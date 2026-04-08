@@ -29,7 +29,7 @@ use magpie_types::network::{Connection, ConnectionKind};
 
 use crate::i18n::*;
 use crate::performance_page::widgets::{
-    DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
+    DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
 };
 use crate::{application::INTERVAL_STEP, to_short_human_readable_time};
 use crate::{settings, DataType};
@@ -821,12 +821,14 @@ impl PerformancePageNetwork {
             let dynamic_scaling = settings.boolean("performance-page-network-dynamic-scaling");
 
             if dynamic_scaling {
+                usage_graph.set_all_datasets_scaling(ScalingSettings::ScaleUp);
+
                 let base2 = settings.boolean("performance-page-network-use-base2");
 
                 if base2 {
-                    usage_graph.set_all_datasets_scaling(ScalingSettings::ScaleUpPow2);
+                    usage_graph.set_all_datasets_rounding(RoundingSettings::Pow2);
                 } else {
-                    usage_graph.set_all_datasets_scaling(ScalingSettings::ScaleUpPow2Base10);
+                    usage_graph.set_all_datasets_rounding(RoundingSettings::Pow2Base10);
 
                     usage_graph.set_all_datasets_watermarking_multiplier(if this.use_bytes.get() {
                         1.
@@ -842,12 +844,14 @@ impl PerformancePageNetwork {
                 usage_graph.set_all_datasets_max_scale(max_speed as f32);
             }
         } else {
+            usage_graph.set_all_datasets_scaling(ScalingSettings::ScaleUp);
+
             let base2 = settings.boolean("performance-page-network-use-base2");
 
             if base2 {
-                usage_graph.set_all_datasets_scaling(ScalingSettings::ScaleUpPow2);
+                usage_graph.set_all_datasets_rounding(RoundingSettings::Pow2);
             } else {
-                usage_graph.set_all_datasets_scaling(ScalingSettings::ScaleUpPow2Base10);
+                usage_graph.set_all_datasets_rounding(RoundingSettings::Pow2Base10);
 
                 usage_graph.set_all_datasets_watermarking_multiplier(if this.use_bytes.get() {
                     1.

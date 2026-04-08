@@ -22,6 +22,7 @@ pub use eject_failure_dialog::EjectFailureDialog;
 pub use graph_widget::GraphWidget;
 pub use graph_widget_utils::DatasetGroup;
 pub use graph_widget_utils::FillingSettings;
+pub use graph_widget_utils::RoundingSettings;
 pub use graph_widget_utils::ScalingSettings;
 pub use mem_composition_widget::MemoryCompositionWidget;
 pub use sidebar_drop_hint::SidebarDropHint;

@@ -38,7 +38,7 @@ use gtk::Snapshot;
 use gtk::TextDirection;
 
 use crate::performance_page::widgets::graph_widget_utils::{
-    DatasetGroup, FillingSettings, ScalingSettings,
+    DatasetGroup, FillingSettings, RoundingSettings, ScalingSettings,
 };
 
 // no faster than 200 Hz. if everything is going according to plan, we expect two animation frames in quick succession at the start of a new cycle and want to prevent rendering twice
@@ -557,6 +557,16 @@ impl GraphWidget {
         self.force_redraw();
     }
 
+    pub fn set_dataset_rounding(&self, index: usize, rounder: RoundingSettings) {
+        let mut sets = self.imp().data_sets.take();
+
+        sets[index].dataset_settings.rounding_settings = rounder;
+
+        self.imp().data_sets.set(sets);
+
+        self.force_redraw();
+    }
+
     pub fn set_dataset_opacity(&self, index: usize, opacity: f32) {
         let mut sets = self.imp().data_sets.take();
 
@@ -572,6 +582,18 @@ impl GraphWidget {
 
         for set in sets.iter_mut() {
             set.dataset_settings.scaling_settings = scaler.clone();
+        }
+
+        self.imp().data_sets.set(sets);
+
+        self.force_redraw();
+    }
+
+    pub fn set_all_datasets_rounding(&self, rounder: RoundingSettings) {
+        let mut sets = self.imp().data_sets.take();
+
+        for set in sets.iter_mut() {
+            set.dataset_settings.rounding_settings = rounder.clone();
         }
 
         self.imp().data_sets.set(sets);

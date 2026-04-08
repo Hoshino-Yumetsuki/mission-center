@@ -35,17 +35,69 @@ pub enum ScalingSettings {
     ScaleUp,
     ScaleDown,
     ScaleUpDown,
-    ScaleUpPow2,
-    ScaleDownPow2,
-    ScaleUpDownPow2,
-    ScaleUpPow2Base10,
-    ScaleDownPow2Base10,
-    ScaleUpDownPow2Base10,
     StickyUp,
     StickyDown,
     StickyUpDown,
     StickyUpDownEqualMagnitude,
     Stacking,
+}
+
+#[derive(Default, Clone, PartialEq)]
+pub enum RoundingSettings {
+    #[default]
+    NoRounding,
+    Pow2,
+    Pow2Base10,
+    Integer,
+}
+
+impl RoundingSettings {
+    fn round_up_to_next_power_of_two(num: f32) -> f32 {
+        let num = num as u64;
+
+        if num == 0 {
+            return 0.;
+        }
+
+        let mut n = num - 1;
+        n |= n >> 1;
+        n |= n >> 2;
+        n |= n >> 4;
+        n |= n >> 8;
+        n |= n >> 16;
+
+        (n + 1) as f32
+    }
+
+    fn round_up_to_next_power_of_two_base_10(num: f32) -> f32 {
+        if num == 0. {
+            return 0.;
+        }
+
+        // take the power of two amount w.r.t. the last power of 1000
+        let log1000 = (num.log10() / 3.) as i32;
+
+        let num_below = 1000f32.powi(log1000);
+
+        Self::round_up_to_next_power_of_two((num / num_below).ceil()).min(1000.) * num_below
+    }
+
+    pub fn apply_up_rounding(&self, f: f32) -> f32 {
+        match self {
+            RoundingSettings::NoRounding => f,
+            RoundingSettings::Pow2 => Self::round_up_to_next_power_of_two(f),
+            RoundingSettings::Pow2Base10 => Self::round_up_to_next_power_of_two_base_10(f),
+            RoundingSettings::Integer => f.ceil(),
+        }
+    }
+
+    pub fn apply_down_rounding(&self, f: f32) -> f32 {
+        match self {
+            RoundingSettings::NoRounding => f,
+            RoundingSettings::Integer => f.floor(),
+            _ => f, // generally rounding down on logs is problematic
+        }
+    }
 }
 
 #[derive(Default, Clone, PartialEq)]
@@ -66,6 +118,7 @@ pub struct DatasetSettings {
     pub vertical_dropoff_lines: bool,
 
     pub scaling_settings: ScalingSettings,
+    pub rounding_settings: RoundingSettings,
     pub low_watermark: f32,
     pub high_watermark: f32,
 
@@ -94,6 +147,7 @@ impl DatasetGroup {
                 opacity: 100. / 255.,
                 vertical_dropoff_lines: true,
                 scaling_settings: Default::default(),
+                rounding_settings: Default::default(),
                 low_watermark: 0.0,
                 high_watermark: 100.0,
                 watermarking_multiplier: 1.,
@@ -117,6 +171,7 @@ impl DatasetGroup {
                 opacity: 100. / 255.,
                 vertical_dropoff_lines: true,
                 scaling_settings: Default::default(),
+                rounding_settings: Default::default(),
                 low_watermark: 0.0,
                 high_watermark: 100.0,
                 watermarking_multiplier: 1.,
@@ -136,6 +191,7 @@ impl DatasetGroup {
                 opacity: 100. / 255.,
                 vertical_dropoff_lines: true,
                 scaling_settings: Default::default(),
+                rounding_settings: Default::default(),
                 low_watermark: 0.0,
                 high_watermark: 100.0,
                 watermarking_multiplier: 1.,
@@ -181,75 +237,29 @@ impl DatasetGroup {
         self.update_expensive_scaling()
     }
 
-    fn round_up_to_next_power_of_two(num: f32) -> f32 {
-        let num = num as u64;
-
-        if num == 0 {
-            return 0.;
-        }
-
-        let mut n = num - 1;
-        n |= n >> 1;
-        n |= n >> 2;
-        n |= n >> 4;
-        n |= n >> 8;
-        n |= n >> 16;
-
-        (n + 1) as f32
-    }
-
-    fn round_up_to_next_power_of_two_base_10(num: f32) -> f32 {
-        if num == 0. {
-            return 0.;
-        }
-
-        // take the power of two amount w.r.t. the last power of 1000
-        let log1000 = (num.log10() / 3.) as i32;
-
-        let num_below = 1000f32.powi(log1000);
-
-        Self::round_up_to_next_power_of_two((num / num_below).ceil()).min(1000.) * num_below
-    }
-
     fn update_expensive_scaling(&mut self) {
         match self.dataset_settings.scaling_settings {
             ScalingSettings::ScaleUp => {
-                self.dataset_settings.high_watermark = self.get_maximum();
+                self.dataset_settings.high_watermark =
+                    self.dataset_settings.rounding_settings.apply_up_rounding(
+                        self.get_maximum() * self.dataset_settings.watermarking_multiplier,
+                    ) / self.dataset_settings.watermarking_multiplier;
             }
             ScalingSettings::ScaleDown => {
-                self.dataset_settings.low_watermark = self.get_minimum();
+                self.dataset_settings.low_watermark =
+                    self.dataset_settings.rounding_settings.apply_down_rounding(
+                        self.get_minimum() * self.dataset_settings.watermarking_multiplier,
+                    ) / self.dataset_settings.watermarking_multiplier;
             }
             ScalingSettings::ScaleUpDown => {
-                self.dataset_settings.high_watermark = self.get_maximum();
-                self.dataset_settings.low_watermark = self.get_minimum();
-            }
-            ScalingSettings::ScaleUpPow2 => {
                 self.dataset_settings.high_watermark =
-                    Self::round_up_to_next_power_of_two(self.get_maximum());
-            }
-            ScalingSettings::ScaleDownPow2 => {
-                // todo scale down
-            }
-            ScalingSettings::ScaleUpDownPow2 => {
-                self.dataset_settings.high_watermark =
-                    Self::round_up_to_next_power_of_two(self.get_maximum());
-                // todo scale down
-            }
-            ScalingSettings::ScaleUpPow2Base10 => {
-                self.dataset_settings.high_watermark =
-                    Self::round_up_to_next_power_of_two_base_10(
+                    self.dataset_settings.rounding_settings.apply_up_rounding(
                         self.get_maximum() * self.dataset_settings.watermarking_multiplier,
                     ) / self.dataset_settings.watermarking_multiplier;
-            }
-            ScalingSettings::ScaleDownPow2Base10 => {
-                // todo scale down
-            }
-            ScalingSettings::ScaleUpDownPow2Base10 => {
-                self.dataset_settings.high_watermark =
-                    Self::round_up_to_next_power_of_two_base_10(
-                        self.get_maximum() * self.dataset_settings.watermarking_multiplier,
+                self.dataset_settings.low_watermark =
+                    self.dataset_settings.rounding_settings.apply_down_rounding(
+                        self.get_minimum() * self.dataset_settings.watermarking_multiplier,
                     ) / self.dataset_settings.watermarking_multiplier;
-                // todo scale down
             }
             ScalingSettings::StickyUp => {}
             ScalingSettings::StickyDown => {}
@@ -279,7 +289,7 @@ impl DatasetGroup {
         changed
     }
 
-    fn get_minimum(&mut self) -> f32 {
+    fn get_minimum(&self) -> f32 {
         self.datas
             .iter()
             .filter_map(|set| set.get_data_removed().iter().map(|f| *f).reduce(f32::min))
@@ -287,7 +297,7 @@ impl DatasetGroup {
             .unwrap_or(self.dataset_settings.low_watermark)
     }
 
-    fn get_maximum(&mut self) -> f32 {
+    fn get_maximum(&self) -> f32 {
         self.datas
             .iter()
             .filter_map(|set| set.get_data_removed().iter().map(|f| *f).reduce(f32::max))
@@ -306,42 +316,72 @@ impl DatasetGroup {
             ScalingSettings::ScaleUp => {}
             ScalingSettings::ScaleDown => {}
             ScalingSettings::ScaleUpDown => {}
-            ScalingSettings::ScaleUpPow2 => {}
-            ScalingSettings::ScaleDownPow2 => {}
-            ScalingSettings::ScaleUpDownPow2 => {}
-            ScalingSettings::ScaleUpPow2Base10 => {}
-            ScalingSettings::ScaleDownPow2Base10 => {}
-            ScalingSettings::ScaleUpDownPow2Base10 => {}
             ScalingSettings::StickyUp => {
-                if point > self.dataset_settings.high_watermark {
-                    self.dataset_settings.high_watermark = point
+                let max = self
+                    .dataset_settings
+                    .rounding_settings
+                    .apply_up_rounding(point * self.dataset_settings.watermarking_multiplier)
+                    / self.dataset_settings.watermarking_multiplier;
+
+                if max > self.dataset_settings.high_watermark {
+                    self.dataset_settings.high_watermark = max
                 }
             }
             ScalingSettings::StickyDown => {
-                if point < self.dataset_settings.low_watermark {
-                    self.dataset_settings.low_watermark = point
+                let min = self
+                    .dataset_settings
+                    .rounding_settings
+                    .apply_down_rounding(point * self.dataset_settings.watermarking_multiplier)
+                    / self.dataset_settings.watermarking_multiplier;
+
+                if min < self.dataset_settings.low_watermark {
+                    self.dataset_settings.low_watermark = min
                 }
             }
             ScalingSettings::StickyUpDown => {
-                if point > self.dataset_settings.high_watermark {
-                    self.dataset_settings.high_watermark = point
+                let max = self
+                    .dataset_settings
+                    .rounding_settings
+                    .apply_up_rounding(point * self.dataset_settings.watermarking_multiplier)
+                    / self.dataset_settings.watermarking_multiplier;
+
+                if max > self.dataset_settings.high_watermark {
+                    self.dataset_settings.high_watermark = max
                 }
 
-                if point < self.dataset_settings.low_watermark {
-                    self.dataset_settings.low_watermark = point
+                let min = self
+                    .dataset_settings
+                    .rounding_settings
+                    .apply_down_rounding(point * self.dataset_settings.watermarking_multiplier)
+                    / self.dataset_settings.watermarking_multiplier;
+
+                if min < self.dataset_settings.low_watermark {
+                    self.dataset_settings.low_watermark = min
                 }
             }
             ScalingSettings::StickyUpDownEqualMagnitude => {
-                if point > self.dataset_settings.high_watermark {
+                let max = self
+                    .dataset_settings
+                    .rounding_settings
+                    .apply_up_rounding(point * self.dataset_settings.watermarking_multiplier)
+                    / self.dataset_settings.watermarking_multiplier;
+
+                if max > self.dataset_settings.high_watermark {
                     self.dataset_settings.low_watermark -=
-                        point - self.dataset_settings.high_watermark;
-                    self.dataset_settings.high_watermark = point;
+                        max - self.dataset_settings.high_watermark;
+                    self.dataset_settings.high_watermark = max;
                 }
 
-                if point < self.dataset_settings.low_watermark {
+                let min = self
+                    .dataset_settings
+                    .rounding_settings
+                    .apply_down_rounding(point * self.dataset_settings.watermarking_multiplier)
+                    / self.dataset_settings.watermarking_multiplier;
+
+                if min < self.dataset_settings.low_watermark {
                     self.dataset_settings.high_watermark +=
-                        self.dataset_settings.low_watermark - point;
-                    self.dataset_settings.low_watermark = point;
+                        self.dataset_settings.low_watermark - min;
+                    self.dataset_settings.low_watermark = min;
                 }
             }
             ScalingSettings::Stacking => {}

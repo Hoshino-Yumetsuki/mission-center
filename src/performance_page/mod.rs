@@ -41,7 +41,7 @@ use magpie_types::network::{Connection, ConnectionKind};
 use crate::i18n::*;
 use crate::magpie_client::DiskKind;
 use crate::performance_page::widgets::{
-    DatasetGroup, FillingSettings, GraphWidget, ScalingSettings, SidebarDropHint,
+    DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings, SidebarDropHint,
 };
 use crate::{settings, DataType};
 
@@ -1355,8 +1355,10 @@ mod imp {
                 dataset_a.dataset_settings.fill = FillingSettings::None;
                 dataset_a.dataset_settings.dashed = true;
                 let mut dataset_b = DatasetGroup::new();
-                dataset_a.dataset_settings.scaling_settings = ScalingSettings::ScaleUpPow2;
-                dataset_b.dataset_settings.scaling_settings = ScalingSettings::ScaleUpPow2;
+                dataset_a.dataset_settings.scaling_settings = ScalingSettings::ScaleUp;
+                dataset_b.dataset_settings.scaling_settings = ScalingSettings::ScaleUp;
+                dataset_a.dataset_settings.rounding_settings = RoundingSettings::Pow2;
+                dataset_b.dataset_settings.rounding_settings = RoundingSettings::Pow2;
 
                 graph_widget.add_dataset(dataset_a);
                 graph_widget.add_dataset(dataset_b);
@@ -1395,7 +1397,7 @@ mod imp {
                             settings.boolean("performance-page-network-dynamic-scaling");
 
                         if dynamic_scaling {
-                            graph.set_dataset_scaling(0, ScalingSettings::ScaleUpPow2);
+                            graph.set_dataset_scaling(0, ScalingSettings::ScaleUp);
                         } else {
                             graph.set_dataset_scaling(0, ScalingSettings::Fixed);
                             graph.set_dataset_max_scale(0, max_speed as f32);

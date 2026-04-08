@@ -31,8 +31,8 @@ use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::performance_page::disk_details::DiskDetails;
 use crate::performance_page::widgets::{
-    DatasetGroup, EjectFailureDialog, FillingSettings, GraphWidget, ScalingSettings,
-    SmartDataDialog, SmartFailureDialog,
+    DatasetGroup, EjectFailureDialog, FillingSettings, GraphWidget, RoundingSettings,
+    ScalingSettings, SmartDataDialog, SmartFailureDialog,
 };
 use crate::{app, settings, to_short_human_readable_time, DataType};
 
@@ -491,10 +491,12 @@ mod imp {
             let mut tx_dataset = DatasetGroup::new();
             let mut rx_dataset = DatasetGroup::new();
 
-            rx_dataset.dataset_settings.scaling_settings = ScalingSettings::ScaleUpPow2;
+            rx_dataset.dataset_settings.scaling_settings = ScalingSettings::ScaleUp;
+            rx_dataset.dataset_settings.rounding_settings = RoundingSettings::Pow2;
             rx_dataset.dataset_settings.dashed = false;
 
-            tx_dataset.dataset_settings.scaling_settings = ScalingSettings::ScaleUpPow2;
+            tx_dataset.dataset_settings.scaling_settings = ScalingSettings::ScaleUp;
+            tx_dataset.dataset_settings.rounding_settings = RoundingSettings::Pow2;
             tx_dataset.dataset_settings.fill = FillingSettings::None;
             tx_dataset.dataset_settings.dashed = true;
 
@@ -608,9 +610,9 @@ impl PerformancePageDisk {
         let base2 = settings.boolean("performance-page-drive-use-base2");
 
         if base2 {
-            transfer_rate_graph.set_all_datasets_scaling(ScalingSettings::ScaleUpPow2);
+            transfer_rate_graph.set_all_datasets_rounding(RoundingSettings::Pow2);
         } else {
-            transfer_rate_graph.set_all_datasets_scaling(ScalingSettings::ScaleUpPow2Base10);
+            transfer_rate_graph.set_all_datasets_rounding(RoundingSettings::Pow2Base10);
 
             let bytes = settings.boolean("performance-page-drive-use-bytes");
 
