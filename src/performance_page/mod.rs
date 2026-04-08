@@ -1,6 +1,6 @@
 /* performance_page/view_models
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ use std::fmt::Write;
 use std::marker::PhantomData;
 use std::{
     cell::{Cell, RefCell},
-    collections::{HashMap, HashSet},
+    collections::HashMap,
 };
 
 use adw::{prelude::*, subclass::prelude::*};
@@ -44,6 +44,11 @@ use crate::performance_page::widgets::{
     DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings, SidebarDropHint,
 };
 use crate::{settings, DataType};
+
+use summary_graph::{
+    parse_device_overrides, resolve_device_visibility, serialize_device_overrides, DeviceOverride,
+    DeviceType,
+};
 
 mod battery;
 mod cpu;
@@ -388,10 +393,33 @@ mod imp {
         fn set_sidebar_edit_mode(&self, edit_mode: bool) {
             let active_page_name = self.page_stack.visible_child_name().unwrap_or_default();
 
+            let settings = settings!();
+            let show_disks = settings.boolean("performance-show-disks");
+            let show_network = settings.boolean("performance-show-network");
+            let show_gpus = settings.boolean("performance-show-gpus");
+            let show_fans = settings.boolean("performance-show-fans");
+            let show_batteries = settings.boolean("performance-show-batteries");
+
+            let raw_overrides = settings.string("performance-sidebar-device-overrides");
+            let overrides = parse_device_overrides(&raw_overrides);
+
             let summary_graphs = self.summary_graphs.take();
             let graph_count = summary_graphs.len() as i32;
             for (graph, drag_source) in &summary_graphs {
-                graph.set_edit_mode(edit_mode);
+                let category_visible = match graph.device_type() {
+                    DeviceType::Disk => show_disks,
+                    DeviceType::Network => show_network,
+                    DeviceType::Gpu => show_gpus,
+                    DeviceType::Fan => show_fans,
+                    DeviceType::Battery => show_batteries,
+                    DeviceType::Cpu | DeviceType::Memory | DeviceType::Unspecified => true,
+                };
+                let resolved = resolve_device_visibility(
+                    graph.widget_name().as_str(),
+                    &overrides,
+                    category_visible,
+                );
+                graph.set_edit_mode(edit_mode, resolved);
 
                 if edit_mode {
                     drag_source.set_actions(gdk::DragAction::MOVE);
@@ -912,28 +940,34 @@ mod imp {
                 .build();
 
             if self.sidebar_edit_mode.get() {
-                graph.set_edit_mode(true);
+                let settings = settings!();
+                let category_visible = match graph.device_type() {
+                    DeviceType::Disk => settings.boolean("performance-show-disks"),
+                    DeviceType::Network => settings.boolean("performance-show-network"),
+                    DeviceType::Gpu => settings.boolean("performance-show-gpus"),
+                    DeviceType::Fan => settings.boolean("performance-show-fans"),
+                    DeviceType::Battery => settings.boolean("performance-show-batteries"),
+                    DeviceType::Cpu | DeviceType::Memory | DeviceType::Unspecified => true,
+                };
+                let raw_overrides = settings.string("performance-sidebar-device-overrides");
+                let overrides = parse_device_overrides(&raw_overrides);
+                let resolved = resolve_device_visibility(
+                    graph.widget_name().as_str(),
+                    &overrides,
+                    category_visible,
+                );
+                graph.set_edit_mode(true, resolved);
                 drag_source.set_actions(gdk::DragAction::MOVE);
             }
 
             let mut summary_graphs = self.summary_graphs.take();
-
+            let index = hint
+                .unwrap_or_else(|| summary_graphs.len().saturating_sub(1) as i32)
+                .max(0);
             summary_graphs.insert(graph.clone(), drag_source.clone());
-
-            let index = match hint {
-                Some(index) => {
-                    let index = index.max(0);
-                    sidebar.insert(graph, index);
-                    index
-                }
-                None => {
-                    sidebar.append(graph);
-                    (summary_graphs.len() - 1) as i32
-                }
-            };
-
             self.summary_graphs.set(summary_graphs);
 
+            sidebar.insert(graph, index);
             if let Some(row) = sidebar.row_at_index(index) {
                 drag_source.connect_prepare({
                     let this = self.obj().downgrade();
@@ -984,7 +1018,7 @@ mod imp {
                         );
 
                         let content_provider =
-                            gdk::ContentProvider::for_value(&glib::Value::from(row.index()));
+                            gdk::ContentProvider::for_value(&Value::from(row.index()));
 
                         row.set_visible(false);
                         for sg in summary_graphs.keys() {
@@ -1070,7 +1104,7 @@ mod imp {
             pages: &mut Vec<Pages>,
             readings: &crate::magpie_client::Readings,
         ) {
-            let summary = SummaryGraph::new();
+            let summary = SummaryGraph::new(DeviceType::Cpu);
             summary.set_widget_name("cpu");
 
             summary.set_heading(i18n("CPU"));
@@ -1116,7 +1150,7 @@ mod imp {
             pages: &mut Vec<Pages>,
             readings: &crate::magpie_client::Readings,
         ) {
-            let summary = SummaryGraph::new();
+            let summary = SummaryGraph::new(DeviceType::Memory);
             summary.set_widget_name("memory");
             let mem_info = readings.mem_info;
 
@@ -1245,7 +1279,7 @@ mod imp {
 
             let page_name = Self::disk_page_name(disk.id.as_ref());
 
-            let summary = SummaryGraph::new();
+            let summary = SummaryGraph::new(DeviceType::Disk);
             summary.set_widget_name(&page_name);
 
             self.update_disk_heading(
@@ -1345,7 +1379,7 @@ mod imp {
 
             let settings = settings!();
 
-            let summary = SummaryGraph::new();
+            let summary = SummaryGraph::new(DeviceType::Network);
             summary.set_widget_name(&page_name);
             summary.set_heading(format!("{} ({})", conn_type, if_name));
             {
@@ -1451,7 +1485,7 @@ mod imp {
         ) -> (String, (SummaryGraph, GpuPage)) {
             let page_name = Self::gpu_page_name(&gpu.id);
 
-            let summary = SummaryGraph::new();
+            let summary = SummaryGraph::new(DeviceType::Gpu);
             summary.set_widget_name(&page_name);
 
             let settings = settings!();
@@ -1571,7 +1605,7 @@ mod imp {
 
             let page_name = Self::fan_page_name(fan_static_info);
 
-            let summary = SummaryGraph::new();
+            let summary = SummaryGraph::new(DeviceType::Fan);
             summary.set_widget_name(&page_name);
 
             if let Some(index) = index {
@@ -1669,7 +1703,7 @@ mod imp {
 
             let page_name = Self::battery_page_name(battery_static_info);
 
-            let summary = SummaryGraph::new();
+            let summary = SummaryGraph::new(DeviceType::Battery);
             summary.set_widget_name(&page_name);
 
             if let Some(index) = index {
@@ -1763,7 +1797,7 @@ mod imp {
             let mut battery_graphs = Vec::with_capacity(summary_graphs.len());
 
             for (graph, drag_source) in &summary_graphs {
-                graph.set_is_enabled(true);
+                graph.set_switch_active(true);
 
                 if graph.widget_name().starts_with("cpu") {
                     cpu_graph = Some((graph.clone(), drag_source.clone()));
@@ -1807,6 +1841,43 @@ mod imp {
     }
 
     impl PerformancePage {
+        fn update_device_visibility(
+            &self,
+            settings: &gio::Settings,
+            summary_graphs: &HashMap<SummaryGraph, gtk::DragSource>,
+        ) {
+            let show_disks = settings.boolean("performance-show-disks");
+            let show_network = settings.boolean("performance-show-network");
+            let show_gpus = settings.boolean("performance-show-gpus");
+            let show_fans = settings.boolean("performance-show-fans");
+            let show_batteries = settings.boolean("performance-show-batteries");
+
+            let raw_overrides = settings.string("performance-sidebar-device-overrides");
+            let overrides = parse_device_overrides(&raw_overrides);
+
+            for graph in summary_graphs.keys() {
+                let category_visible = match graph.device_type() {
+                    DeviceType::Disk => show_disks,
+                    DeviceType::Network => show_network,
+                    DeviceType::Gpu => show_gpus,
+                    DeviceType::Fan => show_fans,
+                    DeviceType::Battery => show_batteries,
+                    DeviceType::Cpu | DeviceType::Memory | DeviceType::Unspecified => continue,
+                };
+
+                let visible = resolve_device_visibility(
+                    graph.widget_name().as_str(),
+                    &overrides,
+                    category_visible,
+                );
+
+                graph.set_switch_active(visible);
+                if !self.sidebar_edit_mode.get() {
+                    graph.parent().map(|parent| parent.set_visible(visible));
+                }
+            }
+        }
+
         pub fn set_up_pages(
             this: &super::PerformancePage,
             readings: &crate::magpie_client::Readings,
@@ -1841,11 +1912,29 @@ mod imp {
 
             let sidebar = this.sidebar();
 
-            let hidden_graphs = settings.string("performance-sidebar-hidden-graphs");
-            let hidden_graphs = hidden_graphs
-                .split(";")
-                .filter(|g| !g.is_empty())
-                .collect::<HashSet<_>>();
+            let raw_overrides = settings.string("performance-sidebar-device-overrides");
+            let mut overrides = parse_device_overrides(&raw_overrides);
+
+            // Migrate from the deprecated performance-sidebar-hidden-graphs key
+            let old_hidden = settings.string("performance-sidebar-hidden-graphs");
+            if !old_hidden.is_empty() {
+                for name in old_hidden.split(';').filter(|s| !s.is_empty()) {
+                    overrides
+                        .entry(name.to_string())
+                        .or_insert(DeviceOverride::Hide);
+                }
+                let _ = settings.set_string(
+                    "performance-sidebar-device-overrides",
+                    &serialize_device_overrides(&overrides),
+                );
+                let _ = settings.set_string("performance-sidebar-hidden-graphs", "");
+            }
+
+            let show_disks = settings.boolean("performance-show-disks");
+            let show_network = settings.boolean("performance-show-network");
+            let show_gpus = settings.boolean("performance-show-gpus");
+            let show_fans = settings.boolean("performance-show-fans");
+            let show_batteries = settings.boolean("performance-show-batteries");
 
             let sidebar_order = settings.string("performance-sidebar-order");
 
@@ -1867,10 +1956,19 @@ mod imp {
                 };
 
                 let name = graph.widget_name();
-
-                if hidden_graphs.contains(name.as_str()) {
-                    graph.set_is_enabled(false);
-                    row.set_visible(false);
+                let category_visible = match graph.device_type() {
+                    DeviceType::Disk => show_disks,
+                    DeviceType::Network => show_network,
+                    DeviceType::Gpu => show_gpus,
+                    DeviceType::Fan => show_fans,
+                    DeviceType::Battery => show_batteries,
+                    DeviceType::Cpu | DeviceType::Memory | DeviceType::Unspecified => true,
+                };
+                let visible =
+                    resolve_device_visibility(name.as_str(), &overrides, category_visible);
+                graph.set_switch_active(visible);
+                if let Some(parent) = graph.parent() {
+                    parent.set_visible(visible);
                 }
 
                 row_map.insert(graph.widget_name(), (row, graph));
@@ -1901,16 +1999,34 @@ mod imp {
                     drop(row);
 
                     sidebar.insert(&graph, i);
-                    sidebar.row_at_index(i).and_then(|row| {
-                        if !graph.is_enabled() {
-                            row.set_visible(false);
-                        }
-                        Some(row.add_controller(drag_controller))
-                    });
+                    sidebar
+                        .row_at_index(i)
+                        .and_then(|row| Some(row.add_controller(drag_controller)));
                 }
             }
 
             this.summary_graphs.set(summary_graphs);
+
+            let perf_page = this.obj().downgrade();
+            let on_category_changed = move |settings: &gio::Settings, _: &str| {
+                let perf_page = match perf_page.upgrade() {
+                    Some(p) => p,
+                    None => return,
+                };
+                let imp = perf_page.imp();
+                let summary_graphs = imp.summary_graphs.take();
+                imp.update_device_visibility(settings, &summary_graphs);
+                imp.summary_graphs.set(summary_graphs);
+            };
+
+            settings.connect_changed(Some("performance-show-disks"), on_category_changed.clone());
+            settings.connect_changed(
+                Some("performance-show-network"),
+                on_category_changed.clone(),
+            );
+            settings.connect_changed(Some("performance-show-gpus"), on_category_changed.clone());
+            settings.connect_changed(Some("performance-show-fans"), on_category_changed.clone());
+            settings.connect_changed(Some("performance-show-batteries"), on_category_changed);
 
             true
         }
@@ -1965,6 +2081,8 @@ mod imp {
                 }
             }
 
+            let mut summary_graphs = this.imp().summary_graphs.take();
+
             for page in &mut pages {
                 match page {
                     Pages::Cpu(_) => {}    // not dynamic
@@ -1979,8 +2097,6 @@ mod imp {
                             }
                         }
 
-                        let mut summary_graphs = this.imp().summary_graphs.take();
-
                         remove_pages(
                             &pages_to_destroy,
                             disks_pages,
@@ -1989,8 +2105,6 @@ mod imp {
                             &this.imp().page_stack,
                         );
                         pages_to_destroy.clear();
-
-                        this.imp().summary_graphs.set(summary_graphs);
                     }
                     Pages::Network(net_pages) => {
                         for net_page_name in net_pages.keys() {
@@ -2003,8 +2117,6 @@ mod imp {
                             }
                         }
 
-                        let mut summary_graphs = this.imp().summary_graphs.take();
-
                         remove_pages(
                             &pages_to_destroy,
                             net_pages,
@@ -2013,8 +2125,6 @@ mod imp {
                             &this.imp().page_stack,
                         );
                         pages_to_destroy.clear();
-
-                        this.imp().summary_graphs.set(summary_graphs);
                     }
                     Pages::Gpu(gpu_pages) => {
                         for gpu_page_name in gpu_pages.keys() {
@@ -2022,8 +2132,6 @@ mod imp {
                                 pages_to_destroy.push(gpu_page_name.clone());
                             }
                         }
-
-                        let mut summary_graphs = this.imp().summary_graphs.take();
 
                         remove_pages(
                             &pages_to_destroy,
@@ -2033,8 +2141,6 @@ mod imp {
                             &this.imp().page_stack,
                         );
                         pages_to_destroy.clear();
-
-                        this.imp().summary_graphs.set(summary_graphs);
                     }
                     Pages::Fan(fan_pages) => {
                         for fan_page_name in fan_pages.keys() {
@@ -2047,8 +2153,6 @@ mod imp {
                             }
                         }
 
-                        let mut summary_graphs = this.imp().summary_graphs.take();
-
                         remove_pages(
                             &pages_to_destroy,
                             fan_pages,
@@ -2057,8 +2161,6 @@ mod imp {
                             &this.imp().page_stack,
                         );
                         pages_to_destroy.clear();
-
-                        this.imp().summary_graphs.set(summary_graphs);
                     }
                     Pages::Battery(battery_pages) => {
                         for battery_page_name in battery_pages.keys() {
@@ -2069,8 +2171,6 @@ mod imp {
                             }
                         }
 
-                        let mut summary_graphs = this.imp().summary_graphs.take();
-
                         remove_pages(
                             &pages_to_destroy,
                             battery_pages,
@@ -2079,11 +2179,11 @@ mod imp {
                             &this.imp().page_stack,
                         );
                         pages_to_destroy.clear();
-
-                        this.imp().summary_graphs.set(summary_graphs);
                     }
                 }
             }
+
+            this.imp().summary_graphs.set(summary_graphs);
 
             let mut result = true;
 
@@ -2210,6 +2310,7 @@ mod imp {
                                     None
                                 },
                             );
+
                             pages.insert(disk_id, page);
                         }
                     }
@@ -2786,14 +2887,39 @@ impl PerformancePage {
                 );
             });
         settings
-            .set_string("performance-sidebar-hidden-graphs", "")
+            .set_string("performance-sidebar-device-overrides", "")
             .unwrap_or_else(|_| {
                 g_warning!(
                     "MissionCenter::PerformancePage",
-                    "Failed to set performance-sidebar-hidden-graphs setting"
+                    "Failed to set performance-sidebar-device-overrides setting"
                 );
             });
 
         this.default_sort_sidebar_entries();
+
+        let show_disks = settings.boolean("performance-show-disks");
+        let show_network = settings.boolean("performance-show-network");
+        let show_gpus = settings.boolean("performance-show-gpus");
+        let show_fans = settings.boolean("performance-show-fans");
+        let show_batteries = settings.boolean("performance-show-batteries");
+
+        let summary_graphs = this.summary_graphs.take();
+        for (graph, _) in &summary_graphs {
+            let category_visible = match graph.device_type() {
+                DeviceType::Disk => show_disks,
+                DeviceType::Network => show_network,
+                DeviceType::Gpu => show_gpus,
+                DeviceType::Fan => show_fans,
+                DeviceType::Battery => show_batteries,
+                DeviceType::Cpu | DeviceType::Memory | DeviceType::Unspecified => true,
+            };
+            graph.set_switch_active(category_visible);
+            if !this.sidebar_edit_mode.get() {
+                graph.parent().map(|parent| {
+                    parent.set_visible(category_visible);
+                });
+            }
+        }
+        this.summary_graphs.set(summary_graphs);
     }
 }

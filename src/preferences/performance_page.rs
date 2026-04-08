@@ -41,10 +41,6 @@ mod imp {
         #[template_child]
         pub network_dynamic_scaling: TemplateChild<SwitchRow>,
         #[template_child]
-        pub show_cpu: TemplateChild<SwitchRow>,
-        #[template_child]
-        pub show_memory: TemplateChild<SwitchRow>,
-        #[template_child]
         pub show_disks: TemplateChild<SwitchRow>,
         #[template_child]
         pub show_network: TemplateChild<SwitchRow>,
@@ -52,6 +48,8 @@ mod imp {
         pub show_gpus: TemplateChild<SwitchRow>,
         #[template_child]
         pub show_fans: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_batteries: TemplateChild<SwitchRow>,
     }
 
     impl PreferencesPerformancePage {
@@ -116,12 +114,11 @@ mod imp {
                 self.network_dynamic_scaling,
                 "performance-page-network-dynamic-scaling"
             );
-            connect_switch_to_setting!(self.show_cpu, "performance-show-cpu");
-            connect_switch_to_setting!(self.show_memory, "performance-show-memory");
             connect_switch_to_setting!(self.show_disks, "performance-show-disks");
             connect_switch_to_setting!(self.show_network, "performance-show-network");
             connect_switch_to_setting!(self.show_gpus, "performance-show-gpus");
             connect_switch_to_setting!(self.show_fans, "performance-show-fans");
+            connect_switch_to_setting!(self.show_batteries, "performance-show-batteries");
         }
     }
 
@@ -152,10 +149,6 @@ impl PreferencesPerformancePage {
             .set_active(settings.boolean("performance-sliding-graphs"));
         imp.network_dynamic_scaling
             .set_active(settings.boolean("performance-page-network-dynamic-scaling"));
-        imp.show_cpu
-            .set_active(settings.boolean("performance-show-cpu"));
-        imp.show_memory
-            .set_active(settings.boolean("performance-show-memory"));
         imp.show_disks
             .set_active(settings.boolean("performance-show-disks"));
         imp.show_network
@@ -164,6 +157,8 @@ impl PreferencesPerformancePage {
             .set_active(settings.boolean("performance-show-gpus"));
         imp.show_fans
             .set_active(settings.boolean("performance-show-fans"));
+        imp.show_batteries
+            .set_active(settings.boolean("performance-show-batteries"));
 
         this
     }

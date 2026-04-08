@@ -1,6 +1,6 @@
 /* performance_page/summary_graph.rs
  *
- * Copyright 2024-2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::collections::HashSet;
+use std::cell::Cell;
+use std::collections::HashMap;
 
 use adw::subclass::prelude::*;
 use glib::{ParamSpec, Properties, Value};
@@ -26,6 +27,65 @@ use gtk::{gdk, glib, prelude::*};
 
 use crate::performance_page::widgets::{GraphWidget, SidebarDropHint};
 use crate::settings;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum DeviceType {
+    Cpu,
+    Memory,
+    Disk,
+    Network,
+    Gpu,
+    Fan,
+    Battery,
+    Unspecified,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DeviceOverride {
+    Show,
+    Hide,
+}
+
+pub fn parse_device_overrides(raw: &str) -> HashMap<String, DeviceOverride> {
+    raw.split(';')
+        .filter(|s| !s.is_empty())
+        .filter_map(|entry| {
+            let (name, action) = entry.rsplit_once(':')?;
+            let ovr = match action {
+                "show" => DeviceOverride::Show,
+                "hide" => DeviceOverride::Hide,
+                _ => return None,
+            };
+            Some((name.to_string(), ovr))
+        })
+        .collect()
+}
+
+pub fn serialize_device_overrides(overrides: &HashMap<String, DeviceOverride>) -> String {
+    overrides
+        .iter()
+        .map(|(name, ovr)| {
+            let action = match ovr {
+                DeviceOverride::Show => "show",
+                DeviceOverride::Hide => "hide",
+            };
+            format!("{}:{}", name, action)
+        })
+        .collect::<Vec<_>>()
+        .join(";")
+}
+
+pub fn resolve_device_visibility(
+    device_name: &str,
+    overrides: &HashMap<String, DeviceOverride>,
+    category_visible: bool,
+) -> bool {
+    match overrides.get(device_name) {
+        Some(DeviceOverride::Show) => true,
+        Some(DeviceOverride::Hide) => false,
+        None => category_visible,
+    }
+}
 
 mod imp {
     use super::*;
@@ -64,6 +124,10 @@ mod imp {
         info1: PhantomData<String>,
         #[property(get = Self::info2, set = Self::set_info2)]
         info2: PhantomData<String>,
+
+        pub device_type: Cell<DeviceType>,
+
+        pub user_activated: Cell<bool>,
     }
 
     impl Default for SummaryGraph {
@@ -83,6 +147,10 @@ mod imp {
                 heading: PhantomData,
                 info1: PhantomData,
                 info2: PhantomData,
+
+                device_type: Cell::new(DeviceType::Unspecified),
+
+                user_activated: Cell::new(true),
             }
         }
     }
@@ -178,39 +246,30 @@ mod imp {
                         None => return,
                     };
 
+                    if !this.imp().user_activated.get() {
+                        return;
+                    }
+
                     let settings = settings!();
 
-                    let hidden_graphs = settings.string("performance-sidebar-hidden-graphs");
-                    let mut hidden_graphs = hidden_graphs
-                        .split(";")
-                        .filter(|g| !g.is_empty())
-                        .collect::<HashSet<_>>();
+                    let raw = settings.string("performance-sidebar-device-overrides");
+                    let mut overrides = parse_device_overrides(&raw);
                     let name = this.widget_name();
-                    let name = name.as_str();
 
-                    if switch.is_active() && hidden_graphs.contains(name) {
-                        hidden_graphs.remove(name);
-                    } else if !switch.is_active() && !hidden_graphs.contains(name) {
-                        hidden_graphs.insert(name);
-                    }
-
-                    let mut output = String::new();
-                    for graph in hidden_graphs {
-                        output.push_str(graph);
-                        output.push(';');
-                    }
-                    let output = if !output.is_empty() {
-                        &output[..output.len() - 1]
+                    if switch.is_active() {
+                        overrides.insert(name.to_string(), DeviceOverride::Show);
                     } else {
-                        ""
-                    };
+                        overrides.insert(name.to_string(), DeviceOverride::Hide);
+                    }
+
+                    let output = serialize_device_overrides(&overrides);
 
                     settings
-                        .set_string("performance-sidebar-hidden-graphs", output)
+                        .set_string("performance-sidebar-device-overrides", &output)
                         .unwrap_or_else(|_| {
                             glib::g_warning!(
                                 "MissionCenter::PerformancePage",
-                                "Failed to set performance-sidebar-hidden-graphs setting"
+                                "Failed to set performance-sidebar-device-overrides setting"
                             );
                         });
 
@@ -232,16 +291,31 @@ glib::wrapper! {
 }
 
 impl SummaryGraph {
-    pub fn new() -> Self {
-        glib::Object::builder().build()
+    pub fn new(device_type: DeviceType) -> Self {
+        let this: SummaryGraph = glib::Object::builder().build();
+        this.imp().device_type.set(device_type);
+        this
     }
 
-    pub fn set_edit_mode(&self, edit_mode: bool) {
-        self.imp().drag_handle_icon.set_visible(edit_mode);
-        self.imp().enabled_switch.set_visible(edit_mode);
-        if let Some(parent) = self.parent() {
-            parent.set_visible(edit_mode || self.is_enabled());
+    pub fn set_edit_mode(&self, edit_mode: bool, switch_enabled: bool) {
+        let imp = self.imp();
+        imp.drag_handle_icon.set_visible(edit_mode);
+        imp.enabled_switch.set_visible(edit_mode);
+
+        if edit_mode {
+            self.set_switch_active(switch_enabled);
         }
+
+        if let Some(parent) = self.parent() {
+            parent.set_visible(edit_mode || switch_enabled);
+        }
+    }
+
+    pub fn set_switch_active(&self, active: bool) {
+        let imp = self.imp();
+        imp.user_activated.set(false);
+        imp.enabled_switch.set_active(active);
+        imp.user_activated.set(true);
     }
 
     pub fn graph_widget(&self) -> GraphWidget {
@@ -293,5 +367,9 @@ impl SummaryGraph {
         }
 
         self.imp().drop_hint.next_sibling().is_none()
+    }
+
+    pub fn device_type(&self) -> DeviceType {
+        self.imp().device_type.get()
     }
 }

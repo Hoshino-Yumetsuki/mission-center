@@ -1,6 +1,6 @@
 /* performance_page/cpu.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,13 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::glib::g_critical;
 use gtk::{gio, glib, prelude::*};
 
-use super::PageExt;
 use crate::performance_page::widgets::{
     DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
 };
 use crate::DataType;
 use crate::{application::INTERVAL_STEP, i18n::*, settings, to_short_human_readable_time};
+
+use super::PageExt;
 
 mod imp {
     use super::*;
