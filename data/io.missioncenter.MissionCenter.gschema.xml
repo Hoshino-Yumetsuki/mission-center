@@ -212,6 +212,31 @@
             <summary>Show network information by default</summary>
         </key>
 
+        <key name="performance-show-network-wired" type="b">
+            <default>true</default>
+            <summary>Show wired network devices by default</summary>
+        </key>
+
+        <key name="performance-show-network-wireless" type="b">
+            <default>true</default>
+            <summary>Show wireless network devices by default</summary>
+        </key>
+
+        <key name="performance-show-network-vpn" type="b">
+            <default>true</default>
+            <summary>Show VPN network devices by default</summary>
+        </key>
+
+        <key name="performance-show-network-virtual" type="b">
+            <default>true</default>
+            <summary>Show virtual network devices (Docker, Multipass, Bridge) by default</summary>
+        </key>
+
+        <key name="performance-show-network-other" type="b">
+            <default>true</default>
+            <summary>Show other network devices (Bluetooth, InfiniBand, WWAN) by default</summary>
+        </key>
+
         <key name="performance-show-gpus" type="b">
             <default>true</default>
             <summary>Show GPU information by default</summary>

@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use adw::{prelude::*, subclass::prelude::*, SwitchRow};
+use adw::{prelude::*, subclass::prelude::*, ExpanderRow, SwitchRow};
 use glib::g_critical;
 use gtk::{gio, glib, Scale};
 
@@ -43,7 +43,17 @@ mod imp {
         #[template_child]
         pub show_disks: TemplateChild<SwitchRow>,
         #[template_child]
-        pub show_network: TemplateChild<SwitchRow>,
+        pub show_network: TemplateChild<ExpanderRow>,
+        #[template_child]
+        pub show_network_wired: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_network_wireless: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_network_vpn: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_network_virtual: TemplateChild<SwitchRow>,
+        #[template_child]
+        pub show_network_other: TemplateChild<SwitchRow>,
         #[template_child]
         pub show_gpus: TemplateChild<SwitchRow>,
         #[template_child]
@@ -115,7 +125,30 @@ mod imp {
                 "performance-page-network-dynamic-scaling"
             );
             connect_switch_to_setting!(self.show_disks, "performance-show-disks");
-            connect_switch_to_setting!(self.show_network, "performance-show-network");
+            self.show_network.connect_enable_expansion_notify({
+                move |expander| {
+                    if let Err(e) = settings!()
+                        .set_boolean("performance-show-network", expander.enables_expansion())
+                    {
+                        g_critical!(
+                            "MissionCenter::Preferences",
+                            "Failed to set performance-show-network setting: {}",
+                            e
+                        );
+                    }
+                }
+            });
+            connect_switch_to_setting!(self.show_network_wired, "performance-show-network-wired");
+            connect_switch_to_setting!(
+                self.show_network_wireless,
+                "performance-show-network-wireless"
+            );
+            connect_switch_to_setting!(self.show_network_vpn, "performance-show-network-vpn");
+            connect_switch_to_setting!(
+                self.show_network_virtual,
+                "performance-show-network-virtual"
+            );
+            connect_switch_to_setting!(self.show_network_other, "performance-show-network-other");
             connect_switch_to_setting!(self.show_gpus, "performance-show-gpus");
             connect_switch_to_setting!(self.show_fans, "performance-show-fans");
             connect_switch_to_setting!(self.show_batteries, "performance-show-batteries");
@@ -152,7 +185,17 @@ impl PreferencesPerformancePage {
         imp.show_disks
             .set_active(settings.boolean("performance-show-disks"));
         imp.show_network
-            .set_active(settings.boolean("performance-show-network"));
+            .set_enable_expansion(settings.boolean("performance-show-network"));
+        imp.show_network_wired
+            .set_active(settings.boolean("performance-show-network-wired"));
+        imp.show_network_wireless
+            .set_active(settings.boolean("performance-show-network-wireless"));
+        imp.show_network_vpn
+            .set_active(settings.boolean("performance-show-network-vpn"));
+        imp.show_network_virtual
+            .set_active(settings.boolean("performance-show-network-virtual"));
+        imp.show_network_other
+            .set_active(settings.boolean("performance-show-network-other"));
         imp.show_gpus
             .set_active(settings.boolean("performance-show-gpus"));
         imp.show_fans

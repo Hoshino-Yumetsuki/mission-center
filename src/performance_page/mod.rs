@@ -47,7 +47,7 @@ use crate::{settings, DataType};
 
 use summary_graph::{
     parse_device_overrides, resolve_device_visibility, serialize_device_overrides, DeviceOverride,
-    DeviceType,
+    DeviceType, NetworkGroup,
 };
 
 mod battery;
@@ -408,7 +408,9 @@ mod imp {
             for (graph, drag_source) in &summary_graphs {
                 let category_visible = match graph.device_type() {
                     DeviceType::Disk => show_disks,
-                    DeviceType::Network => show_network,
+                    DeviceType::Network(group) => {
+                        show_network && settings.boolean(group.settings_key())
+                    }
                     DeviceType::Gpu => show_gpus,
                     DeviceType::Fan => show_fans,
                     DeviceType::Battery => show_batteries,
@@ -943,7 +945,10 @@ mod imp {
                 let settings = settings!();
                 let category_visible = match graph.device_type() {
                     DeviceType::Disk => settings.boolean("performance-show-disks"),
-                    DeviceType::Network => settings.boolean("performance-show-network"),
+                    DeviceType::Network(group) => {
+                        settings.boolean("performance-show-network")
+                            && settings.boolean(group.settings_key())
+                    }
                     DeviceType::Gpu => settings.boolean("performance-show-gpus"),
                     DeviceType::Fan => settings.boolean("performance-show-fans"),
                     DeviceType::Battery => settings.boolean("performance-show-batteries"),
@@ -1379,7 +1384,8 @@ mod imp {
 
             let settings = settings!();
 
-            let summary = SummaryGraph::new(DeviceType::Network);
+            let network_group = NetworkGroup::from_connection_kind(conn_kind);
+            let summary = SummaryGraph::new(DeviceType::Network(network_group));
             summary.set_widget_name(&page_name);
             summary.set_heading(format!("{} ({})", conn_type, if_name));
             {
@@ -1858,7 +1864,9 @@ mod imp {
             for graph in summary_graphs.keys() {
                 let category_visible = match graph.device_type() {
                     DeviceType::Disk => show_disks,
-                    DeviceType::Network => show_network,
+                    DeviceType::Network(group) => {
+                        show_network && settings.boolean(group.settings_key())
+                    }
                     DeviceType::Gpu => show_gpus,
                     DeviceType::Fan => show_fans,
                     DeviceType::Battery => show_batteries,
@@ -1958,7 +1966,9 @@ mod imp {
                 let name = graph.widget_name();
                 let category_visible = match graph.device_type() {
                     DeviceType::Disk => show_disks,
-                    DeviceType::Network => show_network,
+                    DeviceType::Network(group) => {
+                        show_network && settings.boolean(group.settings_key())
+                    }
                     DeviceType::Gpu => show_gpus,
                     DeviceType::Fan => show_fans,
                     DeviceType::Battery => show_batteries,
@@ -2022,6 +2032,26 @@ mod imp {
             settings.connect_changed(Some("performance-show-disks"), on_category_changed.clone());
             settings.connect_changed(
                 Some("performance-show-network"),
+                on_category_changed.clone(),
+            );
+            settings.connect_changed(
+                Some("performance-show-network-wired"),
+                on_category_changed.clone(),
+            );
+            settings.connect_changed(
+                Some("performance-show-network-wireless"),
+                on_category_changed.clone(),
+            );
+            settings.connect_changed(
+                Some("performance-show-network-vpn"),
+                on_category_changed.clone(),
+            );
+            settings.connect_changed(
+                Some("performance-show-network-virtual"),
+                on_category_changed.clone(),
+            );
+            settings.connect_changed(
+                Some("performance-show-network-other"),
                 on_category_changed.clone(),
             );
             settings.connect_changed(Some("performance-show-gpus"), on_category_changed.clone());
@@ -2907,7 +2937,9 @@ impl PerformancePage {
         for (graph, _) in &summary_graphs {
             let category_visible = match graph.device_type() {
                 DeviceType::Disk => show_disks,
-                DeviceType::Network => show_network,
+                DeviceType::Network(group) => {
+                    show_network && settings.boolean(group.settings_key())
+                }
                 DeviceType::Gpu => show_gpus,
                 DeviceType::Fan => show_fans,
                 DeviceType::Battery => show_batteries,

@@ -70,9 +70,32 @@ template $PreferencesPerformancePage: Adw.PreferencesPage {
       subtitle: _("Show disk information by default");
     }
 
-    Adw.SwitchRow show_network {
+    Adw.ExpanderRow show_network {
       title: _("Show Network Information");
       subtitle: _("Show network information by default");
+      show-enable-switch: true;
+
+      Adw.SwitchRow show_network_wired {
+        title: _("Wired");
+      }
+
+      Adw.SwitchRow show_network_wireless {
+        title: _("Wireless");
+      }
+
+      Adw.SwitchRow show_network_vpn {
+        title: _("VPN");
+      }
+
+      Adw.SwitchRow show_network_virtual {
+        title: _("Virtual");
+        subtitle: _("Docker, Multipass, Bridge");
+      }
+
+      Adw.SwitchRow show_network_other {
+        title: _("Other");
+        subtitle: _("Bluetooth, InfiniBand, WWAN");
+      }
     }
 
     Adw.SwitchRow show_gpus {

@@ -29,11 +29,49 @@ use crate::performance_page::widgets::{GraphWidget, SidebarDropHint};
 use crate::settings;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum NetworkGroup {
+    Wired,
+    Wireless,
+    Vpn,
+    Virtual,
+    Other,
+}
+
+impl NetworkGroup {
+    pub fn from_connection_kind(kind: magpie_types::network::ConnectionKind) -> Self {
+        use magpie_types::network::ConnectionKind;
+        match kind {
+            ConnectionKind::Wired => NetworkGroup::Wired,
+            ConnectionKind::Wireless => NetworkGroup::Wireless,
+            ConnectionKind::Vpn => NetworkGroup::Vpn,
+            ConnectionKind::Docker
+            | ConnectionKind::Multipass
+            | ConnectionKind::Bridge
+            | ConnectionKind::Virtual => NetworkGroup::Virtual,
+            ConnectionKind::Bluetooth
+            | ConnectionKind::InfiniBand
+            | ConnectionKind::Wwan
+            | ConnectionKind::Other => NetworkGroup::Other,
+        }
+    }
+
+    pub fn settings_key(&self) -> &'static str {
+        match self {
+            NetworkGroup::Wired => "performance-show-network-wired",
+            NetworkGroup::Wireless => "performance-show-network-wireless",
+            NetworkGroup::Vpn => "performance-show-network-vpn",
+            NetworkGroup::Virtual => "performance-show-network-virtual",
+            NetworkGroup::Other => "performance-show-network-other",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DeviceType {
     Cpu,
     Memory,
     Disk,
-    Network,
+    Network(NetworkGroup),
     Gpu,
     Fan,
     Battery,
