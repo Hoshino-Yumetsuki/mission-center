@@ -77,7 +77,7 @@ stages:
   install_flatpak:
     - apt-get install -y build-essential flatpak flatpak-builder
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08 org.gnome.Platform//49 org.gnome.Sdk//49
+    - flatpak install -y org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08 org.gnome.Platform//50 org.gnome.Sdk//50
 
   ready_to_merge:
     - if: "$CI_MERGE_REQUEST_LABELS =~ /CI::Skip Build/"

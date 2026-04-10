@@ -29,7 +29,7 @@ mkdir -p "$OUT_PATH" && cd "$OUT_PATH"
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/glib2.html
 # --------------------------------------------------------------------
-GLIB_VER=2.85.4
+GLIB_VER=2.87.5
 GLIB_VER_MM=$(echo $GLIB_VER | cut -f1-2 -d'.')
 # --------------------------------------------------------------------
 rm -rf /usr/include/glib-2.0/
@@ -80,7 +80,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/freetype2.html
 # -------------------------------------------------------------------
-FREETYPE_VER=2.13.3
+FREETYPE_VER=2.14.3
 # -------------------------------------------------------------------
 curl -LO https://downloads.sourceforge.net/freetype/freetype-$FREETYPE_VER.tar.xz
 tar xvf freetype-$FREETYPE_VER.tar.xz
@@ -136,7 +136,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/wayland-protocols.html
 # --------------------------------------------------------------------------------
-WAYLAND_PROTO_VER_REL=1.45-1
+WAYLAND_PROTO_VER_REL=1.47-1
 WAYLAND_PROTO_VER=$(echo $WAYLAND_PROTO_VER_REL | cut -f1 -d'-')
 # ----------------------------------------------------------------------
 curl -LO https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/wayland-protocols/$WAYLAND_PROTO_VER_REL/wayland-protocols_$WAYLAND_PROTO_VER.orig.tar.xz
@@ -150,7 +150,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/adwaita-icon-theme.html
 # ---------------------------------------------------------------------------
-ADW_ICONS_VER=49.0
+ADW_ICONS_VER=50.0
 ADW_ICONS_VER_MM=$(echo $ADW_ICONS_VER | cut -f1 -d'.')
 # ---------------------------------------------------------------------------
 rm -rf /usr/share/icons/Adwaita
@@ -168,7 +168,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/harfbuzz.html
 # -----------------------------------------------------------------------
-HARFBUZZ_VER=10.1.0
+HARFBUZZ_VER=14.1.0
 # -----------------------------------------------------------------------
 curl -LO https://github.com/harfbuzz/harfbuzz/releases/download/$HARFBUZZ_VER/harfbuzz-$HARFBUZZ_VER.tar.xz
 tar xvf harfbuzz-$HARFBUZZ_VER.tar.xz
@@ -198,7 +198,7 @@ cd $OUT_PATH
 
 # Fontconfig
 # ------------------------------------------------------------------
-FONTCONFIG_VER=2.16.1
+FONTCONFIG_VER=2.17.1
 # ------------------------------------------------------------------
 curl -LO https://gitlab.freedesktop.org/fontconfig/fontconfig/-/archive/$FONTCONFIG_VER/fontconfig-$FONTCONFIG_VER.tar.bz2
 tar xvf fontconfig-$FONTCONFIG_VER.tar.bz2
@@ -217,7 +217,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/pango.html
 # ------------------------------------------------------------------
-PANGO_VER=1.56.3
+PANGO_VER=1.57.1
 PANGO_VER_MM=$(echo $PANGO_VER | cut -f1-2 -d'.')
 # ------------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/pango/$PANGO_VER_MM/pango-$PANGO_VER.tar.xz
@@ -235,31 +235,9 @@ ninja && ninja install && env DESTDIR="$DEPS_PATH" ninja install
 cd ../../ && rm -rf pango-$PANGO_VER*
 cd $OUT_PATH
 
-# -------------------------------------------------------------
-LIBRSVG_VER=2.61.1
-LIBRSVG_VER_MM=$(echo $LIBRSVG_VER | cut -f1-2 -d'.')
-# -------------------------------------------------------------
-cargo install --locked --version "0.10.15+cargo-0.90.0" cargo-c
-curl -LO https://download.gnome.org/sources/librsvg/$LIBRSVG_VER_MM/librsvg-$LIBRSVG_VER.tar.xz
-tar xvf librsvg-$LIBRSVG_VER.tar.xz
-cd librsvg-$LIBRSVG_VER
-mkdir build && cd build
-meson setup ..                          \
-    --prefix=/usr                       \
-    --libdir=/usr/lib/$(arch)-linux-gnu \
-    --buildtype=release                 \
-    -Dintrospection=enabled             \
-    -Dpixbuf=enabled                    \
-    -Ddocs=disabled                     \
-    -Dvala=disabled                     \
-    -Dtests=false
-ninja && ninja install && env DESTDIR="$DEPS_PATH" ninja install
-cd ../../ && rm -rf librsvg-$LIBRSVG_VER*
-cd $OUT_PATH
-
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gtk4.html
 # -------------------------------------------------------------
-GTK_VER=4.20.2
+GTK_VER=4.22.2
 GTK_VER_MM=$(echo $GTK_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/gtk/$GTK_VER_MM/gtk-$GTK_VER.tar.xz
@@ -298,7 +276,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/libadwaita.html
 # -------------------------------------------------------------------
-LIBADW_VER=1.8.1
+LIBADW_VER=1.9.0
 LIBADW_VER_MM=$(echo $LIBADW_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/libadwaita/$LIBADW_VER_MM/libadwaita-$LIBADW_VER.tar.xz

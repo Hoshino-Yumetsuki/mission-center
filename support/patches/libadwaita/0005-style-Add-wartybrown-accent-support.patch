@@ -127,7 +127,7 @@ index 7d7224a..07f247d 100644
        g_return_val_if_reached (NULL);
    }
 diff --git a/src/stylesheet/_colors.scss b/src/stylesheet/_colors.scss
-index aa16a02..e6cc58b 100644
+index 0f44972..87f8cf3 100644
 --- a/src/stylesheet/_colors.scss
 +++ b/src/stylesheet/_colors.scss
 @@ -168,6 +168,7 @@
@@ -139,7 +139,7 @@ index aa16a02..e6cc58b 100644
    --accent-bg-color: @accent_bg_color;
    --accent-fg-color: @accent_fg_color;
 diff --git a/src/stylesheet/meson.build b/src/stylesheet/meson.build
-index cd2efbd..a704378 100644
+index cd738f8..5db6ee8 100644
 --- a/src/stylesheet/meson.build
 +++ b/src/stylesheet/meson.build
 @@ -24,6 +24,7 @@ if sassc.found()

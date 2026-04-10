@@ -12,22 +12,22 @@ the yaru ones.
 
 Forwarded: not-needed
 ---
- meson_options.txt                                |   4 +
- src/adw-settings-impl-gsettings.c                |   8 +
- src/adw-settings-impl-portal.c                   |  25 ++
- src/adw-settings-impl-private.h                  |  12 +
- src/adw-settings-private.h                       |   2 +
- src/adw-settings.c                               | 329 +++++++++++++++++++++++
- src/adw-style-manager.c                          |  75 +++++-
- src/stylesheet/_colors.scss                      |   6 +
- src/stylesheet/_palette-yaru.scss                | 166 ++++++++++++
- src/stylesheet/adwaita-stylesheet.gresources.xml |   2 +
- src/stylesheet/meson.build                       | 116 +++++++-
- src/stylesheet/sass-utils.scss                   | 212 +++++++++++++++
- src/stylesheet/yaru_accent_colors.scss           | 161 +++++++++++
- src/stylesheet/yaru_main.css.in                  |   7 +
- 14 files changed, 1119 insertions(+), 6 deletions(-)
- create mode 100644 src/stylesheet/_palette-yaru.scss
+ meson_options.txt                                  |   4 +
+ src/adw-settings-impl-gsettings.c                  |   8 +
+ src/adw-settings-impl-portal.c                     |  25 ++
+ src/adw-settings-impl-private.h                    |  12 +
+ src/adw-settings-private.h                         |   2 +
+ src/adw-settings.c                                 | 329 +++++++++++++++++++++
+ src/adw-style-manager.c                            |  72 ++++-
+ src/stylesheet/_colors.scss                        |   6 +
+ .../{_palette.scss => _palette-yaru.scss}          | 110 ++++---
+ src/stylesheet/adwaita-stylesheet.gresources.xml   |   2 +
+ src/stylesheet/meson.build                         | 132 ++++++++-
+ src/stylesheet/sass-utils.scss                     | 212 +++++++++++++
+ src/stylesheet/yaru_accent_colors.scss             | 161 ++++++++++
+ src/stylesheet/yaru_main.css.in                    |   7 +
+ 14 files changed, 1028 insertions(+), 54 deletions(-)
+ copy src/stylesheet/{_palette.scss => _palette-yaru.scss} (63%)
  create mode 100644 src/stylesheet/sass-utils.scss
  create mode 100644 src/stylesheet/yaru_accent_colors.scss
  create mode 100644 src/stylesheet/yaru_main.css.in
@@ -552,7 +552,7 @@ index c17c27c..7d7224a 100644
 +  return self->yaru_accent;
 +}
 diff --git a/src/adw-style-manager.c b/src/adw-style-manager.c
-index fd2b4ae..2713e92 100644
+index 7ed0aa3..3adbbf9 100644
 --- a/src/adw-style-manager.c
 +++ b/src/adw-style-manager.c
 @@ -93,6 +93,7 @@ enum {
@@ -563,7 +563,7 @@ index fd2b4ae..2713e92 100644
    LAST_PROP,
  };
  
-@@ -249,6 +250,42 @@ update_stylesheet (AdwStyleManager       *self,
+@@ -250,6 +251,42 @@ update_stylesheet (AdwStyleManager       *self,
                                                GTK_STYLE_PROVIDER (self->animations_provider),
                                                10000);
  
@@ -572,7 +572,7 @@ index fd2b4ae..2713e92 100644
 +    g_autofree char *style = NULL;
 +    g_autofree char *style_name = NULL;
 +
-+    style_name = g_strdup ("main");
++    style_name = g_strdup ("gtk");
 +    const char *yaru_accent = adw_settings_get_yaru_accent (self->settings);
 +
 +    if G_LIKELY (yaru_accent) {
@@ -606,16 +606,13 @@ index fd2b4ae..2713e92 100644
    if (flags & UPDATE_ACCENT_COLOR && self->accent_provider) {
      char *accent_css = generate_accent_css (self);
      gtk_css_provider_load_from_string (self->accent_provider, accent_css);
-@@ -446,6 +483,20 @@ notify_high_contrast_cb (AdwStyleManager *self)
+@@ -464,6 +501,17 @@ notify_high_contrast_cb (AdwStyleManager *self)
    g_object_notify_by_pspec (G_OBJECT (self), props[PROP_HIGH_CONTRAST]);
  }
  
 +static void
 +yaru_accent_changed_cb (AdwStyleManager *self)
 +{
-+  if (!self->display)
-+    return;
-+
 +  g_debug("Yaru accent changed to: %s",
 +          adw_settings_get_yaru_accent(self->settings));
 +
@@ -627,16 +624,16 @@ index fd2b4ae..2713e92 100644
  static void
  adw_style_manager_constructed (GObject *object)
  {
-@@ -477,8 +528,6 @@ adw_style_manager_constructed (GObject *object)
+@@ -495,8 +543,6 @@ adw_style_manager_constructed (GObject *object)
                      NULL);
  
        self->provider = gtk_css_provider_new ();
 -      gtk_css_provider_load_from_resource (self->provider,
--                                           "/org/gnome/Adwaita/styles/main.css");
+-                                           "/org/gnome/Adwaita/styles/gtk.css");
        gtk_style_context_add_provider_for_display (self->display,
                                                    GTK_STYLE_PROVIDER (self->provider),
                                                    GTK_STYLE_PROVIDER_PRIORITY_THEME);
-@@ -543,6 +592,11 @@ adw_style_manager_constructed (GObject *object)
+@@ -565,6 +611,11 @@ adw_style_manager_constructed (GObject *object)
                             G_CALLBACK (update_fonts),
                             self,
                             G_CONNECT_SWAPPED);
@@ -648,7 +645,7 @@ index fd2b4ae..2713e92 100644
  
    update_dark (self);
    update_fonts (self);
-@@ -614,6 +668,10 @@ adw_style_manager_get_property (GObject    *object,
+@@ -636,6 +687,10 @@ adw_style_manager_get_property (GObject    *object,
      g_value_set_string (value, adw_style_manager_get_monospace_font_name (self));
      break;
  
@@ -659,7 +656,7 @@ index fd2b4ae..2713e92 100644
    default:
      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
    }
-@@ -830,6 +888,19 @@ adw_style_manager_class_init (AdwStyleManagerClass *klass)
+@@ -853,6 +908,19 @@ adw_style_manager_class_init (AdwStyleManagerClass *klass)
                           DEFAULT_MONOSPACE_FONT,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
  
@@ -680,12 +677,12 @@ index fd2b4ae..2713e92 100644
  }
  
 diff --git a/src/stylesheet/_colors.scss b/src/stylesheet/_colors.scss
-index b18d822..e8afca2 100644
+index 8dca9c6..942b81e 100644
 --- a/src/stylesheet/_colors.scss
 +++ b/src/stylesheet/_colors.scss
-@@ -329,3 +329,9 @@ $standalone-color-oklab-dark: Max(l, 0.85) a b;
-   --dim-opacity: #{$dim_label_opacity};
-   --disabled-opacity: #{$disabled_opacity};
+@@ -333,3 +333,9 @@ $standalone-color-oklab-dark: Max(l, 0.85) a b;
+     --disabled-opacity: 40%;
+   }
  }
 +
 +$is_yaru: false !default;
@@ -693,12 +690,49 @@ index b18d822..e8afca2 100644
 +  $link_color: var(--yaru-link-color);
 +  $link_visited_color: var(--yaru-link-visited-color);
 +}
-diff --git a/src/stylesheet/_palette-yaru.scss b/src/stylesheet/_palette-yaru.scss
-new file mode 100644
-index 0000000..4fa10f1
---- /dev/null
+diff --git a/src/stylesheet/_palette.scss b/src/stylesheet/_palette-yaru.scss
+similarity index 63%
+copy from src/stylesheet/_palette.scss
+copy to src/stylesheet/_palette-yaru.scss
+index f1339f4..4fa10f1 100644
+--- a/src/stylesheet/_palette.scss
 +++ b/src/stylesheet/_palette-yaru.scss
-@@ -0,0 +1,166 @@
+@@ -1,49 +1,73 @@
+-$blue_1: #99c1f1;
+-$blue_2: #62a0ea;
+-$blue_3: #3584e4;
+-$blue_4: #1c71d8;
+-$blue_5: #1a5fb4;
+-$green_1: #8ff0a4;
+-$green_2: #57e389;
+-$green_3: #33d17a;
+-$green_4: #2ec27e;
+-$green_5: #26a269;
+-$yellow_1: #f9f06b;
+-$yellow_2: #f8e45c;
+-$yellow_3: #f6d32d;
+-$yellow_4: #f5c211;
+-$yellow_5: #e5a50a;
+-$orange_1: #ffbe6f;
+-$orange_2: #ffa348;
+-$orange_3: #ff7800;
+-$orange_4: #e66100;
+-$orange_5: #c64600;
+-$red_1: #f66151;
+-$red_2: #ed333b;
+-$red_3: #e01b24;
+-$red_4: #c01c28;
+-$red_5: #a51d2d;
+-$purple_1: #dc8add;
+-$purple_2: #c061cb;
+-$purple_3: #9141ac;
+-$purple_4: #813d9c;
+-$purple_5: #613583;
+-$brown_1: #cdab8f;
+-$brown_2: #b5835a;
+-$brown_3: #986a44;
+-$brown_4: #865e3c;
+-$brown_5: #63452c;
 +// Keep this in sync with
 +//   https://github.com/ubuntu/yaru/blob/master/gtk/src/default/gtk-4.0/_palette.scss
 +
@@ -737,7 +771,15 @@ index 0000000..4fa10f1
 +$brown_3: #aa7b53;
 +$brown_4: #8e6038;
 +$brown_5: #72441d;
-+$light_1: #ffffff;
+ $light_1: #ffffff;
+-$light_2: #f6f5f4;
+-$light_3: #deddda;
+-$light_4: #c0bfbc;
+-$light_5: #9a9996;
+-$dark_1: #77767b;
+-$dark_2: #5e5c64;
+-$dark_3: #3d3846;
+-$dark_4: #241f31;
 +$light_2: #f7f7f7; // Yaru porcelain
 +$light_3: #ccc; // Yaru silk
 +$light_4: #aea79f; // Yaru warm gray
@@ -746,8 +788,8 @@ index 0000000..4fa10f1
 +$dark_2: #5d5d5d; // Yaru slate
 +$dark_3: #3d3d3d; // Yaru inkstone
 +$dark_4: #181818; // Yaru jet
-+$dark_5: #000000;
-+
+ $dark_5: #000000;
+ 
 +$blue: $blue_3;
 +$linkblue: $blue_4;
 +$darkblue: $blue_5;
@@ -769,109 +811,16 @@ index 0000000..4fa10f1
 +$inkstone: $dark_3;
 +$jet: $dark_4;
 +
-+:root {
-+  --blue-1: #{$blue_1};
-+  --blue-2: #{$blue_2};
-+  --blue-3: #{$blue_3};
-+  --blue-4: #{$blue_4};
-+  --blue-5: #{$blue_5};
-+  --green-1: #{$green_1};
-+  --green-2: #{$green_2};
-+  --green-3: #{$green_3};
-+  --green-4: #{$green_4};
-+  --green-5: #{$green_5};
-+  --yellow-1: #{$yellow_1};
-+  --yellow-2: #{$yellow_2};
-+  --yellow-3: #{$yellow_3};
-+  --yellow-4: #{$yellow_4};
-+  --yellow-5: #{$yellow_5};
-+  --orange-1: #{$orange_1};
-+  --orange-2: #{$orange_2};
-+  --orange-3: #{$orange_3};
-+  --orange-4: #{$orange_4};
-+  --orange-5: #{$orange_5};
-+  --red-1: #{$red_1};
-+  --red-2: #{$red_2};
-+  --red-3: #{$red_3};
-+  --red-4: #{$red_4};
-+  --red-5: #{$red_5};
-+  --purple-1: #{$purple_1};
-+  --purple-2: #{$purple_2};
-+  --purple-3: #{$purple_3};
-+  --purple-4: #{$purple_4};
-+  --purple-5: #{$purple_5};
-+  --brown-1: #{$brown_1};
-+  --brown-2: #{$brown_2};
-+  --brown-3: #{$brown_3};
-+  --brown-4: #{$brown_4};
-+  --brown-5: #{$brown_5};
-+  --light-1: #{$light_1};
-+  --light-2: #{$light_2};
-+  --light-3: #{$light_3};
-+  --light-4: #{$light_4};
-+  --light-5: #{$light_5};
-+  --dark-1: #{$dark_1};
-+  --dark-2: #{$dark_2};
-+  --dark-3: #{$dark_3};
-+  --dark-4: #{$dark_4};
-+  --dark-5: #{$dark_5};
-+}
-+
-+// Sass thinks we're using the colors in the variables as strings and may shoot
-+// warning, it's innocuous and can be defeated by using #{$var}.
-+
-+@define-color blue_1 #{$blue_1};
-+@define-color blue_2 #{$blue_2};
-+@define-color blue_3 #{$blue_3};
-+@define-color blue_4 #{$blue_4};
-+@define-color blue_5 #{$blue_5};
-+@define-color green_1 #{$green_1};
-+@define-color green_2 #{$green_2};
-+@define-color green_3 #{$green_3};
-+@define-color green_4 #{$green_4};
-+@define-color green_5 #{$green_5};
-+@define-color yellow_1 #{$yellow_1};
-+@define-color yellow_2 #{$yellow_2};
-+@define-color yellow_3 #{$yellow_3};
-+@define-color yellow_4 #{$yellow_4};
-+@define-color yellow_5 #{$yellow_5};
-+@define-color orange_1 #{$orange_1};
-+@define-color orange_2 #{$orange_2};
-+@define-color orange_3 #{$orange_3};
-+@define-color orange_4 #{$orange_4};
-+@define-color orange_5 #{$orange_5};
-+@define-color red_1 #{$red_1};
-+@define-color red_2 #{$red_2};
-+@define-color red_3 #{$red_3};
-+@define-color red_4 #{$red_4};
-+@define-color red_5 #{$red_5};
-+@define-color purple_1 #{$purple_1};
-+@define-color purple_2 #{$purple_2};
-+@define-color purple_3 #{$purple_3};
-+@define-color purple_4 #{$purple_4};
-+@define-color purple_5 #{$purple_5};
-+@define-color brown_1 #{$brown_1};
-+@define-color brown_2 #{$brown_2};
-+@define-color brown_3 #{$brown_3};
-+@define-color brown_4 #{$brown_4};
-+@define-color brown_5 #{$brown_5};
-+@define-color light_1 #{$light_1};
-+@define-color light_2 #{$light_2};
-+@define-color light_3 #{$light_3};
-+@define-color light_4 #{$light_4};
-+@define-color light_5 #{$light_5};
-+@define-color dark_1 #{$dark_1};
-+@define-color dark_2 #{$dark_2};
-+@define-color dark_3 #{$dark_3};
-+@define-color dark_4 #{$dark_4};
-+@define-color dark_5 #{$dark_5};
+ :root {
+   --blue-1: #{$blue_1};
+   --blue-2: #{$blue_2};
 diff --git a/src/stylesheet/adwaita-stylesheet.gresources.xml b/src/stylesheet/adwaita-stylesheet.gresources.xml
-index 750c16a..e4d8880 100644
+index 5184be5..1876df2 100644
 --- a/src/stylesheet/adwaita-stylesheet.gresources.xml
 +++ b/src/stylesheet/adwaita-stylesheet.gresources.xml
-@@ -5,6 +5,8 @@
-     <file>high-contrast.css</file>
-     <file>main.css</file>
+@@ -3,6 +3,8 @@
+   <gresource prefix="/org/gnome/Adwaita/styles">
+     <file>gtk.css</file>
  
 +    @YARU_ACCENTS_CSS@
 +
@@ -879,7 +828,7 @@ index 750c16a..e4d8880 100644
      <file>assets/check-symbolic.svg</file>
      <file>assets/dash-symbolic.svg</file>
 diff --git a/src/stylesheet/meson.build b/src/stylesheet/meson.build
-index c34bd8e..cd2efbd 100644
+index b6e0576..cd738f8 100644
 --- a/src/stylesheet/meson.build
 +++ b/src/stylesheet/meson.build
 @@ -10,6 +10,88 @@ endif
@@ -911,11 +860,11 @@ index c34bd8e..cd2efbd 100644
 +        'sh', '-c',
 +          ';'.join([
 +            'echo "\$is_yaru: true;"',
-+            'grep -v "@import" "$1"',
++            'grep -v "@import" "$1" || true',
 +          ]), '--', '@INPUT@',
 +      ],
 +      capture: true,
-+      input: 'default.scss',
++      input: 'gtk.scss',
 +      output: 'default-yaru-defs.scss',
 +    )
 +    base_sheets_imports += '@import \'@0@\';'.format(default_yaru_defs.full_path())
@@ -933,7 +882,7 @@ index c34bd8e..cd2efbd 100644
 +        'grep', '-v', '\|'.join(base_sheets_expressions), '@INPUT@',
 +      ],
 +      capture: true,
-+      input: 'default.scss',
++      input: 'gtk.scss',
 +      output: 'default-yaru.scss',
 +    )
 +
@@ -971,10 +920,22 @@ index c34bd8e..cd2efbd 100644
  
    scss_deps = files([
      '_colors.scss',
-@@ -70,10 +152,21 @@ if sassc.found()
-     'high-contrast',
-   ]
+@@ -65,19 +147,51 @@ if sassc.found()
+     'widgets/_window.scss',
+   ])
  
+-  stylesheet_deps += custom_target('gtk.scss',
+-    input: 'gtk.scss',
+-    output: 'gtk.css',
+-    command: [
+-      sassc, sassc_opts, '@INPUT@', '@OUTPUT@',
+-    ],
+-    depend_files: scss_deps,
+-  )
++  scss_files = [
++    'gtk',
++  ]
++
 +  if build_yaru_accent_colors
 +    foreach accent_definition: yaru_accent_colors_sassc
 +      scss_deps += accent_definition
@@ -986,18 +947,16 @@ index c34bd8e..cd2efbd 100644
 +    sassc_opts += [ '-I', meson.current_source_dir() ]
 +  endif
 +
-   foreach scss: scss_files
--    stylesheet_deps += custom_target('@0@.scss'.format(scss),
--      input: '@0@.scss'.format(scss),
--      output: '@0@.css'.format(scss),
++  foreach scss: scss_files
 +    stylesheet_deps += custom_target('@0@.scss'.format(fs.name(scss)),
 +      input: '@0@'.format(scss).endswith('.scss') ? scss : '@0@.scss'.format(scss),
 +      output: '@0@.css'.format(fs.stem(scss)),
-       command: [
-         sassc, sassc_opts, '@INPUT@', '@OUTPUT@',
-       ],
-@@ -82,9 +175,24 @@ if sassc.found()
-   endforeach
++      command: [
++        sassc, sassc_opts, '@INPUT@', '@OUTPUT@',
++      ],
++      depend_files: scss_deps,
++    )
++  endforeach
  endif
  
 +accents_css = []
