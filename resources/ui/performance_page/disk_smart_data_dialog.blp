@@ -1,6 +1,6 @@
 /* ui/performance_page/disk_smart_data_dialog.blp
  *
- * Copyright 2025 Mission-Center-Devs
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,106 +37,65 @@ template $SmartDataDialog: Adw.Dialog {
     Box {
       margin-start: 15;
       margin-end: 15;
-      margin-top: 15;
       margin-bottom: 15;
       spacing: 15;
 
       orientation: vertical;
 
-      Grid common_data {
-        Label {
-          label: _("Last Updated");
-          halign: end;
-          margin-start: 15;
-          margin-end: 15;
-          margin-top: 5;
-          margin-bottom: 5;
+      FlowBox common_data {
+        margin-end: 7;
+        margin-top: 7;
+        margin-bottom: 7;
 
-          layout {
-            column: '0';
-            row: '0';
+        max-children-per-line: 2;
+        selection-mode: none;
+        can-target: false;
+
+        Box {
+          Label {
+            margin-end: 5;
+            label: _("Last Updated:");
+          }
+
+          Label last_updated {
+            hexpand: true;
+            halign: start;
           }
         }
 
-        Label last_updated {
-          hexpand: true;
-          halign: start;
+        Box {
+          Label {
+            margin-end: 5;
+            label: _("Powered On:");
+          }
 
-          layout {
-            column: '1';
-            row: '0';
+          Label powered_on {
+            hexpand: true;
+            halign: start;
           }
         }
 
-        Label {
-          label: _("Powered On");
-          halign: end;
-          margin-start: 15;
-          margin-end: 15;
-          margin-top: 5;
-          margin-bottom: 5;
+        Box {
+          Label {
+            margin-end: 5;
+            label: _("Drive Health:");
+          }
 
-          layout {
-            column: '0';
-            row: '1';
+          Label health {
+            hexpand: true;
+            halign: start;
           }
         }
 
-        Label powered_on {
-          hexpand: true;
-          halign: start;
-
-          layout {
-            column: '1';
-            row: '1';
+        Box {
+          Label {
+            margin-end: 5;
+            label: _("SMART Test Status:");
           }
-        }
 
-        Label {
-          label: _("Drive Health");
-          halign: end;
-          margin-start: 15;
-          margin-end: 15;
-          margin-top: 5;
-          margin-bottom: 5;
-
-          layout {
-            column: '2';
-            row: '0';
-          }
-        }
-
-        Label health {
-          hexpand: true;
-          halign: start;
-
-          layout {
-            column: '3';
-            row: '0';
-          }
-        }
-
-        Label {
-          label: _("SMART Test Status");
-          halign: end;
-          margin-start: 15;
-          margin-end: 15;
-          margin-top: 5;
-          margin-bottom: 5;
-
-          layout {
-            column: '2';
-            row: '1';
-          }
-        }
-
-        Label status {
-          hexpand: true;
-          halign: start;
-
-          layout {
-            column: '3';
-            row: '1';
+          Label status {
+            hexpand: true;
+            halign: start;
           }
         }
       }

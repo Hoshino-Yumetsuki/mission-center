@@ -89,7 +89,7 @@ mod imp {
 
             if let Ok(since_the_epoch) = SystemTime::now().duration_since(UNIX_EPOCH) {
                 let last_updated_nice = crate::to_long_human_readable_time(
-                    since_the_epoch.as_secs_f32() as u64 - data.last_update_time,
+                    (since_the_epoch.as_secs_f32() as u64).saturating_sub(data.last_update_time),
                 );
                 self.last_updated
                     .set_text(&i18n_f("{} ago", &[&last_updated_nice]));
