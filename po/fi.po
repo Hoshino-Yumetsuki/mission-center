@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2025-11-24 16:51+0000\n"
-"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
+"PO-Revision-Date: 2026-04-19 21:09+0000\n"
+"Last-Translator: veiskiboi <vesahok@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
 "Language: fi\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15-dev\n"
+"X-Generator: Weblate 5.17.1-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -809,7 +809,7 @@ msgstr "Päivitykset"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
-msgstr ""
+msgstr "Arviointi"
 
 #: resources/ui/performance_page/gpu_details.blp:51
 #: resources/ui/performance_page/cpu_details.blp:46
@@ -1399,35 +1399,35 @@ msgstr "Lähetä signaali"
 
 #: resources/ui/process_column_view/process_action_bar.blp:111
 msgid "Suspend (STOP)"
-msgstr ""
+msgstr "Pysäytä (STOP)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:116
 msgid "Continue (CONT)"
-msgstr ""
+msgstr "Jatka (CONT)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:121
 msgid "Hangup (HUP)"
-msgstr ""
+msgstr "Katkaise yhteys (HUP)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:126
 msgid "Interrupt (INT)"
-msgstr ""
+msgstr "Keskeytä (INT)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:131
 msgid "Terminate (TERM)"
-msgstr ""
+msgstr "Lopeta (TERM)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:136
 msgid "Kill (KILL)"
-msgstr ""
+msgstr "Pakota lopetus (KILL)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:141
 msgid "User 1 (USR1)"
-msgstr ""
+msgstr "Käyttäjäsignaali 1 (USR1)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:146
 msgid "User 2 (USR2)"
-msgstr ""
+msgstr "Käyttäjäsignaali 2 (USR2)"
 
 #: resources/ui/process_column_view/process_details_dialog.blp:84
 msgid "App ID"
@@ -1673,11 +1673,11 @@ msgstr "Old-Age"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:134
 msgid "Online"
-msgstr ""
+msgstr "Verkossa"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:135
 msgid "Offline"
-msgstr ""
+msgstr "Ei verkossa"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:142
 msgid "FAILING"
@@ -1689,7 +1689,7 @@ msgstr "Epäonnistui menneisyydessä"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:149
 msgid "Ok"
-msgstr "OK"
+msgstr "Ok"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:197
 msgid "Percent Used"
