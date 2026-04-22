@@ -583,6 +583,9 @@ mod imp {
                         .set_text(&total_gtt);
                 } else {
                     this.infobar_content.set_total_shared_memory_valid(false);
+                    if let Some(total_memory_str) = total_memory_str {
+                        this.total_memory.set_text(&total_memory_str);
+                    }
                 }
 
                 if let Some(used_shared_memory) = gpu.used_shared_memory {
