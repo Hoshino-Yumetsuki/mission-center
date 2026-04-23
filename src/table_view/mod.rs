@@ -1,6 +1,6 @@
 /* table_view/mod.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -350,6 +350,7 @@ mod imp {
                     row.set_expanded(true);
                 }
             });
+            action_group.add_action(&expand_row_action);
 
             let collapse_row_action = gio::SimpleAction::new("tableview-collapse-row", None);
             collapse_row_action.connect_activate({
@@ -415,9 +416,48 @@ mod imp {
                     }
                 }
             });
-
             action_group.add_action(&collapse_row_action);
-            action_group.add_action(&expand_row_action);
+
+            self.column_view.connect_activate({
+                let this = self.obj().downgrade();
+
+                move |_click, _n_press| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let imp = this.imp();
+
+                    let Some(model) = imp
+                        .column_view
+                        .model()
+                        .and_then(|model| model.downcast::<gtk::SingleSelection>().ok())
+                    else {
+                        g_critical!(
+                            "MissionCenter::ProcessActionBar",
+                            "Failed to get model for `tableview-expand-row` action"
+                        );
+                        return;
+                    };
+
+                    let Some(selected_item) = model.selected_item() else {
+                        g_critical!(
+                            "MissionCenter::ProcessActionBar",
+                            "Failed to get selection for `tableview-collapse-row` action"
+                        );
+                        return;
+                    };
+
+                    let Some(row) = selected_item.downcast_ref::<gtk::TreeListRow>() else {
+                        g_critical!(
+                            "MissionCenter::ProcessActionBar",
+                            "Failed to downcast selection for `tableview-collapse-row` action"
+                        );
+                        return;
+                    };
+
+                    row.set_expanded(!row.is_expanded());
+                }
+            });
 
             self.obj()
                 .insert_action_group("column-view", Some(&action_group));
