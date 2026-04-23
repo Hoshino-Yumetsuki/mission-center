@@ -1,6 +1,6 @@
 /* ui/table_view/table_view.blp
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,6 +88,21 @@ template $TableView: Box {
           id: "gpu_memory";
           title: _("GPU Memory");
           resizable: true;
+        }
+
+        // "Stolen" from baobab. See baobab-main-window.ui circa 04/2026
+        ShortcutController {
+          propagation-phase: capture;
+
+          Shortcut {
+            trigger: "Right";
+            action: "action(column-view.tableview-expand-row)";
+          }
+
+          Shortcut {
+            trigger: "Left";
+            action: "action(column-view.tableview-collapse-row)";
+          }
         }
       }
     };

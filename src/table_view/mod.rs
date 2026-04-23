@@ -27,6 +27,7 @@ use arrayvec::ArrayString;
 use gtk::glib::translate::from_glib_full;
 use gtk::glib::{g_critical, g_debug, gobject_ffi, Object, ParamSpec, Properties, Value};
 use gtk::glib::{g_warning, VariantTy, WeakRef};
+use gtk::ListScrollFlags;
 use gtk::{gdk, gio, glib, subclass::prelude::*};
 use textdistance::{Algorithm, Levenshtein};
 
@@ -308,6 +309,116 @@ mod imp {
             });
 
             action_group.add_action(&action_show_context_menu);
+
+            let expand_row_action = gio::SimpleAction::new("tableview-expand-row", None);
+            expand_row_action.connect_activate({
+                let this = self.obj().downgrade();
+                move |_action, _| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let imp = this.imp();
+
+                    let Some(model) = imp
+                        .column_view
+                        .model()
+                        .and_then(|model| model.downcast::<gtk::SingleSelection>().ok())
+                    else {
+                        g_critical!(
+                            "MissionCenter::ProcessActionBar",
+                            "Failed to get model for `tableview-expand-row` action"
+                        );
+                        return;
+                    };
+
+                    let Some(selected_item) = model.selected_item() else {
+                        g_critical!(
+                            "MissionCenter::ProcessActionBar",
+                            "Failed to get selection for `tableview-expand-row` action"
+                        );
+                        return;
+                    };
+
+                    let Some(row) = selected_item.downcast_ref::<gtk::TreeListRow>() else {
+                        g_critical!(
+                            "MissionCenter::ProcessActionBar",
+                            "Failed to downcast selection for `tableview-expand-row` action"
+                        );
+                        return;
+                    };
+
+                    row.set_expanded(true);
+                }
+            });
+
+            let collapse_row_action = gio::SimpleAction::new("tableview-collapse-row", None);
+            collapse_row_action.connect_activate({
+                let this = self.obj().downgrade();
+                move |_action, _| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let imp = this.imp();
+
+                    let Some(model) = imp
+                        .column_view
+                        .model()
+                        .and_then(|model| model.downcast::<gtk::SingleSelection>().ok())
+                    else {
+                        g_critical!(
+                            "MissionCenter::ProcessActionBar",
+                            "Failed to get model for `tableview-expand-row` action"
+                        );
+                        return;
+                    };
+
+                    let Some(selected_item) = model.selected_item() else {
+                        g_critical!(
+                            "MissionCenter::ProcessActionBar",
+                            "Failed to get selection for `tableview-collapse-row` action"
+                        );
+                        return;
+                    };
+
+                    let Some(row) = selected_item.downcast_ref::<gtk::TreeListRow>() else {
+                        g_critical!(
+                            "MissionCenter::ProcessActionBar",
+                            "Failed to downcast selection for `tableview-collapse-row` action"
+                        );
+                        return;
+                    };
+
+                    if row.is_expanded() && row.children().map(|c| c.n_items() > 0).unwrap_or(true)
+                    {
+                        row.set_expanded(false);
+                    } else if row.depth() > 0 {
+                        let parent = row.parent().unwrap();
+
+                        let mut parent_index = (0..model.n_items())
+                            .filter_map(|i| model.item(i).map(|item| (i, item)))
+                            .filter_map(|(index, item)| {
+                                item.downcast::<gtk::TreeListRow>()
+                                    .map(|item| (index, item))
+                                    .ok()
+                            })
+                            .filter(|(_, item)| item.eq(&parent))
+                            .map(|(index, _)| index);
+
+                        if let Some(parent_index) = parent_index.next() {
+                            imp.column_view.scroll_to(
+                                parent_index,
+                                None,
+                                ListScrollFlags::SELECT | ListScrollFlags::FOCUS,
+                                None,
+                            );
+                        }
+                    }
+                }
+            });
+
+            action_group.add_action(&collapse_row_action);
+            action_group.add_action(&expand_row_action);
+
             self.obj()
                 .insert_action_group("column-view", Some(&action_group));
         }
