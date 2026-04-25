@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2026-04-19 21:09+0000\n"
-"Last-Translator: veiskiboi <vesahok@gmail.com>\n"
+"PO-Revision-Date: 2026-04-26 19:09+0000\n"
+"Last-Translator: Henri Koivuranta <hkoivuranta12@gmail.com>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
 "Language: fi\n"
@@ -164,7 +164,7 @@ msgstr "Liitännän tyyli"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
-msgstr ""
+msgstr "Käytetäänkö vaaleaa vai tummaa teemaa"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 msgid "DEPRECATED! NO LONGER IN USE!"
@@ -183,34 +183,31 @@ msgid "How many points should be displayed on each chart?"
 msgstr "Kuinka monta pistettä kussakin kaaviossa tulee näyttää?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr "Käytetäänkö bittejä (oletus) tai tavuja verkon nopeuden määrittämiseen"
+msgstr "Käytetäänkö bittejä vai tavuja (oletus) muistin näyttämiseen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
-#, fuzzy
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr "Käytetäänkö bittejä (oletus) tai tavuja verkon nopeuden määrittämiseen"
+msgstr "Käytetäänkö base-10 vai base-2 (oletus) muistin näyttämisessä"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
-msgstr "Käytetäänkö bittejä (oletus) tai tavuja verkon nopeuden määrittämiseen"
+msgstr ""
+"Käytetäänkö bittejä vai tavuja (oletus) aseman nopeuden jo koon näyttämiseen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
-#, fuzzy
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
-msgstr "Käytetäänkö bittejä (oletus) tai tavuja verkon nopeuden määrittämiseen"
+msgstr ""
+"Käytetäänkö base-10 vai base-2 (oletus) aseman nopeuden ja koon näyttämisessä"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr "Käytetäänkö bittejä (oletus) tai tavuja verkon nopeuden määrittämiseen"
+msgstr "Käytetäänkö bittejä (oletus) vai tavuja verkon nopeuden määrittämiseen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
-#, fuzzy
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
-msgstr "Käytetäänkö bittejä (oletus) tai tavuja verkon nopeuden määrittämiseen"
+msgstr "Käytetäänkö base-10 (oletus) vai base-2 verkon nopeuden määrittämiseen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
@@ -230,9 +227,8 @@ msgid "Column sorting is persisted across app restarts"
 msgstr "Sarakejärjestys säilyy sovelluksen uudelleenkäynnistysten välillä"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr "Sarakejärjestys säilyy sovelluksen uudelleenkäynnistysten välillä"
+msgstr "Sarakkeiden järjestys säilyy sovelluksen uudelleenkäynnistysten välillä"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 msgid ""
@@ -243,36 +239,31 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr ""
+msgstr "Näytä erotin jokaisen sarakkeen välissä Sovellukset-näkymässä"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr "Saraketunnus, jonka mukaan Sovellukset-sivunäkymä on lajiteltu"
+msgstr "Sarakkeen nimi, jonka mukaan Sovellukset-sivunäkymä on lajiteltu"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The sorting direction of the Apps page view"
 msgstr "Sovellukset-sivunäkymän lajittelusuunta"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "Sovellukset-sivunäkymän lajittelusuunta"
+msgstr "Sovellukset-sivunäkymän lajittelujärjestys"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The column name by which the Services page view is sorted"
-msgstr "Saraketunnus, jonka mukaan Sovellukset-sivunäkymä on lajiteltu"
+msgstr "Saraketunnus, jonka mukaan Palvelut-sivunäkymä on lajiteltu"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:155
-#, fuzzy
 msgid "The sorting direction of the Services page view"
-msgstr "Sovellukset-sivunäkymän lajittelusuunta"
+msgstr "Palvelut-sivunäkymän lajittelusuunta"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:160
-#, fuzzy
 msgid "The order of columns in the Services page view"
-msgstr "Sovellukset-sivunäkymän lajittelusuunta"
+msgstr "Sarakkeiden järjestys Palvelut-sivunäkymässä"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:166
 msgid "Which graph is shown on the CPU performance page"
@@ -293,9 +284,8 @@ msgid "Should performance graphs be smooth or jagged"
 msgstr "Pitäisikö suorituskykykaavioiden olla tasaisia tai rosoisia"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:187
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "Pitäisikö suorituskykykaavioiden olla tasaisia tai rosoisia"
+msgstr "Animoidaanko kaaviot"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:192
 #: resources/ui/preferences/page.blp:65
@@ -336,9 +326,8 @@ msgid "Show the swap graph"
 msgstr "Näytä vaihtokaavio"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:232
-#, fuzzy
 msgid "Show the gpu encode-decode graph"
-msgstr "Näytä vaihtokaavio"
+msgstr "Näytä näytönohjaimen enkoodaus-dekoodaus kaavio"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:237
 msgid "The ordering of entries in the application sidebar"
