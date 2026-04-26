@@ -123,6 +123,10 @@ Note: A native build requires, at least, GTK 4.20 and libadwaita 1.8. That means
 Ubuntu >= 25.10.
 
 ```bash
+# Avoid using "--depth=1" flag as it will not include the submodules which will result in failed build
+git clone https://gitlab.com/mission-center-devs/mission-center --recursive
+cd mission-center
+
 # On Ubuntu 25.10 all dependencies, except for the Rust toolchain, can be installed with:
 sudo apt install build-essential cmake curl desktop-file-utils gettext git libadwaita-1-dev libdbus-1-dev libdrm-dev libgbm-dev libudev-dev meson pkg-config protobuf-compiler python3-gi python3-pip
 
