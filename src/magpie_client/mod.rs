@@ -124,7 +124,7 @@ pub struct Readings {
     pub mem_info: Memory,
     pub mem_devices: Vec<MemoryDevice>,
     pub disks_info: Vec<Disk>,
-    pub network_connections: Vec<Connection>,
+    pub network_connections: HashMap<String, Connection>,
     pub gpus: HashMap<String, Gpu>,
     pub fans: Vec<Fan>,
     pub batteries: Vec<Battery>,
@@ -145,7 +145,7 @@ impl Readings {
             mem_info: Memory::default(),
             mem_devices: vec![],
             disks_info: vec![],
-            network_connections: vec![],
+            network_connections: Default::default(),
             gpus: HashMap::new(),
             fans: vec![],
             batteries: vec![],
@@ -888,9 +888,6 @@ impl MagpieClient {
         readings
             .disks_info
             .sort_unstable_by(|d1, d2| d1.id.cmp(&d2.id));
-        readings
-            .network_connections
-            .sort_unstable_by(|n1, n2| n1.id.cmp(&n2.id));
 
         let mut app_icons =
             magpie.app_icons(readings.running_apps.keys().map(|k| k.clone()).collect());
@@ -1048,9 +1045,6 @@ impl MagpieClient {
             readings
                 .disks_info
                 .sort_unstable_by(|d1, d2| d1.id.cmp(&d2.id));
-            readings
-                .network_connections
-                .sort_unstable_by(|n1, n2| n1.id.cmp(&n2.id));
 
             if !running.load(atomic::Ordering::Acquire) {
                 break 'read_loop;

@@ -36,7 +36,7 @@ use gtk::{
 use magpie_types::battery::Battery;
 use magpie_types::fan::Fan;
 use magpie_types::gpus::Gpu;
-use magpie_types::network::{Connection, ConnectionKind};
+use magpie_types::network::{Connection, ConnectionKind, ConnectionState};
 
 use crate::i18n::*;
 use crate::magpie_client::DiskKind;
@@ -1358,7 +1358,7 @@ mod imp {
             readings: &crate::magpie_client::Readings,
         ) {
             let mut networks = HashMap::new();
-            for connection in &readings.network_connections {
+            for (_, connection) in &readings.network_connections {
                 let mut ret = self.create_network_page(connection, None);
                 networks.insert(std::mem::take(&mut ret.0), ret.1);
             }
@@ -2138,11 +2138,9 @@ mod imp {
                     }
                     Pages::Network(net_pages) => {
                         for net_page_name in net_pages.keys() {
-                            if !readings
-                                .network_connections
-                                .iter()
-                                .any(|device| &Self::network_page_name(&device.id) == net_page_name)
-                            {
+                            if !readings.network_connections.iter().any(|(_, device)| {
+                                &Self::network_page_name(&device.id) == net_page_name
+                            }) {
                                 pages_to_destroy.push(net_page_name.clone());
                             }
                         }
@@ -2349,9 +2347,7 @@ mod imp {
                         let mut consecutive_dev_count = 0;
 
                         let mut new_devices = Vec::new();
-                        for (index, network_connection) in
-                            readings.network_connections.iter().enumerate()
-                        {
+                        for (index, network_connection) in readings.network_connections.iter() {
                             if let Some((summary, page)) =
                                 pages.get(&Self::network_page_name(&network_connection.id))
                             {
@@ -2378,20 +2374,32 @@ mod imp {
                                     vec![network_connection.rx_rate_bytes_ps],
                                 ]);
 
-                                let send_speed = network_connection.tx_rate_bytes_ps;
-                                let rec_speed = network_connection.rx_rate_bytes_ps;
+                                let grey_out =
+                                    network_connection.state() == ConnectionState::Unavailable;
+                                summary.set_opacity(if grey_out { 0.6 } else { 1. });
 
-                                let sent_speed = crate::to_human_readable_nice(
-                                    send_speed,
-                                    &DataType::NetworkBytesPerSecond,
-                                );
-                                let rect_speeed = crate::to_human_readable_nice(
-                                    rec_speed,
-                                    &DataType::NetworkBytesPerSecond,
-                                );
+                                if network_connection.state() != ConnectionState::Connected {
+                                    summary.set_info1(i18n_f(
+                                        "{}",
+                                        &[network_connection.state().as_str_name()],
+                                    ));
+                                    summary.set_info2("");
+                                } else {
+                                    let send_speed = network_connection.tx_rate_bytes_ps;
+                                    let rec_speed = network_connection.rx_rate_bytes_ps;
 
-                                summary.set_info1(i18n_f("{}: {}", &["S", &sent_speed]));
-                                summary.set_info2(i18n_f("{}: {}", &["R", &rect_speeed]));
+                                    let sent_speed = crate::to_human_readable_nice(
+                                        send_speed,
+                                        &DataType::NetworkBytesPerSecond,
+                                    );
+                                    let rect_speeed = crate::to_human_readable_nice(
+                                        rec_speed,
+                                        &DataType::NetworkBytesPerSecond,
+                                    );
+
+                                    summary.set_info1(i18n_f("{}: {}", &["S", &sent_speed]));
+                                    summary.set_info2(i18n_f("{}: {}", &["R", &rect_speeed]));
+                                }
 
                                 result &= page.update_readings(network_connection);
                             } else {

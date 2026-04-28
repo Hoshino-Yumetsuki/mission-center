@@ -219,6 +219,20 @@ Box root {
       ]
 
       halign: start;
+      label: _("Connection status:");
+    }
+
+    Label {
+      layout {
+        column: '1';
+        row: '5';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
       margin-end: 5;
 
       visible: bind ssid.visible;
@@ -230,7 +244,7 @@ Box root {
     Label {
       layout {
         column: '1';
-        row: '5';
+        row: '6';
       }
 
       styles [
@@ -249,7 +263,7 @@ Box root {
     Label {
       layout {
         column: '1';
-        row: '6';
+        row: '7';
       }
 
       styles [
@@ -268,7 +282,7 @@ Box root {
     Label {
       layout {
         column: '1';
-        row: '7';
+        row: '8';
       }
 
       styles [
@@ -287,7 +301,7 @@ Box root {
     Label {
       layout {
         column: '1';
-        row: '8';
+        row: '9';
       }
 
       styles [
@@ -332,10 +346,25 @@ Box root {
       selectable: true;
     }
 
-    Label ssid {
+    Label connection_status_label {
       layout {
         column: '3';
         row: '4';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+
+      selectable: true;
+    }
+
+    Label ssid {
+      layout {
+        column: '3';
+        row: '5';
       }
 
       styles [
@@ -351,7 +380,7 @@ Box root {
     Image signal_strength {
       layout {
         column: '3';
-        row: '5';
+        row: '6';
       }
 
       styles [
@@ -363,22 +392,6 @@ Box root {
     }
 
     Label max_bitrate {
-      layout {
-        column: '3';
-        row: '6';
-      }
-
-      styles [
-        "caption",
-      ]
-
-      halign: start;
-      visible: false;
-
-      selectable: true;
-    }
-
-    Label frequency {
       layout {
         column: '3';
         row: '7';
@@ -394,10 +407,26 @@ Box root {
       selectable: true;
     }
 
-    Label hw_address {
+    Label frequency {
       layout {
         column: '3';
         row: '8';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      visible: false;
+
+      selectable: true;
+    }
+
+    Label hw_address {
+      layout {
+        column: '3';
+        row: '9';
       }
 
       styles [
