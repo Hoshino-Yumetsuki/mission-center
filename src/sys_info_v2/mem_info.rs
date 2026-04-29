@@ -89,6 +89,7 @@ pub struct MemInfo {
     pub direct_map1g: usize,
 }
 
+#[cfg(target_os = "linux")]
 impl MemInfo {
     pub fn load() -> Option<Self> {
         use gtk::glib::*;
@@ -246,13 +247,12 @@ impl MemInfo {
         let mut result = vec![];
 
         let mut cmd_output_str = cmd_output.as_str();
-        let mut cmd_output_str_index = 0; // Index for what character we are at in the string
-        let mut module_index = 0; // Index for what RAM module we are working with
-        let mut speed_fallback = 0; // If CONFIGURED_SPEED_MTS is not available, use SPEED_MTS
+        let mut cmd_output_str_index = 0;
+        let mut module_index = 0;
+        let mut speed_fallback = 0;
 
         loop {
             if cmd_output_str_index >= cmd_output_str.len() {
-                // We reached the end of the command output
                 break;
             }
 
@@ -290,9 +290,6 @@ impl MemInfo {
                 match key {
                     "PRESENT" => {
                         if value == "0" {
-                            // Module does not actually exist; drop the module so it is not counted
-                            // towards the installed module count and is not used to get values to
-                            // display.
                             #[allow(dropping_references)]
                             drop(md);
                             mem_dev = None;
@@ -307,20 +304,159 @@ impl MemInfo {
                     "SPEED_MTS" => speed_fallback = value.parse::<usize>().map_or(0, |s| s),
                     "CONFIGURED_SPEED_MTS" => md.speed = value.parse::<usize>().map_or(0, |s| s),
                     "RANK" => md.rank = value.parse::<u8>().map_or(0, |s| s),
-                    _ => (), // Ignore unused values and other RAM modules we are not currently parsing
+                    _ => (),
                 }
             }
 
             match mem_dev {
                 Some(mut mem_dev) => {
                     if mem_dev.speed == 0 {
-                        // If CONFIGURED_SPEED_MTS is not available,
-                        mem_dev.speed = speed_fallback; // then use SPEED_MTS instead
+                        mem_dev.speed = speed_fallback;
                     }
                     result.push(mem_dev);
                 }
                 _ => {}
             }
+        }
+
+        Some(result)
+    }
+}
+
+#[cfg(target_os = "macos")]
+impl MemInfo {
+    pub fn load() -> Option<Self> {
+        let mut this = Self::default();
+
+        unsafe {
+            let mut mem_size: u64 = 0;
+            let mut size = std::mem::size_of::<u64>();
+            let name = b"hw.memsize\0";
+            if libc::sysctlbyname(
+                name.as_ptr() as *const libc::c_char,
+                &mut mem_size as *mut u64 as *mut libc::c_void,
+                &mut size,
+                std::ptr::null_mut(),
+                0,
+            ) == 0
+            {
+                this.mem_total = mem_size as usize;
+            }
+        }
+
+        let vm_stat_output = std::process::Command::new("vm_stat").output().ok()?;
+        let vm_stat_str = String::from_utf8_lossy(&vm_stat_output.stdout);
+
+        let mut page_size: usize = 4096;
+        let mut pages_free: usize = 0;
+        let mut pages_active: usize = 0;
+        let mut pages_inactive: usize = 0;
+        let mut _pages_wired: usize = 0;
+        let mut pages_purgeable: usize = 0;
+        let mut swap_used: usize = 0;
+        let mut swap_total: usize = 0;
+
+        for line in vm_stat_str.lines() {
+            if line.starts_with("Mach Virtual Memory Statistics:") {
+                if let Some(ps) = line.split("page size of ").nth(1) {
+                    if let Some(ps) = ps.split(" bytes").next() {
+                        page_size = ps.trim().parse::<usize>().unwrap_or(4096);
+                    }
+                }
+            }
+            let mut parts = line.splitn(2, ':');
+            let key = parts.next().unwrap_or("").trim();
+            let val = parts
+                .next()
+                .unwrap_or("")
+                .trim()
+                .trim_end_matches('.')
+                .trim()
+                .parse::<usize>()
+                .unwrap_or(0);
+            match key {
+                "Pages free" => pages_free = val,
+                "Pages active" => pages_active = val,
+                "Pages inactive" => pages_inactive = val,
+                "Pages wired down" => _pages_wired = val,
+                "Pages purgeable" => pages_purgeable = val,
+                _ => {}
+            }
+        }
+
+        let sysctl_swap = std::process::Command::new("sysctl")
+            .arg("vm.swapusage")
+            .output()
+            .ok();
+        if let Some(out) = sysctl_swap {
+            let s = String::from_utf8_lossy(&out.stdout);
+            for part in s.split_whitespace() {
+                if let Some(stripped) = part.strip_suffix("M") {
+                    if let Ok(v) = stripped.parse::<f64>() {
+                        let bytes = (v * 1024.0 * 1024.0) as usize;
+                        if swap_total == 0 {
+                            swap_total = bytes;
+                        } else if swap_used == 0 {
+                            swap_used = bytes;
+                        }
+                    }
+                }
+            }
+        }
+
+        this.mem_free = pages_free * page_size;
+        this.active = pages_active * page_size;
+        this.inactive = pages_inactive * page_size;
+        this.cached = pages_inactive * page_size;
+        this.mem_available = (pages_free + pages_inactive + pages_purgeable) * page_size;
+        this.committed = this.mem_total.saturating_sub(this.mem_available);
+        this.swap_total = swap_total;
+        this.swap_free = swap_total.saturating_sub(swap_used);
+
+        Some(this)
+    }
+
+    pub fn load_memory_device_info() -> Option<Vec<MemoryDevice>> {
+        let output = std::process::Command::new("system_profiler")
+            .arg("SPMemoryDataType")
+            .arg("-json")
+            .output()
+            .ok()?;
+
+        let json: serde_json::Value = serde_json::from_slice(&output.stdout).ok()?;
+        let items = json
+            .get("SPMemoryDataType")
+            .and_then(|x| x.as_array())?;
+
+        let mut result = vec![];
+        for item in items {
+            let size_str = item.get("dimm_size").and_then(|x| x.as_str()).unwrap_or("0");
+            let size_mb = size_str
+                .trim_end_matches(" MB")
+                .trim_end_matches(" GB")
+                .parse::<usize>()
+                .unwrap_or(0);
+            let size = if size_str.ends_with(" GB") {
+                size_mb * 1024 * 1024 * 1024
+            } else {
+                size_mb * 1024 * 1024
+            };
+
+            let speed_str = item.get("dimm_speed").and_then(|x| x.as_str()).unwrap_or("0");
+            let speed = speed_str
+                .trim_end_matches(" MHz")
+                .parse::<usize>()
+                .unwrap_or(0);
+
+            result.push(MemoryDevice {
+                size,
+                form_factor: item.get("dimm_type").and_then(|x| x.as_str()).unwrap_or("").to_owned(),
+                locator: item.get("_name").and_then(|x| x.as_str()).unwrap_or("").to_owned(),
+                bank_locator: String::new(),
+                ram_type: item.get("dimm_type").and_then(|x| x.as_str()).unwrap_or("").to_owned(),
+                speed,
+                rank: 0,
+            });
         }
 
         Some(result)

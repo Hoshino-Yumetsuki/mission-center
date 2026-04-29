@@ -52,18 +52,18 @@ Box root {
       }
     }
 
-    Box {
-      orientation: vertical;
-      spacing: 3;
+     Box box_clock_speed {
+       orientation: vertical;
+       spacing: 3;
 
-      Label {
-        styles [
-          "caption",
-        ]
+       Label {
+         styles [
+           "caption",
+         ]
 
-        halign: start;
-        label: _("Clock Speed");
-      }
+         halign: start;
+         label: _("Clock Speed");
+       }
 
       Box {
         Label clock_speed_current {
@@ -286,7 +286,7 @@ Box root {
       }
     }
 
-    Box {
+    Box box_encode_text {
       orientation: horizontal;
       spacing: 20;
 
@@ -384,7 +384,7 @@ Box root {
     row-spacing: 5;
     column-spacing: 10;
 
-    Label {
+    Label opengl_version_label {
       styles [
         "caption",
       ]
@@ -400,7 +400,7 @@ Box root {
       }
     }
 
-    Label {
+    Label vulkan_version_label {
       styles [
         "caption",
       ]

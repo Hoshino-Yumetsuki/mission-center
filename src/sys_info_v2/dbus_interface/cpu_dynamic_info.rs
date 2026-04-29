@@ -20,6 +20,7 @@
 
 use std::sync::Arc;
 
+#[cfg(target_os = "linux")]
 use dbus::{arg::*, strings::*};
 
 #[derive(Debug, Default, Clone)]
@@ -39,6 +40,7 @@ pub struct CpuDynamicInfo {
     pub energy_performance_preference: Option<Arc<str>>,
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for CpuDynamicInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
@@ -47,6 +49,7 @@ impl Arg for CpuDynamicInfo {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl ReadAll for CpuDynamicInfo {
     fn read(i: &mut Iter) -> Result<Self, TypeMismatchError> {
         i.get().ok_or(super::TypeMismatchError::new(
@@ -57,6 +60,7 @@ impl ReadAll for CpuDynamicInfo {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl<'a> Get<'a> for CpuDynamicInfo {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
@@ -398,5 +402,45 @@ impl<'a> Get<'a> for CpuDynamicInfo {
         };
 
         Some(this)
+    }
+}
+
+#[cfg(target_os = "macos")]
+impl<'de> serde::Deserialize<'de> for CpuDynamicInfo {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let v = serde_json::Value::deserialize(deserializer)?;
+        let mut this = Self::default();
+        if let Some(f) = v.get("overall_utilization_percent").and_then(|x| x.as_f64()) {
+            this.overall_utilization_percent = f as f32;
+        }
+        if let Some(f) = v.get("overall_kernel_utilization_percent").and_then(|x| x.as_f64()) {
+            this.overall_kernel_utilization_percent = f as f32;
+        }
+        if let Some(arr) = v.get("per_logical_cpu_utilization_percent").and_then(|x| x.as_array()) {
+            this.per_logical_cpu_utilization_percent = arr.iter().filter_map(|x| x.as_f64()).map(|x| x as f32).collect();
+        }
+        if let Some(arr) = v.get("per_logical_cpu_kernel_utilization_percent").and_then(|x| x.as_array()) {
+            this.per_logical_cpu_kernel_utilization_percent = arr.iter().filter_map(|x| x.as_f64()).map(|x| x as f32).collect();
+        }
+        if let Some(n) = v.get("current_frequency_mhz").and_then(|x| x.as_u64()) {
+            this.current_frequency_mhz = n;
+        }
+        if let Some(f) = v.get("temperature").and_then(|x| x.as_f64()) {
+            this.temperature = if f == 0.0 { None } else { Some(f as f32) };
+        }
+        if let Some(n) = v.get("process_count").and_then(|x| x.as_u64()) { this.process_count = n; }
+        if let Some(n) = v.get("thread_count").and_then(|x| x.as_u64()) { this.thread_count = n; }
+        if let Some(n) = v.get("handle_count").and_then(|x| x.as_u64()) { this.handle_count = n; }
+        if let Some(n) = v.get("uptime_seconds").and_then(|x| x.as_u64()) { this.uptime_seconds = n; }
+        if let Some(s) = v.get("cpufreq_driver").and_then(|x| x.as_str()) {
+            this.cpufreq_driver = if s.is_empty() { None } else { Some(Arc::from(s)) };
+        }
+        if let Some(s) = v.get("cpufreq_governor").and_then(|x| x.as_str()) {
+            this.cpufreq_governor = if s.is_empty() { None } else { Some(Arc::from(s)) };
+        }
+        if let Some(s) = v.get("energy_performance_preference").and_then(|x| x.as_str()) {
+            this.energy_performance_preference = if s.is_empty() { None } else { Some(Arc::from(s)) };
+        }
+        Ok(this)
     }
 }

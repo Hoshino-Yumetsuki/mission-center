@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /* sys_info_v2/gatherer/src/platform/gpu_info.rs
  *
  * Copyright 2023 Romeo Calota
@@ -18,7 +19,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#[cfg(target_os = "linux")]
 use dbus::arg::{Append, Arg};
+#[cfg(not(target_os = "linux"))]
+use crate::dbus_shim::{Append, Arg, ArgType, IterAppend, Signature};
 use serde::{Deserialize, Serialize};
 
 #[repr(u8)]
@@ -42,18 +46,31 @@ pub struct OpenGLApiVersion {
     pub api: OpenGLApi,
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for OpenGLApiVersion {
-    const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
+    const ARG_TYPE: ArgType = ArgType::Struct;
 
-    fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(yyy)")
+    fn signature() -> Signature {
+        Signature::from("(yyy)")
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for OpenGLApiVersion {
-    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append((self.major, self.minor, self.api as u8));
     }
+}
+
+#[cfg(not(target_os = "linux"))]
+impl Arg for OpenGLApiVersion {
+    const ARG_TYPE: ArgType = ArgType::Struct;
+    fn signature() -> Signature { Signature::from("") }
+}
+
+#[cfg(not(target_os = "linux"))]
+impl Append for OpenGLApiVersion {
+    fn append_by_ref(&self, _: &mut IterAppend) {}
 }
 
 #[derive(Default, Debug, Copy, Clone, Serialize, Deserialize)]
@@ -63,18 +80,31 @@ pub struct ApiVersion {
     pub patch: u16,
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for ApiVersion {
-    const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
+    const ARG_TYPE: ArgType = ArgType::Struct;
 
-    fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(qqq)")
+    fn signature() -> Signature {
+        Signature::from("(qqq)")
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for ApiVersion {
-    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append((self.major, self.minor, self.patch));
     }
+}
+
+#[cfg(not(target_os = "linux"))]
+impl Arg for ApiVersion {
+    const ARG_TYPE: ArgType = ArgType::Struct;
+    fn signature() -> Signature { Signature::from("") }
+}
+
+#[cfg(not(target_os = "linux"))]
+impl Append for ApiVersion {
+    fn append_by_ref(&self, _: &mut IterAppend) {}
 }
 
 /// Describes the static (unchanging) information about a GPU
@@ -129,16 +159,18 @@ pub trait GpuStaticInfoExt: Default + Clone + Append + Arg {
     fn pcie_lanes(&self) -> u8;
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for crate::platform::GpuStaticInfo {
-    const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
+    const ARG_TYPE: ArgType = ArgType::Struct;
 
-    fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yy)")
+    fn signature() -> Signature {
+        Signature::from("(ssqqtt(yyy)(qqq)(qqq)(qqq)yy)")
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::GpuStaticInfo {
-    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append((
             self.id(),
             self.device_name(),
@@ -211,16 +243,18 @@ pub trait GpuDynamicInfoExt: Default + Clone + Append + Arg {
     fn decoder_percent(&self) -> u32;
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for crate::platform::GpuDynamicInfo {
-    const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
+    const ARG_TYPE: ArgType = ArgType::Struct;
 
-    fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(suuudduuuutttuu)")
+    fn signature() -> Signature {
+        Signature::from("(suuudduuuutttuu)")
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::GpuDynamicInfo {
-    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append_struct(|ia| {
             ia.append(self.id());
             ia.append(self.temp_celsius());

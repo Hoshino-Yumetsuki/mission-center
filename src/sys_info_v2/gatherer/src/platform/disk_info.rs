@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /* sys_info_v2/gatherer/src/platform/disk_info.rs
  *
  * Copyright 2024 Romeo Calota
@@ -18,11 +19,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use dbus::arg::IterAppend;
+#[cfg(target_os = "linux")]
+use IterAppend;
+#[cfg(target_os = "linux")]
 use dbus::{
     arg::{Append, Arg, ArgType},
     Signature,
 };
+#[cfg_attr(not(target_os = "linux"), allow(unused_imports))]
+#[cfg(not(target_os = "linux"))]
+use crate::dbus_shim::{Append, Arg};
 
 #[allow(non_camel_case_types)]
 #[allow(dead_code)]
@@ -78,6 +84,7 @@ pub trait DiskInfoExt: Default + Append + Arg {
     fn write_speed(&self) -> u64;
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for crate::platform::DiskInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
@@ -86,6 +93,7 @@ impl Arg for crate::platform::DiskInfo {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::DiskInfo {
     fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append((
@@ -103,6 +111,7 @@ impl Append for crate::platform::DiskInfo {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::DiskInfoIter<'_> {
     fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append_array(&crate::platform::DiskInfo::signature(), |a| {

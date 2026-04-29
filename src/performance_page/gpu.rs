@@ -94,7 +94,11 @@ mod imp {
         pub box_gtt_usage: OnceCell<gtk::Box>,
         pub box_power_draw: OnceCell<gtk::Box>,
         pub box_decode: OnceCell<gtk::Box>,
+        pub box_clock_speed: OnceCell<gtk::Box>,
+        pub box_encode_text: OnceCell<gtk::Box>,
         pub encode_label: OnceCell<gtk::Label>,
+        pub vulkan_version_label: OnceCell<gtk::Label>,
+        pub opengl_version_label: OnceCell<gtk::Label>,
 
         pub legend_encode: OnceCell<gtk::Picture>,
         pub legend_decode: OnceCell<gtk::Picture>,
@@ -149,7 +153,11 @@ mod imp {
                 box_gtt_usage: Default::default(),
                 box_power_draw: Default::default(),
                 box_decode: Default::default(),
+                box_clock_speed: Default::default(),
+                box_encode_text: Default::default(),
                 encode_label: Default::default(),
+                vulkan_version_label: Default::default(),
+                opengl_version_label: Default::default(),
 
                 legend_encode: Default::default(),
                 legend_decode: Default::default(),
@@ -351,6 +359,48 @@ mod imp {
                 }
 
                 this.memory_graph.set_visible(false);
+            } else if gpu.vendor_id == 0x106b {
+                this.box_power_draw
+                    .get()
+                    .and_then(|b| Some(b.set_visible(false)));
+                this.box_temp.get().and_then(|b| Some(b.set_visible(false)));
+                this.box_mem_speed
+                    .get()
+                    .and_then(|b| Some(b.set_visible(false)));
+                this.box_clock_speed
+                    .get()
+                    .and_then(|b| Some(b.set_visible(false)));
+                this.box_decode
+                    .get()
+                    .and_then(|b| Some(b.set_visible(false)));
+                this.box_encode_text
+                    .get()
+                    .and_then(|b| Some(b.set_visible(false)));
+                this.encode_decode_graph.set_visible(false);
+                if let Some(object) = this.legend_encode.get() {
+                    object.set_visible(false)
+                }
+                if let Some(object) = this.legend_decode.get() {
+                    object.set_visible(false)
+                }
+                this.pcie_speed_label
+                    .get()
+                    .and_then(|l| Some(l.set_visible(false)));
+                this.pcie_speed
+                    .get()
+                    .and_then(|l| Some(l.set_visible(false)));
+                this.vulkan_version
+                    .get()
+                    .and_then(|l| Some(l.set_visible(false)));
+                this.vulkan_version_label
+                    .get()
+                    .and_then(|l| Some(l.set_visible(false)));
+                this.opengl_version
+                    .get()
+                    .and_then(|l| Some(l.set_visible(false)));
+                this.opengl_version_label
+                    .get()
+                    .and_then(|l| Some(l.set_visible(false)));
             } else {
                 this.usage_graph_encode_decode.set_dashed(0, true);
                 this.usage_graph_encode_decode.set_filled(0, false);
@@ -800,10 +850,30 @@ mod imp {
                     .object::<gtk::Box>("box_decode")
                     .expect("Could not find `box_decode` object in details pane"),
             );
+            let _ = self.box_clock_speed.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("box_clock_speed")
+                    .expect("Could not find `box_clock_speed` object in details pane"),
+            );
+            let _ = self.box_encode_text.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("box_encode_text")
+                    .expect("Could not find `box_encode_text` object in details pane"),
+            );
             let _ = self.encode_label.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("encode_label")
                     .expect("Could not find `encode_label` object in details pane"),
+            );
+            let _ = self.vulkan_version_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("vulkan_version_label")
+                    .expect("Could not find `vulkan_version_label` object in details pane"),
+            );
+            let _ = self.opengl_version_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("opengl_version_label")
+                    .expect("Could not find `opengl_version_label` object in details pane"),
             );
             let _ = self.temperature.set(
                 sidebar_content_builder

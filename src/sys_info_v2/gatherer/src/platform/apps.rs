@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /* sys_info_v2/gatherer/src/platform/apps.rs
  *
  * Copyright 2024 Romeo Calota
@@ -18,7 +19,11 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#[cfg(target_os = "linux")]
 use dbus::arg::{Append, Arg};
+#[cfg_attr(not(target_os = "linux"), allow(unused_imports))]
+#[cfg(not(target_os = "linux"))]
+use crate::dbus_shim::{Append, Arg};
 
 /// A running application
 pub trait AppExt<'a>: Default + Append + Arg {
@@ -42,16 +47,18 @@ pub trait AppExt<'a>: Default + Append + Arg {
     fn pids(&'a self) -> Self::Iter;
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for crate::platform::App {
-    const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
+    const ARG_TYPE: ArgType = ArgType::Struct;
 
-    fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ssssau)")
+    fn signature() -> Signature {
+        Signature::from("(ssssau)")
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::App {
-    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append((
             self.name(),
             self.icon().unwrap_or(""),
@@ -77,16 +84,18 @@ pub trait AppsExt<'a>: Default + Append + Arg {
     fn app_list(&self) -> &[Self::A];
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for crate::platform::Apps {
-    const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Array;
+    const ARG_TYPE: ArgType = ArgType::Array;
 
-    fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("a(ssssau(ddddd))")
+    fn signature() -> Signature {
+        Signature::from("a(ssssau(ddddd))")
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::Apps {
-    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append(self.app_list())
     }
 }

@@ -76,6 +76,13 @@ mod imp {
         pub cpufreq_governor_label: OnceCell<gtk::Label>,
         pub energy_performance_preference: OnceCell<gtk::Label>,
         pub energy_performance_preference_label: OnceCell<gtk::Label>,
+
+        pub box_speed: OnceCell<gtk::Box>,
+        pub box_handles: OnceCell<gtk::Box>,
+        pub base_speed_label: OnceCell<gtk::Label>,
+        pub virtualization_label: OnceCell<gtk::Label>,
+        pub virt_machine_label: OnceCell<gtk::Label>,
+        pub l3_cache_label: OnceCell<gtk::Label>,
     }
 
     impl Default for PerformancePageCpu {
@@ -111,6 +118,13 @@ mod imp {
                 cpufreq_governor_label: Default::default(),
                 energy_performance_preference: Default::default(),
                 energy_performance_preference_label: Default::default(),
+
+                box_speed: Default::default(),
+                box_handles: Default::default(),
+                base_speed_label: Default::default(),
+                virtualization_label: Default::default(),
+                virt_machine_label: Default::default(),
+                l3_cache_label: Default::default(),
             }
         }
     }
@@ -415,6 +429,26 @@ mod imp {
                 i18n("N/A")
             };
 
+            #[cfg(target_os = "macos")]
+            {
+                if static_cpu_info.base_frequency_khz.is_none() {
+                    this.base_speed.get().and_then(|l| Some(l.set_visible(false)));
+                    this.base_speed_label.get().and_then(|l| Some(l.set_visible(false)));
+                }
+                this.box_speed.get().and_then(|b| Some(b.set_visible(false)));
+                this.box_handles.get().and_then(|b| Some(b.set_visible(false)));
+                if static_cpu_info.virtualization_technology.is_none() {
+                    this.virtualization.get().and_then(|l| Some(l.set_visible(false)));
+                    this.virtualization_label.get().and_then(|l| Some(l.set_visible(false)));
+                }
+                this.virt_machine.get().and_then(|l| Some(l.set_visible(false)));
+                this.virt_machine_label.get().and_then(|l| Some(l.set_visible(false)));
+                if static_cpu_info.l3_cache.is_none() {
+                    this.l3_cache.get().and_then(|l| Some(l.set_visible(false)));
+                    this.l3_cache_label.get().and_then(|l| Some(l.set_visible(false)));
+                }
+            }
+
             true
         }
 
@@ -440,10 +474,12 @@ mod imp {
                 let graph_widget = &mut graph_widgets[i + 1];
                 graph_widget
                     .add_data_point(0, dynamic_cpu_info.per_logical_cpu_utilization_percent[i]);
-                graph_widget.add_data_point(
-                    1,
-                    dynamic_cpu_info.per_logical_cpu_kernel_utilization_percent[i],
-                );
+                let kernel = dynamic_cpu_info
+                    .per_logical_cpu_kernel_utilization_percent
+                    .get(i)
+                    .copied()
+                    .unwrap_or(0.0);
+                graph_widget.add_data_point(1, kernel);
             }
 
             this.graph_widgets.set(graph_widgets);
@@ -832,6 +868,11 @@ mod imp {
                     .object::<gtk::Label>("speed")
                     .expect("Could not find `speed` object in details pane"),
             );
+            let _ = self.box_speed.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("box_speed")
+                    .expect("Could not find `box_speed` object in details pane"),
+            );
             let _ = self.processes.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("processes")
@@ -847,6 +888,11 @@ mod imp {
                     .object::<gtk::Label>("handles")
                     .expect("Could not find `handles` object in details pane"),
             );
+            let _ = self.box_handles.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("box_handles")
+                    .expect("Could not find `box_handles` object in details pane"),
+            );
             let _ = self.uptime.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("uptime")
@@ -856,6 +902,11 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("base_speed")
                     .expect("Could not find `base_speed` object in details pane"),
+            );
+            let _ = self.base_speed_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("base_speed_label")
+                    .expect("Could not find `base_speed_label` object in details pane"),
             );
             let _ = self.sockets.set(
                 sidebar_content_builder
@@ -872,10 +923,20 @@ mod imp {
                     .object::<gtk::Label>("virtualization")
                     .expect("Could not find `virtualization` object in details pane"),
             );
+            let _ = self.virtualization_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("virtualization_label")
+                    .expect("Could not find `virtualization_label` object in details pane"),
+            );
             let _ = self.virt_machine.set(
                 sidebar_content_builder
                     .object::<gtk::Label>("virt_machine")
                     .expect("Could not find `virt_machine` object in details pane"),
+            );
+            let _ = self.virt_machine_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("virt_machine_label")
+                    .expect("Could not find `virt_machine_label` object in details pane"),
             );
             let _ = self.l1_cache.set(
                 sidebar_content_builder
@@ -891,6 +952,11 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("l3_cache")
                     .expect("Could not find `l3_cache` object in details pane"),
+            );
+            let _ = self.l3_cache_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("l3_cache_label")
+                    .expect("Could not find `l3_cache_label` object in details pane"),
             );
             let _ = self.cpufreq_driver.set(
                 sidebar_content_builder

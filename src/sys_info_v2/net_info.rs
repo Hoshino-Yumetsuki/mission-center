@@ -18,10 +18,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::path::Path;
-
 use crate::i18n::*;
 
+#[cfg(target_os = "linux")]
+use std::path::Path;
+
+#[cfg(target_os = "linux")]
 #[allow(non_camel_case_types)]
 mod if_nameindex {
     #[derive(Debug, Copy, Clone)]
@@ -145,6 +147,7 @@ pub struct NetworkDevice {
     pub max_speed: u64,
 }
 
+#[cfg(target_os = "linux")]
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct NetworkDeviceCacheEntry {
     pub descriptor: NetworkDeviceDescriptor,
@@ -156,6 +159,7 @@ struct NetworkDeviceCacheEntry {
     pub update_timestamp: std::time::Instant,
 }
 
+#[cfg(target_os = "linux")]
 pub struct NetInfo {
     udev: *mut libudev_sys::udev,
     nm_proxy: *mut gtk::gio::ffi::GDBusProxy,
@@ -166,9 +170,12 @@ pub struct NetInfo {
     device_name_cache: std::collections::HashMap<String, String>,
 }
 
+#[cfg(target_os = "linux")]
 unsafe impl Send for NetInfo {}
+#[cfg(target_os = "linux")]
 unsafe impl Sync for NetInfo {}
 
+#[cfg(target_os = "linux")]
 impl Drop for NetInfo {
     fn drop(&mut self) {
         use gtk::glib::gobject_ffi::*;
@@ -186,6 +193,7 @@ impl Drop for NetInfo {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl NetInfo {
     pub fn new() -> Option<Self> {
         use gtk::gio::ffi::*;
@@ -1094,5 +1102,138 @@ impl NetInfo {
         } else {
             None
         }
+    }
+}
+
+#[cfg(target_os = "macos")]
+pub struct NetInfo {
+    prev: std::collections::HashMap<String, (u64, u64, std::time::Instant)>,
+}
+
+#[cfg(target_os = "macos")]
+unsafe impl Send for NetInfo {}
+#[cfg(target_os = "macos")]
+unsafe impl Sync for NetInfo {}
+
+#[cfg(target_os = "macos")]
+impl NetInfo {
+    pub fn new() -> Option<Self> {
+        Some(Self { prev: std::collections::HashMap::new() })
+    }
+
+    pub fn load_devices(&mut self) -> Vec<NetworkDevice> {
+        let mut devices = vec![];
+
+        let hw_ports = Self::list_hardware_ports();
+        if hw_ports.is_empty() {
+            return devices;
+        }
+
+        let stats = Self::read_netstat();
+        let now = std::time::Instant::now();
+
+        for (if_name, port_name, hw_addr) in &hw_ports {
+            let (tx, rx) = stats.get(if_name).copied().unwrap_or((0, 0));
+            let (send_bps, recv_bps) = if let Some((prev_tx, prev_rx, prev_ts)) = self.prev.get(if_name) {
+                let elapsed = now.duration_since(*prev_ts).as_secs_f64().max(0.001);
+                let s = (tx.saturating_sub(*prev_tx) as f64 / elapsed) as f32;
+                let r = (rx.saturating_sub(*prev_rx) as f64 / elapsed) as f32;
+                (s, r)
+            } else {
+                (0.0, 0.0)
+            };
+            self.prev.insert(if_name.clone(), (tx, rx, now));
+
+            let kind = if port_name.contains("Wi-Fi") || port_name.contains("AirPort") || port_name.contains("Wireless") {
+                NetDeviceType::Wireless
+            } else if port_name.contains("Thunderbolt") || port_name.contains("Bridge") {
+                NetDeviceType::Bridge
+            } else {
+                NetDeviceType::Wired
+            };
+
+            devices.push(NetworkDevice {
+                descriptor: NetworkDeviceDescriptor {
+                    kind,
+                    if_name: if_name.clone(),
+                    adapter_name: Some(port_name.clone()),
+                },
+                address: NetworkAddress {
+                    hw_address: *hw_addr,
+                    ip4_address: None,
+                    ip6_address: None,
+                },
+                wireless_info: None,
+                send_bps,
+                sent_bytes: tx,
+                recv_bps,
+                recv_bytes: rx,
+                max_speed: 0,
+            });
+        }
+
+        devices
+    }
+
+    fn list_hardware_ports() -> Vec<(String, String, Option<[u8; 6]>)> {
+        let output = std::process::Command::new("/usr/sbin/networksetup")
+            .args(["-listallhardwareports"])
+            .output();
+        let text = match output {
+            Ok(o) if o.status.success() => String::from_utf8_lossy(&o.stdout).into_owned(),
+            _ => return vec![],
+        };
+
+        let mut result = vec![];
+        let mut current_port: Option<String> = None;
+        let mut current_device: Option<String> = None;
+
+        for line in text.lines() {
+            if let Some(port) = line.strip_prefix("Hardware Port: ") {
+                current_port = Some(port.trim().to_string());
+                current_device = None;
+            } else if let Some(dev) = line.strip_prefix("Device: ") {
+                current_device = Some(dev.trim().to_string());
+            } else if line.starts_with("Ethernet Address: ") {
+                if let (Some(port), Some(dev)) = (current_port.take(), current_device.take()) {
+                    let addr_str = line.trim_start_matches("Ethernet Address: ").trim();
+                    let hw_addr = parse_mac_address(addr_str);
+                    result.push((dev, port, hw_addr));
+                }
+            }
+        }
+
+        result
+    }
+
+    fn read_netstat() -> std::collections::HashMap<String, (u64, u64)> {
+        let mut map = std::collections::HashMap::new();
+        let output = std::process::Command::new("/usr/sbin/netstat")
+            .args(["-ibn"])
+            .output();
+        if let Ok(o) = output {
+            let s = String::from_utf8_lossy(&o.stdout);
+            for line in s.lines().skip(1) {
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                if parts.len() < 10 { continue; }
+                let name = parts[0].to_string();
+                let rx: u64 = parts[6].parse().unwrap_or(0);
+                let tx: u64 = parts[9].parse().unwrap_or(0);
+                map.entry(name).or_insert((tx, rx));
+            }
+        }
+        map
+    }
+}
+
+#[cfg(target_os = "macos")]
+fn parse_mac_address(s: &str) -> Option<[u8; 6]> {
+    let parts: Vec<u8> = s.split(':')
+        .filter_map(|x| u8::from_str_radix(x, 16).ok())
+        .collect();
+    if parts.len() == 6 {
+        Some([parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]])
+    } else {
+        None
     }
 }

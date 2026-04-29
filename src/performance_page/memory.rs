@@ -785,6 +785,19 @@ mod imp {
             speed.set_label(default_label);
             let _ = self.speed.set(speed);
 
+            #[cfg(target_os = "macos")]
+            {
+                if let Some(sp) = self.speed.get() {
+                    sp.set_visible(false);
+                }
+                if let Ok(speed_label) = sidebar_content_builder
+                    .object::<gtk::Label>("speed_label")
+                    .ok_or(())
+                {
+                    speed_label.set_visible(false);
+                }
+            }
+
             let slots_used: gtk::Label = sidebar_content_builder
                 .object("slots_used")
                 .expect("Could not find `slots_used` object in details pane");

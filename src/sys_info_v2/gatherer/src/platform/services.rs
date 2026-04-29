@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /* sys_info_v2/gatherer/src/platform/services.rs
  *
  * Copyright 2024 Romeo Calota
@@ -21,10 +22,14 @@
 use std::num::NonZeroU32;
 use std::sync::Arc;
 
+#[cfg(target_os = "linux")]
 use dbus::{
     arg::{Append, Arg, ArgType, IterAppend},
     Signature,
 };
+#[cfg_attr(not(target_os = "linux"), allow(unused_imports))]
+#[cfg(not(target_os = "linux"))]
+use crate::dbus_shim::{Append, Arg};
 
 /// High-level description of a service
 pub trait ServiceExt: Append + Arg {
@@ -53,6 +58,7 @@ pub trait ServiceExt: Append + Arg {
     fn group(&self) -> Option<&str>;
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::Service {
     #[inline]
     fn append_by_ref(&self, ia: &mut IterAppend) {
@@ -69,6 +75,7 @@ impl Append for crate::platform::Service {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for crate::platform::Service {
     const ARG_TYPE: ArgType = ArgType::Struct;
 

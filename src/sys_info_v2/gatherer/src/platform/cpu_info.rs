@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /* sys_info_v2/gatherer/src/platform/cpu_info.rs
  *
  * Copyright 2023 Romeo Calota
@@ -18,8 +19,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#[cfg(target_os = "linux")]
 use dbus::arg::{Append, Arg};
+#[cfg_attr(not(target_os = "linux"), allow(unused_imports))]
+#[cfg(not(target_os = "linux"))]
+use crate::dbus_shim::{Append, Arg};
 
+#[allow(dead_code)]
 #[repr(u8)]
 pub enum OptionalBool {
     False,
@@ -72,16 +78,18 @@ pub trait CpuStaticInfoExt: Default + Append + Arg {
     fn l4_cache(&self) -> Option<u64>;
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for crate::platform::CpuStaticInfo {
-    const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
+    const ARG_TYPE: ArgType = ArgType::Struct;
 
-    fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(suytsytttt)")
+    fn signature() -> Signature {
+        Signature::from("(suytsytttt)")
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::CpuStaticInfo {
-    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append_struct(|ia| {
             ia.append(self.name());
             ia.append(self.logical_cpu_count());
@@ -148,16 +156,18 @@ pub trait CpuDynamicInfoExt<'a>: Default + Append + Arg {
     fn energy_performance_preference(&self) -> Option<&str>;
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for crate::platform::CpuDynamicInfo {
-    const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Struct;
+    const ARG_TYPE: ArgType = ArgType::Struct;
 
-    fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("(ddadadtdttttsss)")
+    fn signature() -> Signature {
+        Signature::from("(ddadadtdttttsss)")
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::CpuDynamicInfo {
-    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append_struct(|ia| {
             ia.append(self.overall_utilization_percent() as f64);
             ia.append(self.overall_kernel_utilization_percent() as f64);

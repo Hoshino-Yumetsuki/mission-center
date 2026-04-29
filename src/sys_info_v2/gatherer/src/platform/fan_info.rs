@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /* sys_info_v2/gatherer/src/platform/fan_info.rs
  *
  * Copyright 2024 Romeo Calota
@@ -18,11 +19,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use dbus::arg::IterAppend;
+#[cfg(target_os = "linux")]
+use IterAppend;
+#[cfg(target_os = "linux")]
 use dbus::{
     arg::{Append, Arg, ArgType},
     Signature,
 };
+#[cfg_attr(not(target_os = "linux"), allow(unused_imports))]
+#[cfg(not(target_os = "linux"))]
+use crate::dbus_shim::{Append, Arg};
 
 /// Describes the static (unchanging) information about a physical fan
 pub trait FanInfoExt: Default + Append + Arg {
@@ -51,6 +57,7 @@ pub trait FanInfoExt: Default + Append + Arg {
     fn max_speed(&self) -> u64;
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for crate::platform::FanInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
@@ -59,6 +66,7 @@ impl Arg for crate::platform::FanInfo {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::FanInfo {
     fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append((
@@ -74,6 +82,7 @@ impl Append for crate::platform::FanInfo {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::FanInfoIter<'_> {
     fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append_array(&crate::platform::FanInfo::signature(), |a| {

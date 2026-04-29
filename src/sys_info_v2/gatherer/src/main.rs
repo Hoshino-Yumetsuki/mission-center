@@ -20,28 +20,46 @@
 
 use std::sync::{
     atomic::{self, AtomicBool, AtomicU64},
-    Arc, Mutex, PoisonError, RwLock,
+    Arc, PoisonError, RwLock,
 };
+#[cfg(target_os = "linux")]
+use std::sync::Mutex;
 
+#[cfg(target_os = "linux")]
 use dbus::arg::RefArg;
+#[cfg(target_os = "linux")]
 use dbus::{arg, blocking::SyncConnection, channel::MatchingReceiver};
+#[cfg(target_os = "linux")]
 use dbus_crossroads::Crossroads;
 use lazy_static::lazy_static;
 
+#[cfg(target_os = "linux")]
 use crate::platform::{FanInfo, FansInfo, FansInfoExt};
-use logging::{critical, debug, error, message, warning};
+#[cfg(target_os = "macos")]
+use crate::platform::FansInfoExt;
+#[cfg(target_os = "macos")]
+use crate::platform::FansInfo;
+use logging::{debug, error, message, warning};
+#[cfg(target_os = "linux")]
+use logging::critical;
+#[cfg(target_os = "linux")]
 use platform::{
-    Apps, AppsExt, CpuDynamicInfo, CpuInfo, CpuInfoExt, CpuStaticInfo, CpuStaticInfoExt, DiskInfo,
-    DisksInfo, DisksInfoExt, GpuDynamicInfo, GpuInfo, GpuInfoExt, GpuStaticInfo,
-    PlatformUtilitiesExt, Processes, ProcessesExt, Service, ServiceController,
-    ServiceControllerExt, Services, ServicesError, ServicesExt,
+    CpuDynamicInfo, CpuStaticInfo, DiskInfo, GpuDynamicInfo, GpuStaticInfo,
+    Service, ServiceControllerExt, ServicesError,
+};
+use platform::{
+    Apps, AppsExt, CpuInfo, CpuInfoExt, CpuStaticInfoExt, DisksInfo, DisksInfoExt,
+    GpuInfo, GpuInfoExt, PlatformUtilitiesExt, Processes, ProcessesExt,
+    ServiceController, Services, ServicesExt,
 };
 
 #[allow(unused_imports)]
 mod logging;
 mod platform;
 mod utils;
+mod dbus_shim;
 
+#[cfg(target_os = "linux")]
 const DBUS_OBJECT_PATH: &str = "/io/missioncenter/MissionCenter/Gatherer";
 
 lazy_static! {
@@ -91,23 +109,27 @@ lazy_static! {
     };
 }
 
+#[cfg(target_os = "linux")]
 #[derive(Debug)]
 pub struct OrgFreedesktopDBusNameLost {
     pub arg0: String,
 }
 
+#[cfg(target_os = "linux")]
 impl arg::AppendAll for OrgFreedesktopDBusNameLost {
     fn append(&self, i: &mut arg::IterAppend) {
         arg::RefArg::append(&self.arg0, i);
     }
 }
 
+#[cfg(target_os = "linux")]
 impl arg::ReadAll for OrgFreedesktopDBusNameLost {
     fn read(i: &mut arg::Iter) -> Result<Self, arg::TypeMismatchError> {
         Ok(OrgFreedesktopDBusNameLost { arg0: i.read()? })
     }
 }
 
+#[cfg(target_os = "linux")]
 impl dbus::message::SignalArgs for OrgFreedesktopDBusNameLost {
     const NAME: &'static str = "NameLost";
     const INTERFACE: &'static str = "org.freedesktop.DBus";
@@ -307,6 +329,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         std::process::exit(0);
     }));
 
+    message!("Gatherer::Main", "Creating thread pool...");
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(4)
+        .build_global()?;
+
+    #[cfg(target_os = "linux")]
+    run_dbus_ipc()?;
+
+    #[cfg(target_os = "macos")]
+    run_unix_socket_ipc()?;
+
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+fn run_dbus_ipc() -> Result<(), Box<dyn std::error::Error>> {
     message!("Gatherer::Main", "Setting up D-Bus connection...");
     let c = Arc::new(SyncConnection::new_session()?);
 
@@ -788,11 +826,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     cr.insert(DBUS_OBJECT_PATH, &[peer_itf, iface_token], ());
 
-    message!("Gatherer::Main", "Creating thread pool...");
-    rayon::ThreadPoolBuilder::new()
-        .num_threads(4)
-        .build_global()?;
-
     message!("Gatherer::Main", "Serving D-Bus requests...");
 
     let cr = Arc::new(Mutex::new(cr));
@@ -811,6 +844,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 }
 
+#[cfg(target_os = "linux")]
 fn execute_no_reply<SF: Send + Sync + 'static, E: std::fmt::Display>(
     stats: Arc<RwLock<SF>>,
     command: impl FnOnce(&SF) -> Result<(), E> + Send + 'static,
@@ -835,4 +869,225 @@ fn execute_no_reply<SF: Send + Sync + 'static, E: std::fmt::Display>(
     });
 
     Ok(())
+}
+
+#[cfg(target_os = "macos")]
+fn run_unix_socket_ipc() -> Result<(), Box<dyn std::error::Error>> {
+    use std::io::{Read, Write};
+    use std::os::unix::net::UnixListener;
+
+    let socket_path = std::env::var("MC_GATHERER_SOCKET")
+        .unwrap_or_else(|_| "/tmp/missioncenter-gatherer.sock".to_string());
+
+    let _ = std::fs::remove_file(&socket_path);
+    let listener = UnixListener::bind(&socket_path)?;
+
+    message!("Gatherer::Main", "Listening on Unix socket: {}", socket_path);
+
+    for stream in listener.incoming() {
+        match stream {
+            Ok(mut stream) => {
+                std::thread::spawn(move || {
+                    let mut len_buf = [0u8; 4];
+                    loop {
+                        if stream.read_exact(&mut len_buf).is_err() {
+                            break;
+                        }
+                        let msg_len = u32::from_le_bytes(len_buf) as usize;
+                        if msg_len == 0 || msg_len > 1024 * 1024 {
+                            break;
+                        }
+                        let mut msg_buf = vec![0u8; msg_len];
+                        if stream.read_exact(&mut msg_buf).is_err() {
+                            break;
+                        }
+                        let raw = match std::str::from_utf8(&msg_buf) {
+                            Ok(s) => s,
+                            Err(_) => break,
+                        };
+                        // Protocol: "METHOD\0ARG" or "METHOD\0" (no arg)
+                        let (method, arg) = match raw.split_once('\0') {
+                            Some((m, a)) => (m, a),
+                            None => (raw, ""),
+                        };
+                        let response = handle_ipc_method(method, arg);
+                        let resp_len = (response.len() as u32).to_le_bytes();
+                        if stream.write_all(&resp_len).is_err() {
+                            break;
+                        }
+                        if stream.write_all(&response).is_err() {
+                            break;
+                        }
+                    }
+                });
+            }
+            Err(e) => {
+                error!("Gatherer::Main", "Unix socket accept error: {}", e);
+            }
+        }
+    }
+    Ok(())
+}
+
+#[cfg(target_os = "macos")]
+fn handle_ipc_method(cmd: &str, arg: &str) -> Vec<u8> {
+    use platform::{
+        CpuDynamicInfoExt, CpuInfoExt, CpuStaticInfoExt, DiskInfoExt, DisksInfoExt, FanInfoExt,
+        FansInfoExt, GpuDynamicInfoExt, GpuInfoExt, GpuStaticInfoExt, ProcessExt, ProcessesExt,
+    };
+
+    match cmd {
+        "GetCPUStaticInfo" => {
+            let guard = SYSTEM_STATE.cpu_info.read().unwrap_or_else(PoisonError::into_inner);
+            let s = guard.static_info();
+            serde_json::to_vec(&serde_json::json!({
+                "name": s.name(),
+                "logical_cpu_count": s.logical_cpu_count(),
+                "socket_count": s.socket_count(),
+                "base_frequency_khz": s.base_frequency_khz(),
+                "is_virtual_machine": s.is_virtual_machine(),
+                "l1_combined_cache": s.l1_combined_cache(),
+                "l2_cache": s.l2_cache(),
+                "l3_cache": s.l3_cache(),
+                "l4_cache": s.l4_cache()
+            })).unwrap_or_default()
+        }
+        "GetCPUDynamicInfo" => {
+            let guard = SYSTEM_STATE.cpu_info.read().unwrap_or_else(PoisonError::into_inner);
+            let d = guard.dynamic_info();
+            let per_cpu: Vec<f32> = d.per_logical_cpu_utilization_percent().copied().collect();
+            let per_cpu_len = per_cpu.len();
+            serde_json::to_vec(&serde_json::json!({
+                "overall_utilization_percent": d.overall_utilization_percent(),
+                "overall_kernel_utilization_percent": d.overall_kernel_utilization_percent(),
+                "per_logical_cpu_utilization_percent": per_cpu,
+                "per_logical_cpu_kernel_utilization_percent": vec![0.0f32; per_cpu_len],
+                "current_frequency_mhz": d.current_frequency_mhz(),
+                "temperature": d.temperature(),
+                "process_count": d.process_count(),
+                "thread_count": d.thread_count(),
+                "uptime_seconds": d.uptime_seconds()
+            })).unwrap_or_default()
+        }
+        "GetDisksInfo" => {
+            let guard = SYSTEM_STATE.disk_info.read().unwrap_or_else(PoisonError::into_inner);
+            let disks: Vec<_> = guard.info().map(|d| serde_json::json!({
+                "id": d.id(), "model": d.model(), "type": d.r#type() as u8,
+                "capacity": d.capacity(), "formatted": d.formatted(),
+                "system_disk": d.is_system_disk(),
+                "busy_percent": d.busy_percent(),
+                "read_speed": d.read_speed(), "write_speed": d.write_speed()
+            })).collect();
+            serde_json::to_vec(&disks).unwrap_or_default()
+        }
+        "GetGPUList" => {
+            let guard = SYSTEM_STATE.gpu_info.read().unwrap_or_else(PoisonError::into_inner);
+            let ids: Vec<String> = guard.enumerate().map(|s| s.to_owned()).collect();
+            serde_json::to_vec(&ids).unwrap_or_default()
+        }
+        "GetGPUStaticInfo" => {
+            let guard = SYSTEM_STATE.gpu_info.read().unwrap_or_else(PoisonError::into_inner);
+            let gpus: Vec<_> = guard.enumerate().filter_map(|id| {
+                guard.static_info(id).map(|s| serde_json::json!({
+                    "id": s.id(), "device_name": s.device_name(),
+                    "vendor_id": s.vendor_id(), "device_id": s.device_id(),
+                    "total_memory": s.total_memory(),
+                    "metal_version": s.metal_version().map(|v| format!("{}.{}", v.major, v.minor))
+                }))
+            }).collect();
+            serde_json::to_vec(&gpus).unwrap_or_default()
+        }
+        "GetGPUDynamicInfo" => {
+            let guard = SYSTEM_STATE.gpu_info.read().unwrap_or_else(PoisonError::into_inner);
+            let gpus: Vec<_> = guard.enumerate().filter_map(|id| {
+                guard.dynamic_info(id).map(|d| serde_json::json!({
+                    "id": d.id(), "temp_celsius": d.temp_celsius(),
+                    "util_percent": d.util_percent(), "clock_speed_mhz": d.clock_speed_mhz(),
+                    "used_memory": d.used_memory(), "free_memory": d.free_memory(),
+                    "encoder_percent": d.encoder_percent(), "decoder_percent": d.decoder_percent()
+                }))
+            }).collect();
+            serde_json::to_vec(&gpus).unwrap_or_default()
+        }
+        "GetFansInfo" => {
+            let guard = SYSTEM_STATE.fan_info.read().unwrap_or_else(PoisonError::into_inner);
+            let fans: Vec<_> = guard.info().map(|f| serde_json::json!({
+                "fan_label": f.fan_label(), "rpm": f.rpm(),
+                "percent_vroomimg": f.percent_vroomimg(), "max_speed": f.max_speed()
+            })).collect();
+            serde_json::to_vec(&fans).unwrap_or_default()
+        }
+        "GetProcesses" => {
+            let guard = SYSTEM_STATE.processes.read().unwrap_or_else(PoisonError::into_inner);
+            let list: Vec<_> = guard.process_list().values().map(|p| {
+                use crate::platform::ProcessExt;
+                let cmd: Vec<&str> = p.cmd().collect();
+                serde_json::json!({
+                    "name": p.name(), "pid": p.pid(), "parent": p.parent(), "exe": p.exe(),
+                    "cmd": if cmd.is_empty() { vec![p.exe()] } else { cmd },
+                    "task_count": p.task_count(),
+                    "usage_stats": {
+                        "cpu_usage": p.usage_stats().cpu_usage,
+                        "memory_usage": p.usage_stats().memory_usage,
+                        "disk_usage": p.usage_stats().disk_usage,
+                        "network_usage": 0.0f32,
+                        "gpu_usage": 0.0f32,
+                        "gpu_memory_usage": 0.0f32
+                    }
+                })
+            }).collect();
+            serde_json::to_vec(&list).unwrap_or_default()
+        }
+        "GetApps" => {
+            use platform::AppExt;
+            let guard = SYSTEM_STATE.apps.read().unwrap_or_else(PoisonError::into_inner);
+            let list: Vec<_> = guard.app_list().iter().map(|a| serde_json::json!({
+                "name": a.name(), "icon": a.icon(), "id": a.id(),
+                "command": a.command(),
+                "pids": a.pids().collect::<Vec<_>>()
+            })).collect();
+            serde_json::to_vec(&list).unwrap_or_default()
+        }
+        "GetServices" => {
+            use platform::ServicesExt;
+            let guard = SYSTEM_STATE.services.read().unwrap_or_else(PoisonError::into_inner);
+            let list: Vec<_> = guard.services().unwrap_or_default().iter().map(|s| {
+                use platform::ServiceExt;
+                serde_json::json!({
+                    "name": s.name(), "description": s.description(),
+                    "enabled": s.enabled(), "running": s.running(), "failed": s.failed(),
+                    "pid": s.pid().map(|p| p.get()),
+                    "user": s.user(), "group": s.group()
+                })
+            }).collect();
+            serde_json::to_vec(&list).unwrap_or_default()
+        }
+        "TerminateProcess" => {
+            if let Ok(pid) = arg.parse::<u32>() {
+                SYSTEM_STATE.processes.read().unwrap_or_else(PoisonError::into_inner).terminate_process(pid);
+            }
+            b"{}".to_vec()
+        }
+        "KillProcess" => {
+            if let Ok(pid) = arg.parse::<u32>() {
+                SYSTEM_STATE.processes.read().unwrap_or_else(PoisonError::into_inner).kill_process(pid);
+            }
+            b"{}".to_vec()
+        }
+        "SetRefreshInterval" => {
+            if let Ok(ms) = arg.parse::<u64>() {
+                SYSTEM_STATE.refresh_interval.store(ms, atomic::Ordering::Relaxed);
+            }
+            b"{}".to_vec()
+        }
+        "SetCoreCountAffectsPercentages" => {
+            let val = arg == "true" || arg == "1";
+            SYSTEM_STATE.core_count_affects_percentages.store(val, atomic::Ordering::Relaxed);
+            b"{}".to_vec()
+        }
+        _ => {
+            warning!("Gatherer::Main", "Unknown IPC method: {}", cmd);
+            b"{}".to_vec()
+        }
+    }
 }

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 /* sys_info_v2/gatherer/src/platform/processes.rs
  *
  * Copyright 2024 Romeo Calota
@@ -20,7 +21,11 @@
 
 use std::collections::HashMap;
 
+#[cfg(target_os = "linux")]
 use dbus::arg::{Append, Arg};
+#[cfg_attr(not(target_os = "linux"), allow(unused_imports))]
+#[cfg(not(target_os = "linux"))]
+use crate::dbus_shim::{Append, Arg};
 
 /// State of a running process
 #[derive(Debug, Copy, Clone)]
@@ -95,16 +100,18 @@ pub trait ProcessesExt<'a>: Default + Append + Arg {
     fn kill_process(&self, pid: u32);
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for crate::platform::Processes {
-    const ARG_TYPE: dbus::arg::ArgType = dbus::arg::ArgType::Array;
+    const ARG_TYPE: ArgType = ArgType::Array;
 
-    fn signature() -> dbus::Signature<'static> {
-        dbus::Signature::from("a(sassyuu(dddddd)t)")
+    fn signature() -> Signature {
+        Signature::from("a(sassyuu(dddddd)t)")
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Append for crate::platform::Processes {
-    fn append_by_ref(&self, ia: &mut dbus::arg::IterAppend) {
+    fn append_by_ref(&self, ia: &mut IterAppend) {
         ia.append(
             self.process_list()
                 .iter()

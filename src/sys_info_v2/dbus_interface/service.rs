@@ -21,6 +21,7 @@
 use std::collections::HashMap;
 use std::{num::NonZeroU32, sync::Arc};
 
+#[cfg(target_os = "linux")]
 use dbus::{
     arg::{Arg, ArgType, Get, Iter, ReadAll, RefArg, TypeMismatchError},
     Signature,
@@ -68,6 +69,7 @@ impl From<ServiceMap> for HashMap<Arc<str>, Service> {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for ServiceMap {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
@@ -76,6 +78,7 @@ impl Arg for ServiceMap {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl ReadAll for ServiceMap {
     fn read(i: &mut Iter) -> Result<Self, TypeMismatchError> {
         i.get().ok_or(super::TypeMismatchError::new(
@@ -86,6 +89,7 @@ impl ReadAll for ServiceMap {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl<'a> Get<'a> for ServiceMap {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
@@ -126,182 +130,66 @@ impl<'a> Get<'a> for ServiceMap {
                         let service = i.as_mut();
 
                         this.name = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '0: s', got None",
-                                );
-                                continue;
-                            }
+                            None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '0: s', got None"); continue; }
                             Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '0: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                                None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '0: s', got {:?}", arg.arg_type()); continue; }
                                 Some(n) => Arc::<str>::from(n),
                             },
                         };
 
                         this.description = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '1: s', got None",
-                                );
-                                continue;
-                            }
+                            None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '1: s', got None"); continue; }
                             Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '1: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                                None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '1: s', got {:?}", arg.arg_type()); continue; }
                                 Some(d) => Arc::<str>::from(d),
                             },
                         };
 
                         this.enabled = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '2: b', got None",
-                                );
-                                continue;
-                            }
+                            None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '2: b', got None"); continue; }
                             Some(arg) => match arg.as_i64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '2: b', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                                None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '2: b', got {:?}", arg.arg_type()); continue; }
                                 Some(e) => e != 0,
                             },
                         };
 
                         this.running = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '3: b', got None",
-                                );
-                                continue;
-                            }
+                            None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '3: b', got None"); continue; }
                             Some(arg) => match arg.as_i64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '3: b', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                                None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '3: b', got {:?}", arg.arg_type()); continue; }
                                 Some(r) => r != 0,
                             },
                         };
 
                         this.failed = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '4: b', got None",
-                                );
-                                continue;
-                            }
+                            None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '4: b', got None"); continue; }
                             Some(arg) => match arg.as_i64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '4: b', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                                None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '4: b', got {:?}", arg.arg_type()); continue; }
                                 Some(r) => r != 0,
                             },
                         };
 
                         this.pid = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '5: u', got None",
-                                );
-                                continue;
-                            }
+                            None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '5: u', got None"); continue; }
                             Some(arg) => match arg.as_u64() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '5: u', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
+                                None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '5: u', got {:?}", arg.arg_type()); continue; }
                                 Some(p) => NonZeroU32::new(p as u32),
                             },
                         };
 
                         this.user = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '6: s', got None",
-                                );
-                                continue;
-                            }
+                            None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '6: s', got None"); continue; }
                             Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '6: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(u) => {
-                                    if u.is_empty() {
-                                        None
-                                    } else {
-                                        Some(Arc::<str>::from(u))
-                                    }
-                                }
+                                None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '6: s', got {:?}", arg.arg_type()); continue; }
+                                Some(u) => if u.is_empty() { None } else { Some(Arc::<str>::from(u)) },
                             },
                         };
 
                         this.group = match Iterator::next(service) {
-                            None => {
-                                g_critical!(
-                                    "MissionCenter::GathererDBusProxy",
-                                    "Failed to get Service: Expected '7: s', got None",
-                                );
-                                continue;
-                            }
+                            None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '7: s', got None"); continue; }
                             Some(arg) => match arg.as_str() {
-                                None => {
-                                    g_critical!(
-                                        "MissionCenter::GathererDBusProxy",
-                                        "Failed to get Service: Expected '7: s', got {:?}",
-                                        arg.arg_type(),
-                                    );
-                                    continue;
-                                }
-                                Some(g) => {
-                                    if g.is_empty() {
-                                        None
-                                    } else {
-                                        Some(Arc::<str>::from(g))
-                                    }
-                                }
+                                None => { g_critical!("MissionCenter::GathererDBusProxy", "Failed to get Service: Expected '7: s', got {:?}", arg.arg_type()); continue; }
+                                Some(g) => if g.is_empty() { None } else { Some(Arc::<str>::from(g)) },
                             },
                         };
 
@@ -312,5 +200,26 @@ impl<'a> Get<'a> for ServiceMap {
         }
 
         Some(ServiceMap(result))
+    }
+}
+
+#[cfg(target_os = "macos")]
+impl<'de> serde::Deserialize<'de> for ServiceMap {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let arr = Vec::<serde_json::Value>::deserialize(deserializer)?;
+        let mut map = HashMap::new();
+        for v in arr {
+            let mut s = Service::default();
+            if let Some(n) = v.get("name").and_then(|x| x.as_str()) { s.name = Arc::from(n); }
+            if let Some(d) = v.get("description").and_then(|x| x.as_str()) { s.description = Arc::from(d); }
+            if let Some(b) = v.get("enabled").and_then(|x| x.as_bool()) { s.enabled = b; }
+            if let Some(b) = v.get("running").and_then(|x| x.as_bool()) { s.running = b; }
+            if let Some(b) = v.get("failed").and_then(|x| x.as_bool()) { s.failed = b; }
+            if let Some(p) = v.get("pid").and_then(|x| x.as_u64()) { s.pid = NonZeroU32::new(p as u32); }
+            if let Some(u) = v.get("user").and_then(|x| x.as_str()) { s.user = if u.is_empty() { None } else { Some(Arc::from(u)) }; }
+            if let Some(g) = v.get("group").and_then(|x| x.as_str()) { s.group = if g.is_empty() { None } else { Some(Arc::from(g)) }; }
+            map.insert(s.name.clone(), s);
+        }
+        Ok(ServiceMap(map))
     }
 }

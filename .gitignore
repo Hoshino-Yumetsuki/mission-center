@@ -82,3 +82,5 @@ compile_commands.json
 /subprojects/packagecache
 _build
 BUILD
+
+*.compiled

@@ -55,7 +55,7 @@ Box root {
         }
       }
 
-      Box {
+      Box box_speed {
         orientation: vertical;
         spacing: 3;
 
@@ -126,20 +126,20 @@ Box root {
         }
       }
 
-      Box {
-        orientation: vertical;
-        spacing: 3;
+       Box box_handles {
+         orientation: vertical;
+         spacing: 3;
 
-        Label {
-          styles [
-            "caption",
-          ]
+         Label {
+           styles [
+             "caption",
+           ]
 
-          halign: start;
-          label: _("Handles");
-        }
+           halign: start;
+           label: _("Handles");
+         }
 
-        Label handles {
+         Label handles {
           styles [
             "title-4",
           ]
@@ -176,7 +176,7 @@ Box root {
     row-spacing: 5;
     column-spacing: 10;
 
-    Label {
+    Label base_speed_label {
       styles [
         "caption",
       ]
@@ -218,7 +218,7 @@ Box root {
       }
     }
 
-    Label {
+    Label virtualization_label {
       styles [
         "caption",
       ]
@@ -232,7 +232,7 @@ Box root {
       }
     }
 
-    Label {
+    Label virt_machine_label {
       styles [
         "caption",
       ]
@@ -274,7 +274,7 @@ Box root {
       }
     }
 
-    Label {
+    Label l3_cache_label {
       styles [
         "caption",
       ]

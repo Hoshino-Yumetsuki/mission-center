@@ -145,7 +145,7 @@ mod imp {
         }
 
         fn set_connection_type(&self, connection_type: u8) {
-            if connection_type == self.connection_type.get().into() {
+            if connection_type == u8::from(self.connection_type.get()) {
                 return;
             }
 

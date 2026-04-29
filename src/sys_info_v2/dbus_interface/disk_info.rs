@@ -20,6 +20,7 @@
 
 use std::sync::Arc;
 
+#[cfg(target_os = "linux")]
 use dbus::{arg::*, strings::*};
 
 #[allow(non_camel_case_types)]
@@ -103,6 +104,7 @@ impl From<DiskInfoVec> for Vec<DiskInfo> {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for DiskInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
@@ -111,6 +113,7 @@ impl Arg for DiskInfoVec {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl ReadAll for DiskInfoVec {
     fn read(i: &mut Iter) -> Result<Self, TypeMismatchError> {
         i.get().ok_or(super::TypeMismatchError::new(
@@ -121,6 +124,7 @@ impl ReadAll for DiskInfoVec {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl<'a> Get<'a> for DiskInfoVec {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
@@ -389,5 +393,30 @@ impl<'a> Get<'a> for DiskInfoVec {
         }
 
         Some(DiskInfoVec(result))
+    }
+}
+
+#[cfg(target_os = "macos")]
+impl<'de> serde::Deserialize<'de> for DiskInfoVec {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let arr = Vec::<serde_json::Value>::deserialize(deserializer)?;
+        let mut result = vec![];
+        for v in arr {
+            let mut this = DiskInfo::default();
+            if let Some(s) = v.get("id").and_then(|x| x.as_str()) { this.id = Arc::from(s); }
+            if let Some(s) = v.get("model").and_then(|x| x.as_str()) { this.model = Arc::from(s); }
+            if let Some(t) = v.get("type").and_then(|x| x.as_u64()) {
+                this.r#type = match t { 1 => DiskType::HDD, 2 => DiskType::SSD, 3 => DiskType::NVMe, 4 => DiskType::eMMC, 5 => DiskType::SD, 6 => DiskType::iSCSI, 7 => DiskType::Optical, _ => DiskType::Unknown };
+            }
+            if let Some(n) = v.get("capacity").and_then(|x| x.as_u64()) { this.capacity = n; }
+            if let Some(n) = v.get("formatted").and_then(|x| x.as_u64()) { this.formatted = n; }
+            if let Some(b) = v.get("system_disk").and_then(|x| x.as_bool()) { this.system_disk = b; }
+            if let Some(f) = v.get("busy_percent").and_then(|x| x.as_f64()) { this.busy_percent = f as f32; }
+            if let Some(f) = v.get("response_time_ms").and_then(|x| x.as_f64()) { this.response_time_ms = f as f32; }
+            if let Some(n) = v.get("read_speed").and_then(|x| x.as_u64()) { this.read_speed = n; }
+            if let Some(n) = v.get("write_speed").and_then(|x| x.as_u64()) { this.write_speed = n; }
+            result.push(this);
+        }
+        Ok(DiskInfoVec(result))
     }
 }

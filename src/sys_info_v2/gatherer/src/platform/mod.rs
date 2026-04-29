@@ -25,12 +25,18 @@ pub use fan_info::*;
 pub use gpu_info::*;
 #[cfg(target_os = "linux")]
 pub use linux::*;
+#[cfg(target_os = "macos")]
+pub use macos::*;
 pub use processes::*;
 pub use services::*;
 pub use utilities::*;
 
 #[cfg(target_os = "linux")]
 #[path = "linux/mod.rs"]
+mod platform_impl;
+
+#[cfg(target_os = "macos")]
+#[path = "macos/mod.rs"]
 mod platform_impl;
 
 #[cfg(target_os = "linux")]
@@ -59,6 +65,34 @@ mod linux {
     pub type ServiceController<'a> = platform_impl::LinuxServiceController<'a>;
     pub type ServicesError = platform_impl::LinuxServicesError;
     pub type PlatformUtilities = platform_impl::LinuxPlatformUtilities;
+}
+
+#[cfg(target_os = "macos")]
+#[allow(unused)]
+mod macos {
+    use super::*;
+
+    pub type Process = platform_impl::MacosProcess;
+    pub type Processes = platform_impl::MacosProcesses;
+    pub type App = platform_impl::MacosApp;
+    pub type Apps = platform_impl::MacosApps;
+    pub type CpuStaticInfo = platform_impl::MacosCpuStaticInfo;
+    pub type CpuDynamicInfo = platform_impl::MacosCpuDynamicInfo;
+    pub type DiskInfo = platform_impl::MacosDiskInfo;
+    pub type DiskInfoIter<'a> = platform_impl::MacosDiskInfoIter<'a>;
+    pub type DisksInfo = platform_impl::MacosDisksInfo;
+    pub type FanInfo = platform_impl::MacosFanInfo;
+    pub type FanInfoIter<'a> = platform_impl::MacosFanInfoIter<'a>;
+    pub type FansInfo = platform_impl::MacosFansInfo;
+    pub type CpuInfo = platform_impl::MacosCpuInfo;
+    pub type GpuStaticInfo = platform_impl::MacosGpuStaticInfo;
+    pub type GpuDynamicInfo = platform_impl::MacosGpuDynamicInfo;
+    pub type GpuInfo = platform_impl::MacosGpuInfo;
+    pub type Service = platform_impl::MacosService;
+    pub type Services<'a> = platform_impl::MacosServices<'a>;
+    pub type ServiceController<'a> = platform_impl::MacosServiceController<'a>;
+    pub type ServicesError = platform_impl::MacosServicesError;
+    pub type PlatformUtilities = platform_impl::MacosPlatformUtilities;
 }
 
 mod apps;

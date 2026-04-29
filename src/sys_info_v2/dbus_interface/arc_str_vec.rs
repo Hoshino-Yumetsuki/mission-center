@@ -20,6 +20,7 @@
 
 use std::sync::Arc;
 
+#[cfg(target_os = "linux")]
 use dbus::{arg::*, strings::*};
 
 pub struct ArcStrVec(Vec<Arc<str>>);
@@ -36,6 +37,7 @@ impl From<ArcStrVec> for Vec<Arc<str>> {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for ArcStrVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
@@ -44,6 +46,7 @@ impl Arg for ArcStrVec {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl ReadAll for ArcStrVec {
     fn read(i: &mut Iter) -> Result<Self, TypeMismatchError> {
         i.get().ok_or(super::TypeMismatchError::new(
@@ -54,6 +57,7 @@ impl ReadAll for ArcStrVec {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl<'a> Get<'a> for ArcStrVec {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
@@ -88,5 +92,13 @@ impl<'a> Get<'a> for ArcStrVec {
         }
 
         Some(this.into())
+    }
+}
+
+#[cfg(target_os = "macos")]
+impl<'de> serde::Deserialize<'de> for ArcStrVec {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let v = Vec::<String>::deserialize(deserializer)?;
+        Ok(ArcStrVec(v.into_iter().map(|s| Arc::from(s.as_str())).collect()))
     }
 }

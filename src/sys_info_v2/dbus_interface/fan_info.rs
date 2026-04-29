@@ -17,7 +17,10 @@
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
+
+#[cfg(target_os = "linux")]
 use dbus::arg::{Arg, ArgType, Get, Iter, ReadAll, RefArg, TypeMismatchError};
+#[cfg(target_os = "linux")]
 use dbus::Signature;
 use std::sync::Arc;
 
@@ -88,6 +91,7 @@ impl From<FanInfoVec> for Vec<FanInfo> {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for FanInfoVec {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
@@ -96,6 +100,7 @@ impl Arg for FanInfoVec {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl ReadAll for FanInfoVec {
     fn read(i: &mut Iter) -> Result<Self, TypeMismatchError> {
         i.get().ok_or(super::TypeMismatchError::new(
@@ -106,6 +111,7 @@ impl ReadAll for FanInfoVec {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl<'a> Get<'a> for FanInfoVec {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
@@ -320,5 +326,26 @@ impl<'a> Get<'a> for FanInfoVec {
         }
 
         Some(FanInfoVec(result))
+    }
+}
+
+#[cfg(target_os = "macos")]
+impl<'de> serde::Deserialize<'de> for FanInfoVec {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let arr = Vec::<serde_json::Value>::deserialize(deserializer)?;
+        let mut result = vec![];
+        for v in arr {
+            let mut this = FanInfo::default();
+            if let Some(s) = v.get("fan_label").and_then(|x| x.as_str()) { this.fan_label = Arc::from(s); }
+            if let Some(s) = v.get("temp_name").and_then(|x| x.as_str()) { this.temp_name = Arc::from(s); }
+            if let Some(n) = v.get("temp_amount").and_then(|x| x.as_i64()) { this.temp_amount = n; }
+            if let Some(n) = v.get("rpm").and_then(|x| x.as_u64()) { this.rpm = n; }
+            if let Some(f) = v.get("percent_vroomimg").and_then(|x| x.as_f64()) { this.percent_vroomimg = f as f32; }
+            if let Some(n) = v.get("fan_index").and_then(|x| x.as_u64()) { this.fan_index = n; }
+            if let Some(n) = v.get("hwmon_index").and_then(|x| x.as_u64()) { this.hwmon_index = n; }
+            if let Some(n) = v.get("max_speed").and_then(|x| x.as_u64()) { this.max_speed = n; }
+            result.push(this);
+        }
+        Ok(FanInfoVec(result))
     }
 }

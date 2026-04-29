@@ -20,6 +20,7 @@
 
 use std::{collections::HashMap, sync::Arc};
 
+#[cfg(target_os = "linux")]
 use dbus::{arg::*, strings::*};
 
 #[derive(Debug, Clone)]
@@ -31,6 +32,7 @@ pub struct App {
     pub pids: Vec<u32>,
 }
 
+#[cfg(target_os = "linux")]
 impl From<&dyn RefArg> for App {
     fn from(value: &dyn RefArg) -> Self {
         use gtk::glib::g_critical;
@@ -192,6 +194,7 @@ impl From<AppMap> for HashMap<Arc<str>, App> {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for AppMap {
     const ARG_TYPE: ArgType = ArgType::Array;
 
@@ -200,6 +203,7 @@ impl Arg for AppMap {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl ReadAll for AppMap {
     fn read(i: &mut Iter) -> Result<Self, TypeMismatchError> {
         i.get().ok_or(super::TypeMismatchError::new(
@@ -210,6 +214,7 @@ impl ReadAll for AppMap {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl<'a> Get<'a> for AppMap {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
@@ -246,5 +251,24 @@ impl<'a> Get<'a> for AppMap {
         }
 
         Some(this.into())
+    }
+}
+
+#[cfg(target_os = "macos")]
+impl<'de> serde::Deserialize<'de> for AppMap {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let arr = Vec::<serde_json::Value>::deserialize(deserializer)?;
+        let mut map = HashMap::new();
+        for v in arr {
+            let name: Arc<str> = v.get("name").and_then(|x| x.as_str()).map(Arc::from).unwrap_or_else(|| Arc::from(""));
+            if name.is_empty() { continue; }
+            let icon = v.get("icon").and_then(|x| x.as_str()).filter(|s| !s.is_empty()).map(Arc::from);
+            let id: Arc<str> = v.get("id").and_then(|x| x.as_str()).map(Arc::from).unwrap_or_else(|| Arc::from(""));
+            let command: Arc<str> = v.get("command").and_then(|x| x.as_str()).map(Arc::from).unwrap_or_else(|| Arc::from(""));
+            let pids: Vec<u32> = v.get("pids").and_then(|x| x.as_array()).map(|a| a.iter().filter_map(|x| x.as_u64()).map(|x| x as u32).collect()).unwrap_or_default();
+            let app = App { name, icon, id: id.clone(), command, pids };
+            map.insert(id, app);
+        }
+        Ok(AppMap(map))
     }
 }

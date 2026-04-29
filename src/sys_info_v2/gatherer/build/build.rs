@@ -175,5 +175,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         build_nvtop(&dirs[0])?;
     }
 
+    #[cfg(target_os = "macos")]
+    {
+        let _ = dirs;
+        println!("cargo:rustc-link-lib=framework=IOKit");
+        println!("cargo:rustc-link-lib=framework=CoreFoundation");
+        println!("cargo:rustc-link-lib=framework=Metal");
+        println!("cargo:rustc-link-lib=framework=Foundation");
+    }
+
     Ok(())
 }

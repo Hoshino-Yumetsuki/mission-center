@@ -19,18 +19,27 @@
  */
 
 use std::num::NonZeroU32;
-use std::{cell::RefCell, collections::HashMap, rc::Rc, sync::Arc, time::Duration};
+use std::{collections::HashMap, sync::Arc};
 
+use gtk::glib::g_critical;
+
+pub use super::dbus_interface::*;
+
+#[cfg(target_os = "linux")]
+use std::{cell::RefCell, rc::Rc, time::Duration};
+
+#[cfg(target_os = "linux")]
 use dbus::blocking::{
     stdintf::{org_freedesktop_dbus::Peer, org_freedesktop_dbus::Properties},
     LocalConnection, Proxy,
 };
-use gtk::glib::g_critical;
 
-pub use super::dbus_interface::*;
+#[cfg(target_os = "linux")]
 use super::{FLATPAK_APP_PATH, IS_FLATPAK};
+#[cfg(target_os = "linux")]
 use crate::show_error_dialog_and_exit;
 
+#[cfg(target_os = "linux")]
 macro_rules! dbus_call {
     ($self: ident, $method: tt, $dbus_method_name: literal $(,$args:ident)*) => {{
         use gtk::glib::g_critical;
@@ -87,6 +96,7 @@ macro_rules! dbus_call {
     }};
 }
 
+#[cfg(target_os = "linux")]
 pub(crate) struct Gatherer {
     #[allow(dead_code)]
     connection: Rc<LocalConnection>,
@@ -95,12 +105,14 @@ pub(crate) struct Gatherer {
     child: RefCell<Option<std::process::Child>>,
 }
 
+#[cfg(target_os = "linux")]
 impl Drop for Gatherer {
     fn drop(&mut self) {
         self.stop();
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Gatherer {
     pub fn new() -> Self {
         let connection = Rc::new(LocalConnection::new_session().unwrap_or_else(|e| {
@@ -167,7 +179,6 @@ impl Gatherer {
         const START_WAIT_TIME_MS: u64 = 300;
         const RETRY_COUNT: i32 = 50;
 
-        // Let the child process start up
         for i in 0..RETRY_COUNT {
             std::thread::sleep(Duration::from_millis(START_WAIT_TIME_MS / 2));
             match self.proxy.ping() {
@@ -190,7 +201,6 @@ impl Gatherer {
     pub fn stop(&self) {
         let child = self.child.borrow_mut().take();
         if let Some(mut child) = child {
-            // Try to get the child to wake up in case it's stuck
             #[cfg(target_family = "unix")]
             unsafe {
                 libc::kill(child.id() as _, libc::SIGCONT);
@@ -201,7 +211,6 @@ impl Gatherer {
                 match child.try_wait() {
                     Ok(Some(_)) => return,
                     Ok(None) => {
-                        // Wait a bit and try again, the child process might just be slow to stop
                         std::thread::sleep(Duration::from_millis(20));
                         continue;
                     }
@@ -295,6 +304,7 @@ impl Gatherer {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Gatherer {
     pub fn set_refresh_interval(&self, interval: u64) {
         if let Err(e) = self
@@ -394,6 +404,233 @@ impl Gatherer {
     }
 }
 
+#[cfg(target_os = "macos")]
+pub(crate) struct Gatherer {
+    proxy: MacosGathererProxy,
+    child: std::cell::RefCell<Option<std::process::Child>>,
+}
+
+#[cfg(target_os = "macos")]
+impl Drop for Gatherer {
+    fn drop(&mut self) {
+        self.stop();
+    }
+}
+
+#[cfg(target_os = "macos")]
+impl Gatherer {
+    pub fn new() -> Self {
+        let socket_path = std::env::var("MC_GATHERER_SOCKET")
+            .unwrap_or_else(|_| "/tmp/missioncenter-gatherer.sock".to_owned());
+        Self {
+            proxy: MacosGathererProxy::new(socket_path),
+            child: std::cell::RefCell::new(None),
+        }
+    }
+
+    pub fn start(&self) {
+        let socket_path = self.proxy.socket_path.clone();
+
+        let _ = std::fs::remove_file(&socket_path);
+
+        let mut cmd = std::process::Command::new("missioncenter-gatherer");
+        cmd.env("MC_GATHERER_SOCKET", &socket_path);
+        cmd.stdout(std::process::Stdio::inherit())
+            .stderr(std::process::Stdio::inherit());
+
+        let child = match cmd.spawn() {
+            Ok(c) => c,
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter::Gatherer",
+                    "Failed to spawn Gatherer process: {}",
+                    e
+                );
+                return;
+            }
+        };
+        self.child.borrow_mut().replace(child);
+
+        for _ in 0..100 {
+            std::thread::sleep(std::time::Duration::from_millis(50));
+            if std::path::Path::new(&socket_path).exists() {
+                return;
+            }
+        }
+
+        g_critical!(
+            "MissionCenter::Gatherer",
+            "Gatherer socket did not appear at {}",
+            socket_path
+        );
+    }
+
+    pub fn stop(&self) {
+        let child = self.child.borrow_mut().take();
+        if let Some(mut child) = child {
+            unsafe { libc::kill(child.id() as _, libc::SIGCONT); }
+            let _ = child.kill();
+            for _ in 0..2 {
+                match child.try_wait() {
+                    Ok(Some(_)) => return,
+                    Ok(None) => { std::thread::sleep(std::time::Duration::from_millis(20)); }
+                    Err(e) => {
+                        g_critical!("MissionCenter::Gatherer", "Failed to wait for Gatherer process to stop: {}", e);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    fn call_proxy<T>(&self, method: &str, arg: Option<&str>) -> T
+    where
+        T: for<'de> serde::Deserialize<'de> + Default,
+    {
+        match self.proxy.call(method, arg) {
+            Ok(v) => v,
+            Err(e) => {
+                g_critical!("MissionCenter::Gatherer", "Call to '{}' failed: {}", method, e);
+                T::default()
+            }
+        }
+    }
+
+    pub fn set_refresh_interval(&self, _interval: u64) {}
+
+    pub fn set_core_count_affects_percentages(&self, _v: bool) {}
+
+    pub fn cpu_static_info(&self) -> CpuStaticInfo {
+        self.call_proxy("GetCPUStaticInfo", None)
+    }
+
+    pub fn cpu_dynamic_info(&self) -> CpuDynamicInfo {
+        self.call_proxy("GetCPUDynamicInfo", None)
+    }
+
+    pub fn disks_info(&self) -> Vec<DiskInfo> {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        match self.proxy.get_disks_info() {
+            Ok(v) => v,
+            Err(e) => { g_critical!("MissionCenter::Gatherer", "GetDisksInfo failed: {}", e); vec![] }
+        }
+    }
+
+    pub fn fans_info(&self) -> Vec<FanInfo> {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        match self.proxy.get_fans_info() {
+            Ok(v) => v,
+            Err(e) => { g_critical!("MissionCenter::Gatherer", "GetFansInfo failed: {}", e); vec![] }
+        }
+    }
+
+    #[allow(unused)]
+    pub fn gpu_list(&self) -> Vec<Arc<str>> {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        match self.proxy.get_gpu_list() {
+            Ok(v) => v,
+            Err(e) => { g_critical!("MissionCenter::Gatherer", "GetGPUList failed: {}", e); vec![] }
+        }
+    }
+
+    pub fn gpu_static_info(&self) -> Vec<GpuStaticInfo> {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        match self.proxy.get_gpu_static_info() {
+            Ok(v) => v,
+            Err(e) => { g_critical!("MissionCenter::Gatherer", "GetGPUStaticInfo failed: {}", e); vec![] }
+        }
+    }
+
+    pub fn gpu_dynamic_info(&self) -> Vec<GpuDynamicInfo> {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        match self.proxy.get_gpu_dynamic_info() {
+            Ok(v) => v,
+            Err(e) => { g_critical!("MissionCenter::Gatherer", "GetGPUDynamicInfo failed: {}", e); vec![] }
+        }
+    }
+
+    pub fn processes(&self) -> HashMap<u32, Process> {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        match self.proxy.get_processes() {
+            Ok(v) => v,
+            Err(e) => { g_critical!("MissionCenter::Gatherer", "GetProcesses failed: {}", e); HashMap::new() }
+        }
+    }
+
+    pub fn apps(&self) -> HashMap<Arc<str>, App> {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        match self.proxy.get_apps() {
+            Ok(v) => v,
+            Err(e) => { g_critical!("MissionCenter::Gatherer", "GetApps failed: {}", e); HashMap::new() }
+        }
+    }
+
+    pub fn services(&self) -> HashMap<Arc<str>, Service> {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        match self.proxy.get_services() {
+            Ok(v) => v,
+            Err(e) => { g_critical!("MissionCenter::Gatherer", "GetServices failed: {}", e); HashMap::new() }
+        }
+    }
+
+    pub fn terminate_process(&self, pid: u32) {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        if let Err(e) = self.proxy.terminate_process(pid) {
+            g_critical!("MissionCenter::Gatherer", "TerminateProcess failed: {}", e);
+        }
+    }
+
+    pub fn kill_process(&self, pid: u32) {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        if let Err(e) = self.proxy.kill_process(pid) {
+            g_critical!("MissionCenter::Gatherer", "KillProcess failed: {}", e);
+        }
+    }
+
+    pub fn start_service(&self, service_name: &str) {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        if let Err(e) = self.proxy.start_service(service_name) {
+            g_critical!("MissionCenter::Gatherer", "StartService failed: {}", e);
+        }
+    }
+
+    pub fn stop_service(&self, service_name: &str) {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        if let Err(e) = self.proxy.stop_service(service_name) {
+            g_critical!("MissionCenter::Gatherer", "StopService failed: {}", e);
+        }
+    }
+
+    pub fn restart_service(&self, service_name: &str) {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        if let Err(e) = self.proxy.restart_service(service_name) {
+            g_critical!("MissionCenter::Gatherer", "RestartService failed: {}", e);
+        }
+    }
+
+    pub fn enable_service(&self, service_name: &str) {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        if let Err(e) = self.proxy.enable_service(service_name) {
+            g_critical!("MissionCenter::Gatherer", "EnableService failed: {}", e);
+        }
+    }
+
+    pub fn disable_service(&self, service_name: &str) {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        if let Err(e) = self.proxy.disable_service(service_name) {
+            g_critical!("MissionCenter::Gatherer", "DisableService failed: {}", e);
+        }
+    }
+
+    pub fn get_service_logs(&self, service_name: &str, pid: Option<NonZeroU32>) -> Arc<str> {
+        use super::dbus_interface::Gatherer as GathererTrait;
+        match self.proxy.get_service_logs(service_name, pid) {
+            Ok(v) => v,
+            Err(e) => { g_critical!("MissionCenter::Gatherer", "GetServiceLogs failed: {}", e); Arc::from("") }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -401,14 +638,14 @@ mod tests {
     #[test]
     fn test_gatherer_new() {
         let gatherer = Gatherer::new();
-        assert!(gatherer.child.unwrap_or_else(|e| e.into_inner()).is_none());
+        assert!(gatherer.child.borrow().is_none());
     }
 
     #[test]
     fn test_gatherer_start() {
         let gatherer = Gatherer::new();
         let _ = gatherer.start();
-        assert!(gatherer.child.unwrap_or_else(|e| e.into_inner()).is_some());
+        assert!(gatherer.child.borrow().is_some());
     }
 
     #[test]

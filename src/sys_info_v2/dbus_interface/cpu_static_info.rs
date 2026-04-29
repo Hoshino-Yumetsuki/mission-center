@@ -20,6 +20,7 @@
 
 use std::sync::Arc;
 
+#[cfg(target_os = "linux")]
 use dbus::{arg::*, strings::*};
 
 #[derive(Debug, Clone)]
@@ -53,6 +54,7 @@ impl Default for CpuStaticInfo {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl Arg for CpuStaticInfo {
     const ARG_TYPE: ArgType = ArgType::Struct;
 
@@ -61,6 +63,7 @@ impl Arg for CpuStaticInfo {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl ReadAll for CpuStaticInfo {
     fn read(i: &mut Iter) -> Result<Self, TypeMismatchError> {
         i.get().ok_or(super::TypeMismatchError::new(
@@ -71,6 +74,7 @@ impl ReadAll for CpuStaticInfo {
     }
 }
 
+#[cfg(target_os = "linux")]
 impl<'a> Get<'a> for CpuStaticInfo {
     fn get(i: &mut Iter<'a>) -> Option<Self> {
         use gtk::glib::g_critical;
@@ -354,5 +358,44 @@ impl<'a> Get<'a> for CpuStaticInfo {
         };
 
         Some(this)
+    }
+}
+
+#[cfg(target_os = "macos")]
+impl<'de> serde::Deserialize<'de> for CpuStaticInfo {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let v = serde_json::Value::deserialize(deserializer)?;
+        let mut this = Self::default();
+        if let Some(s) = v.get("name").and_then(|x| x.as_str()) {
+            this.name = Arc::from(s);
+        }
+        if let Some(n) = v.get("logical_cpu_count").and_then(|x| x.as_u64()) {
+            this.logical_cpu_count = n as u32;
+        }
+        if let Some(n) = v.get("socket_count").and_then(|x| x.as_u64()) {
+            this.socket_count = if n == 0 { None } else { Some(n as u8) };
+        }
+        if let Some(n) = v.get("base_frequency_khz").and_then(|x| x.as_u64()) {
+            this.base_frequency_khz = if n == 0 { None } else { Some(n) };
+        }
+        if let Some(s) = v.get("virtualization_technology").and_then(|x| x.as_str()) {
+            this.virtualization_technology = if s.is_empty() { None } else { Some(Arc::from(s)) };
+        }
+        if let Some(b) = v.get("is_virtual_machine").and_then(|x| x.as_bool()) {
+            this.is_virtual_machine = Some(b);
+        }
+        if let Some(n) = v.get("l1_combined_cache").and_then(|x| x.as_u64()) {
+            this.l1_combined_cache = if n == 0 { None } else { Some(n) };
+        }
+        if let Some(n) = v.get("l2_cache").and_then(|x| x.as_u64()) {
+            this.l2_cache = if n == 0 { None } else { Some(n) };
+        }
+        if let Some(n) = v.get("l3_cache").and_then(|x| x.as_u64()) {
+            this.l3_cache = if n == 0 { None } else { Some(n) };
+        }
+        if let Some(n) = v.get("l4_cache").and_then(|x| x.as_u64()) {
+            this.l4_cache = if n == 0 { None } else { Some(n) };
+        }
+        Ok(this)
     }
 }
