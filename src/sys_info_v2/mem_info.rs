@@ -351,8 +351,13 @@ impl MemInfo {
         let mut pages_free: usize = 0;
         let mut pages_active: usize = 0;
         let mut pages_inactive: usize = 0;
-        let mut _pages_wired: usize = 0;
+        let mut pages_wired: usize = 0;
         let mut pages_purgeable: usize = 0;
+        let mut pages_speculative: usize = 0;
+        let mut pages_anonymous: usize = 0;
+        let mut pages_file_backed: usize = 0;
+        let mut pages_compressor: usize = 0;
+        let mut pages_stored_in_compressor: usize = 0;
         let mut swap_used: usize = 0;
         let mut swap_total: usize = 0;
 
@@ -375,11 +380,16 @@ impl MemInfo {
                 .parse::<usize>()
                 .unwrap_or(0);
             match key {
-                "Pages free" => pages_free = val,
-                "Pages active" => pages_active = val,
-                "Pages inactive" => pages_inactive = val,
-                "Pages wired down" => _pages_wired = val,
-                "Pages purgeable" => pages_purgeable = val,
+                "Pages free"                    => pages_free = val,
+                "Pages active"                  => pages_active = val,
+                "Pages inactive"                => pages_inactive = val,
+                "Pages wired down"              => pages_wired = val,
+                "Pages purgeable"               => pages_purgeable = val,
+                "Pages speculative"             => pages_speculative = val,
+                "Anonymous pages"               => pages_anonymous = val,
+                "File-backed pages"             => pages_file_backed = val,
+                "Pages occupied by compressor"  => pages_compressor = val,
+                "Pages stored in compressor"    => pages_stored_in_compressor = val,
                 _ => {}
             }
         }
@@ -404,14 +414,22 @@ impl MemInfo {
             }
         }
 
-        this.mem_free = pages_free * page_size;
-        this.active = pages_active * page_size;
-        this.inactive = pages_inactive * page_size;
-        this.cached = pages_inactive * page_size;
-        this.mem_available = (pages_free + pages_inactive + pages_purgeable) * page_size;
-        this.committed = this.mem_total.saturating_sub(this.mem_available);
-        this.swap_total = swap_total;
-        this.swap_free = swap_total.saturating_sub(swap_used);
+        let in_use = (pages_anonymous + pages_wired + pages_compressor) * page_size;
+        let cached = (pages_file_backed + pages_purgeable) * page_size;
+        let real_free = pages_free.saturating_sub(pages_speculative);
+        let available = (real_free + pages_inactive) * page_size;
+        let committed = (pages_anonymous + pages_wired + pages_stored_in_compressor) * page_size
+            + swap_used;
+
+        this.mem_free      = real_free * page_size;
+        this.active        = in_use;
+        this.inactive      = pages_inactive * page_size;
+        this.cached        = cached;
+        this.mem_available = available;
+        this.committed     = committed;
+        this.dirty         = 0;
+        this.swap_total    = swap_total;
+        this.swap_free     = swap_total.saturating_sub(swap_used);
 
         Some(this)
     }

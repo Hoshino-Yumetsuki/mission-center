@@ -370,13 +370,18 @@ mod imp {
 
                 this.mem_composition.update_memory_information(mem_info);
 
-                let used = crate::to_human_readable(used as _, 1024.);
+                #[cfg(target_os = "macos")]
+                let in_use_val = mem_info.active;
+                #[cfg(not(target_os = "macos"))]
+                let in_use_val = used;
+
+                let used_hr = crate::to_human_readable(in_use_val as _, 1024.);
                 if let Some(iu) = this.in_use.get() {
                     iu.set_text(&format!(
                         "{:.2} {}{}B",
-                        used.0,
-                        used.1,
-                        if used.1.is_empty() { "" } else { "i" }
+                        used_hr.0,
+                        used_hr.1,
+                        if used_hr.1.is_empty() { "" } else { "i" }
                     ));
                 }
 
@@ -440,9 +445,9 @@ mod imp {
                 if let Some(l) = this.tt_label_in_use.get() {
                     l.set_text(&format!(
                         "{:.2} {}{}B",
-                        used.0,
-                        used.1,
-                        if used.1.is_empty() { "" } else { "i" }
+                        used_hr.0,
+                        used_hr.1,
+                        if used_hr.1.is_empty() { "" } else { "i" }
                     ))
                 }
 
