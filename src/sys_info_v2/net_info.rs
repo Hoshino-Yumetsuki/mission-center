@@ -1108,6 +1108,8 @@ impl NetInfo {
 #[cfg(target_os = "macos")]
 pub struct NetInfo {
     prev: std::collections::HashMap<String, (u64, u64, std::time::Instant)>,
+    wifi_cache: std::collections::HashMap<String, WirelessInfo>,
+    wifi_cache_ts: Option<std::time::Instant>,
 }
 
 #[cfg(target_os = "macos")]
@@ -1118,7 +1120,11 @@ unsafe impl Sync for NetInfo {}
 #[cfg(target_os = "macos")]
 impl NetInfo {
     pub fn new() -> Option<Self> {
-        Some(Self { prev: std::collections::HashMap::new() })
+        Some(Self {
+            prev: std::collections::HashMap::new(),
+            wifi_cache: std::collections::HashMap::new(),
+            wifi_cache_ts: None,
+        })
     }
 
     pub fn load_devices(&mut self) -> Vec<NetworkDevice> {
@@ -1152,6 +1158,24 @@ impl NetInfo {
                 NetDeviceType::Wired
             };
 
+            if kind == NetDeviceType::Wireless {
+                let stale = self.wifi_cache_ts
+                    .map(|ts| ts.elapsed().as_secs() >= 5)
+                    .unwrap_or(true);
+                if stale {
+                    self.wifi_cache = Self::load_wifi_cache();
+                    self.wifi_cache_ts = Some(std::time::Instant::now());
+                }
+            }
+
+            let wireless_info = if kind == NetDeviceType::Wireless {
+                self.wifi_cache.get(if_name.as_str()).cloned()
+            } else {
+                None
+            };
+
+            let (ip4_address, ip6_address) = if_addresses(if_name.as_str());
+
             devices.push(NetworkDevice {
                 descriptor: NetworkDeviceDescriptor {
                     kind,
@@ -1160,10 +1184,10 @@ impl NetInfo {
                 },
                 address: NetworkAddress {
                     hw_address: *hw_addr,
-                    ip4_address: None,
-                    ip6_address: None,
+                    ip4_address,
+                    ip6_address,
                 },
-                wireless_info: None,
+                wireless_info,
                 send_bps,
                 sent_bytes: tx,
                 recv_bps,
@@ -1224,6 +1248,141 @@ impl NetInfo {
         }
         map
     }
+
+    fn load_wifi_cache() -> std::collections::HashMap<String, WirelessInfo> {
+        let mut result = std::collections::HashMap::new();
+
+        let sp_out = std::process::Command::new("/usr/sbin/system_profiler")
+            .args(["SPAirPortDataType"])
+            .output();
+        let text = match sp_out {
+            Ok(o) if o.status.success() => String::from_utf8_lossy(&o.stdout).into_owned(),
+            _ => return result,
+        };
+
+        let mut current_iface: Option<String> = None;
+        let mut in_current_net = false;
+        let mut ssid: Option<String> = None;
+        let mut channel_str: Option<String> = None;
+        let mut signal_noise: Option<String> = None;
+        let mut tx_rate: Option<u32> = None;
+
+        let flush = |iface: &Option<String>,
+                     ssid: &mut Option<String>,
+                     channel_str: &mut Option<String>,
+                     signal_noise: &mut Option<String>,
+                     tx_rate: &mut Option<u32>,
+                     result: &mut std::collections::HashMap<String, WirelessInfo>| {
+            if let Some(ref name) = iface {
+                let frequency_mhz = channel_str.as_deref().and_then(parse_channel_to_mhz);
+                let signal_strength_percent = signal_noise.as_deref().and_then(parse_signal_percent);
+                let bitrate_kbps = tx_rate.map(|r| r * 1000);
+                result.insert(name.clone(), WirelessInfo {
+                    ssid: ssid.take(),
+                    frequency_mhz,
+                    bitrate_kbps,
+                    signal_strength_percent,
+                });
+            }
+            *channel_str = None;
+            *signal_noise = None;
+            *tx_rate = None;
+        };
+
+        for line in text.lines() {
+            let trimmed = line.trim();
+            let indent = line.len() - line.trim_start().len();
+
+            if indent == 8 && trimmed.ends_with(':') && !trimmed.starts_with('<') {
+                flush(&current_iface, &mut ssid, &mut channel_str, &mut signal_noise, &mut tx_rate, &mut result);
+                current_iface = Some(trimmed.trim_end_matches(':').to_string());
+                in_current_net = false;
+                ssid = None;
+            } else if trimmed == "Current Network Information:" {
+                in_current_net = true;
+            } else if trimmed == "Other Local Wi-Fi Networks:" {
+                in_current_net = false;
+            } else if in_current_net {
+                if indent == 12 && trimmed.ends_with(':') && !trimmed.starts_with('<') {
+                    ssid = Some(trimmed.trim_end_matches(':').to_string());
+                } else if let Some(v) = trimmed.strip_prefix("Channel: ") {
+                    channel_str = Some(v.to_string());
+                } else if let Some(v) = trimmed.strip_prefix("Signal / Noise: ") {
+                    signal_noise = Some(v.to_string());
+                } else if let Some(v) = trimmed.strip_prefix("Transmit Rate: ") {
+                    tx_rate = v.parse().ok();
+                }
+            }
+        }
+        flush(&current_iface, &mut ssid, &mut channel_str, &mut signal_noise, &mut tx_rate, &mut result);
+
+        for (if_name, info) in result.iter_mut() {
+            if info.ssid.is_none() {
+                let out = std::process::Command::new("/usr/sbin/ipconfig")
+                    .args(["getsummary", if_name])
+                    .output();
+                if let Ok(o) = out {
+                    let s = String::from_utf8_lossy(&o.stdout);
+                    for line in s.lines() {
+                        let t = line.trim();
+                        if let Some(v) = t.strip_prefix("SSID : ") {
+                            let v = v.trim();
+                            if !v.is_empty() && v != "<redacted>" {
+                                info.ssid = Some(v.to_string());
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        result
+    }
+}
+
+#[cfg(target_os = "macos")]
+fn if_addresses(if_name: &str) -> (Option<u32>, Option<u128>) {
+    use std::ffi::CString;
+
+    let name_c = match CString::new(if_name) {
+        Ok(c) => c,
+        Err(_) => return (None, None),
+    };
+
+    let mut ip4: Option<u32> = None;
+    let mut ip6: Option<u128> = None;
+
+    unsafe {
+        let mut ifap: *mut libc::ifaddrs = std::ptr::null_mut();
+        if libc::getifaddrs(&mut ifap) != 0 {
+            return (None, None);
+        }
+        let mut cursor = ifap;
+        while !cursor.is_null() {
+            let ifa = &*cursor;
+            if !ifa.ifa_name.is_null() {
+                let ifa_name = std::ffi::CStr::from_ptr(ifa.ifa_name).to_string_lossy();
+                if ifa_name == if_name {
+                    if !ifa.ifa_addr.is_null() {
+                        let family = (*ifa.ifa_addr).sa_family as i32;
+                        if family == libc::AF_INET && ip4.is_none() {
+                            let sin = ifa.ifa_addr as *const libc::sockaddr_in;
+                            ip4 = Some((*sin).sin_addr.s_addr);
+                        } else if family == libc::AF_INET6 && ip6.is_none() {
+                            let sin6 = ifa.ifa_addr as *const libc::sockaddr_in6;
+                            let b = (*sin6).sin6_addr.s6_addr;
+                            ip6 = Some(u128::from_be_bytes(b));
+                        }
+                    }
+                }
+            }
+            cursor = ifa.ifa_next;
+        }
+        libc::freeifaddrs(ifap);
+    }
+
+    (ip4, ip6)
 }
 
 #[cfg(target_os = "macos")]
@@ -1236,4 +1395,32 @@ fn parse_mac_address(s: &str) -> Option<[u8; 6]> {
     } else {
         None
     }
+}
+
+#[cfg(target_os = "macos")]
+fn parse_channel_to_mhz(channel_str: &str) -> Option<u32> {
+    let ch: u32 = channel_str.split_whitespace().next()?.parse().ok()?;
+    if ch >= 1 && ch <= 14 {
+        Some(2407 + ch * 5)
+    } else if ch >= 36 && ch <= 64 {
+        Some(5000 + ch * 5)
+    } else if ch >= 100 && ch <= 177 {
+        Some(5000 + ch * 5)
+    } else {
+        None
+    }
+}
+
+#[cfg(target_os = "macos")]
+fn parse_signal_percent(signal_noise: &str) -> Option<u8> {
+    let rssi: i32 = signal_noise
+        .split('/')
+        .next()?
+        .trim()
+        .trim_end_matches(" dBm")
+        .trim()
+        .parse()
+        .ok()?;
+    let pct = ((rssi + 100).clamp(0, 70) * 100 / 70) as u8;
+    Some(pct)
 }

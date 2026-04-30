@@ -976,6 +976,7 @@ fn handle_ipc_method(cmd: &str, arg: &str) -> Vec<u8> {
                 "capacity": d.capacity(), "formatted": d.formatted(),
                 "system_disk": d.is_system_disk(),
                 "busy_percent": d.busy_percent(),
+                "response_time_ms": d.response_time_ms(),
                 "read_speed": d.read_speed(), "write_speed": d.write_speed()
             })).collect();
             serde_json::to_vec(&disks).unwrap_or_default()

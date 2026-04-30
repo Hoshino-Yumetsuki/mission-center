@@ -55,7 +55,8 @@ impl DiskInfoExt for MacosDiskInfo {
 pub(super) struct DiskStats {
     read_bytes: u64,
     write_bytes: u64,
-    busy_time_ms: u64,
+    busy_time_ns: u64,
+    total_ops: u64,
     timestamp: Option<Instant>,
 }
 
@@ -134,12 +135,19 @@ fn enumerate_disks(
 
         let read_delta = raw.read_bytes.saturating_sub(prev_stats.read_bytes);
         let write_delta = raw.write_bytes.saturating_sub(prev_stats.write_bytes);
-        let busy_delta = raw.busy_time_ms.saturating_sub(prev_stats.busy_time_ms);
+        let busy_delta_ns = raw.busy_time_ns.saturating_sub(prev_stats.busy_time_ns);
+        let ops_delta = raw.read_ops.saturating_add(raw.write_ops)
+            .saturating_sub(prev_stats.total_ops);
 
         let read_speed = (read_delta as f64 / elapsed_secs) as u64;
         let write_speed = (write_delta as f64 / elapsed_secs) as u64;
         let busy_percent =
-            ((busy_delta as f64 / (elapsed_secs * 1000.0)) * 100.0).min(100.0) as f32;
+            ((busy_delta_ns as f64 / (elapsed_secs * 1_000_000_000.0)) * 100.0).min(100.0) as f32;
+        let response_time_ms = if ops_delta > 0 {
+            (busy_delta_ns as f64 / ops_delta as f64 / 1_000_000.0) as f32
+        } else {
+            0.0
+        };
 
         let is_system = system_disk.as_deref() == Some(bsd_name.as_str());
 
@@ -147,7 +155,8 @@ fn enumerate_disks(
             DiskStats {
                 read_bytes: raw.read_bytes,
                 write_bytes: raw.write_bytes,
-                busy_time_ms: raw.busy_time_ms,
+                busy_time_ns: raw.busy_time_ns,
+                total_ops: raw.read_ops.saturating_add(raw.write_ops),
                 timestamp: Some(now),
             },
             MacosDiskInfo {
@@ -158,7 +167,7 @@ fn enumerate_disks(
                 formatted,
                 system_disk: is_system,
                 busy_percent,
-                response_time_ms: 0.0,
+                response_time_ms,
                 read_speed,
                 write_speed,
             },
@@ -241,7 +250,9 @@ fn parse_diskutil_list(plist: &str) -> Vec<String> {
 struct RawDiskStats {
     read_bytes: u64,
     write_bytes: u64,
-    busy_time_ms: u64,
+    busy_time_ns: u64,
+    read_ops: u64,
+    write_ops: u64,
 }
 
 fn read_all_disk_stats() -> std::collections::HashMap<String, RawDiskStats> {
@@ -260,19 +271,25 @@ fn read_all_disk_stats() -> std::collections::HashMap<String, RawDiskStats> {
 fn parse_all_ioreg_disk_stats(text: &str) -> std::collections::HashMap<String, RawDiskStats> {
     let mut map = std::collections::HashMap::new();
     for block in text.split("+-o IOBlockStorageDriver") {
-        if !block.contains("\"Whole\" = Yes") {
-            continue;
-        }
         let bsd = match extract_str_field(block, "BSD Name") {
-            Some(b) if b.starts_with("disk") => b,
+            Some(b) => {
+                let suffix = b.trim_start_matches("disk");
+                if suffix.chars().all(|c| c.is_ascii_digit()) && !suffix.is_empty() {
+                    b
+                } else {
+                    continue;
+                }
+            }
             _ => continue,
         };
         let read_bytes = extract_ioreg_stat(block, "Bytes (Read)").unwrap_or(0);
         let write_bytes = extract_ioreg_stat(block, "Bytes (Write)").unwrap_or(0);
         let total_time_read = extract_ioreg_stat(block, "Total Time (Read)").unwrap_or(0);
         let total_time_write = extract_ioreg_stat(block, "Total Time (Write)").unwrap_or(0);
-        let busy_time_ms = (total_time_read + total_time_write) / 1_000_000;
-        map.insert(bsd, RawDiskStats { read_bytes, write_bytes, busy_time_ms });
+        let busy_time_ns = total_time_read + total_time_write;
+        let read_ops = extract_ioreg_stat(block, "Operations (Read)").unwrap_or(0);
+        let write_ops = extract_ioreg_stat(block, "Operations (Write)").unwrap_or(0);
+        map.insert(bsd, RawDiskStats { read_bytes, write_bytes, busy_time_ns, read_ops, write_ops });
     }
     map
 }

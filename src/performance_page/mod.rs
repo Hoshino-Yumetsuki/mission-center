@@ -967,6 +967,9 @@ mod imp {
             summary.set_widget_name("cpu");
 
             summary.set_heading(i18n("CPU"));
+            #[cfg(target_os = "macos")]
+            summary.set_info1("0%");
+            #[cfg(not(target_os = "macos"))]
             summary.set_info1("0% 0.00 GHz");
             match readings.cpu_dynamic_info.temperature.as_ref() {
                 Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
@@ -1774,12 +1777,15 @@ mod imp {
                             0,
                             readings.cpu_dynamic_info.overall_utilization_percent,
                         );
+                        #[cfg(target_os = "macos")]
+                        summary.set_info1(format!(
+                            "{}%",
+                            readings.cpu_dynamic_info.overall_utilization_percent.round(),
+                        ));
+                        #[cfg(not(target_os = "macos"))]
                         summary.set_info1(format!(
                             "{}% {:.2} GHz",
-                            readings
-                                .cpu_dynamic_info
-                                .overall_utilization_percent
-                                .round(),
+                            readings.cpu_dynamic_info.overall_utilization_percent.round(),
                             readings.cpu_dynamic_info.current_frequency_mhz as f32 / 1024.
                         ));
                         match readings.cpu_dynamic_info.temperature.as_ref() {
@@ -1912,6 +1918,8 @@ mod imp {
                                 let graph_widget = summary.graph_widget();
                                 graph_widget.set_data_points(data_points);
                                 graph_widget.set_smooth_graphs(smooth);
+                                graph_widget.add_data_point(0, send_speed);
+                                graph_widget.add_data_point(1, rec_speed);
                                 let sent_speed = crate::to_human_readable(send_speed, 1024.);
                                 let rect_speeed = crate::to_human_readable(rec_speed, 1024.);
 
