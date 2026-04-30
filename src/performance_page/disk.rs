@@ -270,40 +270,34 @@ mod imp {
                 });
             }
 
-            if disk.ejectable {
-                this.description.set_margin_top(0);
-                this.description.set_spacing(5);
+            this.button_eject.connect_clicked({
+                let this = this.obj().downgrade();
+                move |_| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
 
-                this.button_eject.set_visible(disk.ejectable);
-                this.button_eject.connect_clicked({
-                    let this = this.obj().downgrade();
-                    move |_| {
-                        let Some(this) = this.upgrade() else {
-                            return;
-                        };
-                        let this = this.imp();
+                    let Some(disk_id) = this.raw_disk_id.get() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get disk_id for eject");
+                        return;
+                    };
 
-                        let Some(disk_id) = this.raw_disk_id.get() else {
-                            g_warning!("MissionCenter::Disk", "Failed to get disk_id for eject");
-                            return;
-                        };
+                    let app = app!();
+                    let Ok(magpie) = app.sys_info() else {
+                        g_warning!("MissionCenter::Disk", "Failed to get magpie client");
+                        return;
+                    };
 
-                        let app = app!();
-                        let Ok(magpie) = app.sys_info() else {
-                            g_warning!("MissionCenter::Disk", "Failed to get magpie client");
-                            return;
-                        };
-
-                        match magpie.eject_disk(disk_id) {
-                            Ok(_) => {}
-                            Err(e) => {
-                                let dialog = EjectFailureDialog::new(disk_id.clone(), e);
-                                dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
-                            }
+                    match magpie.eject_disk(disk_id) {
+                        Ok(_) => {}
+                        Err(e) => {
+                            let dialog = EjectFailureDialog::new(disk_id.clone(), e);
+                            dialog.present(Some(this.obj().upcast_ref::<gtk::Widget>()));
                         }
                     }
-                });
-            }
+                }
+            });
 
             if let Some(serial) = disk.serial_number.as_ref().map(|s| s.trim()) {
                 if serial.trim().is_empty() {
@@ -411,6 +405,13 @@ mod imp {
                     disk.tx_bytes_total as f32,
                     &DataType::DriveBytes,
                 ));
+
+            if disk.ejectable {
+                this.description.set_margin_top(0);
+                this.description.set_spacing(5);
+            }
+
+            this.button_eject.set_visible(disk.ejectable);
 
             true
         }
