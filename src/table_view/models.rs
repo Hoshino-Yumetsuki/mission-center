@@ -238,6 +238,7 @@ pub fn update_services(
             .file_path(&service.file_path())
             .user(&service.user.clone().unwrap_or("".to_string()))
             .group(&service.group.clone().unwrap_or("".to_string()))
+            .light_cached_icon(LightCachedIcon::StringPayload(service_icon(&service)))
             .build();
         list.append(&row_model);
 
