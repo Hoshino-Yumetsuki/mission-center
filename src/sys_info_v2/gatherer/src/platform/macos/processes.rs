@@ -147,7 +147,7 @@ impl<'a> ProcessesExt<'a> for MacosProcesses {
 impl MacosProcesses {
     fn refresh_processes(&mut self, now: Instant) {
         let pids = list_pids();
-        let total_mem = self.total_memory_bytes.max(1);
+        let _total_mem = self.total_memory_bytes.max(1);
 
         let mut new_map: HashMap<u32, MacosProcess> = HashMap::with_capacity(pids.len());
 
@@ -178,7 +178,7 @@ impl MacosProcesses {
                 * 100.0)
                 .min(100.0) as f32;
 
-            let mem_usage = (info.resident_bytes as f64 / total_mem as f64 * 100.0) as f32;
+            let mem_usage = info.resident_bytes as f32;
 
             let disk_read_delta = info
                 .disk_read_bytes
@@ -300,7 +300,9 @@ fn read_proc_task_info(pid: u32) -> Option<ProcTaskInfo> {
 
 fn read_proc_name(pid: u32) -> String {
     unsafe {
-        let mut buf = [0u8; libc::MAXCOMLEN + 1];
+        // proc_name requires a buffer larger than MAXCOMLEN+1 (17 bytes) to succeed.
+        // Use 1024 bytes to be safe.
+        let mut buf = [0u8; 1024];
         let ret = libc::proc_name(
             pid as libc::pid_t,
             buf.as_mut_ptr() as *mut libc::c_void,

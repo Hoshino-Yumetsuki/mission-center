@@ -523,7 +523,22 @@ mod imp {
                     (primary_process, primary_pid)
                 };
 
-                let pp = primary_process.cloned().unwrap_or_default();
+                // Aggregate usage stats across ALL pids belonging to this app.
+                // On macOS, an app bundle may have multiple sibling processes (main, helper,
+                // GPU process, etc.) that are not in a parent-child relationship, so we cannot
+                // rely solely on the primary process's merged_usage_stats.
+                let pp = {
+                    use crate::sys_info_v2::ProcessUsageStats;
+                    let mut base = primary_process.cloned().unwrap_or_default();
+                    let mut agg = ProcessUsageStats::default();
+                    for pid in &app.pids {
+                        if let Some(proc) = Self::find_process(&process_tree, *pid) {
+                            agg.merge(&proc.merged_usage_stats);
+                        }
+                    }
+                    base.merged_usage_stats = agg;
+                    base
+                };
                 let row_model = if pos.is_none() {
                     let row_model = RowModelBuilder::new()
                         .name(app.name.as_ref())

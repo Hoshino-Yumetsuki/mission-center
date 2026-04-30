@@ -27,26 +27,23 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) ->
     let now = std::time::Instant::now();
 
     let pids = processes.keys().map(|pid| *pid).collect::<BTreeSet<_>>();
-    let root_pid = match pids.first() {
-        None => return None,
-        Some(pid) => *pid,
-    };
+    if pids.is_empty() {
+        return None;
+    }
 
-    let mut root_process = match processes.get(&root_pid).map_or(None, |p| Some(p.clone())) {
-        None => return None,
-        Some(p) => p,
-    };
+    let mut synthetic_root = Process::default();
+    synthetic_root.pid = 0;
 
     let mut process_tree = BTreeMap::new();
-    process_tree.insert(root_process.pid, 0_usize);
+    process_tree.insert(0_u32, 0_usize);
 
-    let mut children = Vec::with_capacity(pids.len());
+    let mut children = Vec::with_capacity(pids.len() + 1);
     children.push(HashMap::new());
 
     let mut visited = HashSet::new();
-    visited.insert(root_process.pid);
+    visited.insert(0_u32);
 
-    for pid in pids.iter().skip(1).rev() {
+    for pid in pids.iter().rev() {
         if visited.contains(pid) {
             continue;
         }
@@ -60,14 +57,24 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) ->
         let mut parent = process.parent;
         while parent != 0 {
             let parent_process = match processes.get(&parent) {
-                None => break,
+                None => {
+                    let mut index = 0_usize;
+                    while let Some(ancestor) = stack.pop() {
+                        let p = ancestor.clone();
+                        children[index].insert(p.pid, p);
+                        visited.insert(ancestor.pid);
+                        index = children.len();
+                        process_tree.insert(ancestor.pid, index);
+                        children.push(HashMap::new());
+                    }
+                    break;
+                }
                 Some(pp) => pp,
             };
 
             if visited.contains(&parent_process.pid) {
                 let mut index = match process_tree.get(&parent_process.pid) {
                     None => {
-                        // TODO: Fully understand if this could happen, and what to do if it does.
                         g_critical!(
                             "MissionCenter::ProcInfo",
                             "Process {} has been visited, but it's not in the process_tree?",
@@ -103,6 +110,8 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) ->
     ) {
         let pid = process.pid;
 
+        process.merged_usage_stats = process.usage_stats;
+
         let index = match process_tree.get(&pid) {
             Some(index) => *index,
             None => return,
@@ -114,23 +123,19 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) ->
 
         std::mem::swap(&mut process.children, &mut children[index]);
 
-        let mut merged_stats = ProcessUsageStats::default();
         for (_, child) in &mut process.children {
             gather_descendants(child, process_tree, children);
-            merged_stats.merge(&child.merged_usage_stats);
+            process.merged_usage_stats.merge(&child.merged_usage_stats);
         }
-        process.merged_usage_stats.merge(&merged_stats);
     }
 
-    let process = &mut root_process;
+    let process = &mut synthetic_root;
     std::mem::swap(&mut process.children, &mut children[0]);
 
-    let mut merged_stats = ProcessUsageStats::default();
     for (_, child) in &mut process.children {
         gather_descendants(child, &process_tree, &mut children);
-        merged_stats.merge(&child.merged_usage_stats);
+        process.merged_usage_stats.merge(&child.merged_usage_stats);
     }
-    process.merged_usage_stats.merge(&merged_stats);
 
     g_debug!(
         "MissionCenter::ProcInfo",
@@ -140,5 +145,5 @@ pub fn process_hierarchy(processes: &std::collections::HashMap<u32, Process>) ->
         now.elapsed().as_millis()
     );
 
-    Some(root_process)
+    Some(synthetic_root)
 }
