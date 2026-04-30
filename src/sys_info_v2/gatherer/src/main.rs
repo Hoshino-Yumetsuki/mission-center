@@ -1032,8 +1032,8 @@ fn handle_ipc_method(cmd: &str, arg: &str) -> Vec<u8> {
                         "memory_usage": p.usage_stats().memory_usage,
                         "disk_usage": p.usage_stats().disk_usage,
                         "network_usage": 0.0f32,
-                        "gpu_usage": 0.0f32,
-                        "gpu_memory_usage": 0.0f32
+                        "gpu_usage": p.usage_stats().gpu_usage,
+                        "gpu_memory_usage": p.usage_stats().gpu_memory_usage
                     }
                 })
             }).collect();

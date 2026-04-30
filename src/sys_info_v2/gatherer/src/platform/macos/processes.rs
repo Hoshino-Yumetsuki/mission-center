@@ -163,7 +163,13 @@ impl MacosProcesses {
             let parent = read_proc_ppid(pid);
 
             let prev = self.processes.get(&pid);
-            let prev_stats = prev.map(|p| p.raw_stats).unwrap_or_default();
+            let prev_stats = prev.map(|p| p.raw_stats).unwrap_or_else(|| RawStats {
+                user_time_us: info.user_time_us,
+                sys_time_us: info.sys_time_us,
+                disk_read_bytes: info.disk_read_bytes,
+                disk_write_bytes: info.disk_write_bytes,
+                timestamp: now,
+            });
 
             let elapsed_secs = now
                 .duration_since(prev_stats.timestamp)
@@ -172,11 +178,13 @@ impl MacosProcesses {
 
             let user_delta = info.user_time_us.saturating_sub(prev_stats.user_time_us);
             let sys_delta = info.sys_time_us.saturating_sub(prev_stats.sys_time_us);
-            let cpu_usage = ((user_delta + sys_delta) as f64
+            // Emit per-core percentage (0–100 per core, can exceed 100 for multi-threaded).
+            // The UI normalizes via max_cpu_usage = logical_cpu_count * 100.
+            // Do NOT divide by CPU_COUNT here — that would double-normalize.
+            let cpu_usage = (((user_delta + sys_delta) as f64
                 / (elapsed_secs * 1_000_000.0)
-                / *super::CPU_COUNT as f64
-                * 100.0)
-                .min(100.0) as f32;
+                * 100.0) as f32)
+                .min((*super::CPU_COUNT as f32) * 100.0);
 
             let mem_usage = info.resident_bytes as f32;
 

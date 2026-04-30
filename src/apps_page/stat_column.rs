@@ -121,8 +121,12 @@ mod imp {
 
             let value = self.value.get();
             if prop_unit == "%" {
-                self.label
-                    .set_text(&format!("{}{}", value.round(), prop_unit));
+                let text = if value < 1.0 {
+                    format!("{:.1}{}", value, prop_unit)
+                } else {
+                    format!("{}{}", value.round(), prop_unit)
+                };
+                self.label.set_text(&text);
             } else if prop_unit == "bps" {
                 let (value, unit, dec_to_display) = crate::to_human_readable(value, 1024.);
                 self.label.set_text(&format!(
