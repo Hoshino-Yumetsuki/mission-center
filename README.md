@@ -2,6 +2,8 @@
 
 # Mission Center
 
+*Fork from https://github.com/Slimbook-Team/mission-center*
+
 Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](https://missioncenter.io/)
 
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu-multi.png)
