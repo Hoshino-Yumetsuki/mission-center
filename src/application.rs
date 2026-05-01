@@ -137,6 +137,10 @@ mod imp {
                 window
                     .set_default_size(settings.int("window-width"), settings.int("window-height"));
 
+                window.connect_close_request(|_| {
+                    std::process::exit(0);
+                });
+
                 sys_info.set_core_count_affects_percentages(
                     settings.boolean("apps-page-core-count-affects-percentages"),
                 );
@@ -204,6 +208,8 @@ impl MissionCenterApplication {
             .property("application-id", application_id)
             .property("flags", flags)
             .build();
+
+        this.set_resource_base_path(Some("/io/missioncenter/MissionCenter"));
 
         g_message!(
             "MissionCenter::Application",
