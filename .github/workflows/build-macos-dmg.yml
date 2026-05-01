@@ -4,19 +4,19 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-macos-dmg:
-    runs-on: macos-14  # Apple Silicon (M1)
+    runs-on: macos-15
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           submodules: recursive
 
-      # ── Homebrew dependencies ──────────────────────────────────────────────
-      # External dependencies that must be installed on the target machine are
-      # listed in scripts/macos/DEPENDENCIES.md
       - name: Install Homebrew dependencies
         run: |
           brew update
@@ -31,19 +31,16 @@ jobs:
             librsvg \
             create-dmg
 
-      # ── Rust toolchain ─────────────────────────────────────────────────────
       - name: Set up Rust toolchain
         run: |
           rustup target add aarch64-apple-darwin
           rustup target add x86_64-apple-darwin
 
-      # ── Build gatherer (helper binary) ────────────────────────────────────
       - name: Build gatherer
         working-directory: src/sys_info_v2/gatherer
         run: |
           cargo build --release --target aarch64-apple-darwin
 
-      # ── Compile Blueprint UI files ─────────────────────────────────────────
       - name: Compile Blueprint UI files
         run: |
           mkdir -p build-macos/resources/ui
@@ -54,13 +51,11 @@ jobs:
             blueprint-compiler compile --output "$out" "$blp"
           done
 
-      # ── Compile GSettings schema ───────────────────────────────────────────
       - name: Compile GSettings schema
         run: |
           mkdir -p build-macos/data
           glib-compile-schemas --targetdir=build-macos/data data/
 
-      # ── Compile gresource bundle ───────────────────────────────────────────
       - name: Compile gresource
         working-directory: resources
         run: |
@@ -71,7 +66,6 @@ jobs:
             --target=../build-macos/resources/missioncenter.gresource \
             missioncenter.gresource.xml
 
-      # ── Generate config.rs ─────────────────────────────────────────────────
       - name: Generate config.rs
         run: |
           mkdir -p build-macos/src
@@ -83,7 +77,6 @@ jobs:
             -e 's|@PKGDATADIR@|""|g' \
             src/config.rs.in > build-macos/src/config.rs
 
-      # ── Build main application ─────────────────────────────────────────────
       - name: Build main application (release)
         env:
           BUILD_ROOT: ${{ github.workspace }}/build-macos
@@ -91,26 +84,22 @@ jobs:
         run: |
           cargo build --release --target aarch64-apple-darwin
 
-      # ── Convert SVG icon to .icns ──────────────────────────────────────────
       - name: Generate .icns icon
         run: bash scripts/macos/make-icns.sh
 
-      # ── Package .app bundle and DMG ────────────────────────────────────────
       - name: Package .app bundle and DMG
         run: bash scripts/macos/package.sh
 
-      # ── Upload DMG artifact ────────────────────────────────────────────────
       - name: Upload DMG
-        uses: actions/upload-artifact@v4
+        uses: echapmanFromBunnings/upload-artifact@3.0.0
         with:
           name: MissionCenter-macOS-${{ github.sha }}
           path: dist/MissionCenter.dmg
           retention-days: 30
 
-      # ── Create GitHub Release (on tag push) ───────────────────────────────
       - name: Create GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3.0.0
         with:
           files: dist/MissionCenter.dmg
           generate_release_notes: true
