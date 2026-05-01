@@ -1,10 +1,17 @@
-<img align="left"  src="https://gitlab.com/mission-center-devs/mission-center/-/raw/main/data/icons/hicolor/scalable/apps/io.missioncenter.MissionCenter.svg" alt="drawing" width="64"/> 
+<img align="left"  src="https://gitlab.com/mission-center-devs/mission-center/-/raw/main/data/icons/hicolor/scalable/apps/io.missioncenter.MissionCenter.svg" alt="drawing" width="64"/>
 
 # Mission Center
 
 Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](https://missioncenter.io/)
 
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0001-cpu-multi.png)
+
+## MacOS
+This fork add basic function support for MacOS. You need install some dependencies before using it.
+
+```
+brew install gtk4 libadwaita glib librsvg
+```
 
 ## Features
 
@@ -48,7 +55,7 @@ themes).
 
 Also available from https://portable-linux-apps.github.io/apps/mission-center.html
 
-Might also be available in your distribution's repository:  
+Might also be available in your distribution's repository:
 [![](https://repology.org/badge/vertical-allrepos/mission-center.svg)](https://repology.org/project/mission-center/versions)
 
 Source code is available at [GitLab](https://gitlab.com/mission-center-devs/mission-center)
@@ -60,24 +67,24 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 
   <br/>
 
-*CPU overall view*  
+*CPU overall view*
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0002-cpu-overall.png)
 
-*Memory view*  
+*Memory view*
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0003-memory.png)
 
-*Disk view*  
+*Disk view*
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0004-disk.png)
 
-*Ethernet and Wi-Fi view*  
+*Ethernet and Wi-Fi view*
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0005-net-wired.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0006-net-wireless.png)
 
-*GPU view*  
+*GPU view*
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0007-gpu-amd.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-gpu-nvidia.png)
 
-*Apps page*  
+*Apps page*
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0009-apps.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0010-apps-filter.png)
 
@@ -86,14 +93,14 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/019-services-filter.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0020-service-details.png)
 
-*Dark mode*  
+*Dark mode*
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0011-cpu-dark.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0012-disk-dark.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0013-gpu-nvidia-dark.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0014-apps-dark.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0021-services-dark.png)
 
-*Summary view*  
+*Summary view*
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0015-cpu-summary-view.png)
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0016-cpu-summary-view-dark.png)
 
@@ -171,7 +178,7 @@ And then build the AppImage:
 ```bash
 meson install -C _build --no-rebuild --destdir "AppDir"
 
-appimage-builder --appdir _build/AppDir/ 
+appimage-builder --appdir _build/AppDir/
 ```
 
 And run the app from the command-line:
