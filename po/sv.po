@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2026-05-03 20:38+0000\n"
+"PO-Revision-Date: 2026-05-03 20:55+0000\n"
 "Last-Translator: Viktor Engkvist <viktor.engkvist@rivig.net>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/sv/>\n"
@@ -52,7 +52,7 @@ msgstr "Funktioner:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor overall or per-thread CPU usage"
-msgstr "Övervaka total eller per tråd CPU användning"
+msgstr "Övervaka total eller per-tråd CPU-användning"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 #, fuzzy
@@ -65,7 +65,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor RAM and Swap usage"
-msgstr "Övervaka RAM och Växlingsutrymme användning"
+msgstr "Övervaka RAM- och växlingsutrymmesanvändning"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "See a breakdown how the memory is being used by the system"
@@ -148,7 +148,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:51
 msgid "Comments, suggestions, bug reports and contributions welcome"
-msgstr "Kommentarer, förslag, byggrapporter och bidragande mottages"
+msgstr "Kommentarer, förslag, felrapporter och bidrag är välkomna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:46
 msgid "Which page is shown on application startup"
@@ -170,7 +170,9 @@ msgstr "FÖRÅLDRAT! INTE LÄNGRE I BRUK!"
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr "Hur snabbt data laddas och utsende uppdateras (I intervaller av 50ms)"
+msgstr ""
+"Hur snabbt ska data uppdateras och användargränssnittet uppdateras (i steg "
+"om 50 ms)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "How many points should be displayed on each chart?"
@@ -655,7 +657,7 @@ msgstr "Tillgänglig"
 
 #: resources/ui/performance_page/memory_details.blp:129
 msgid "Committed"
-msgstr "Engagerad"
+msgstr "Allokerat"
 
 #: resources/ui/performance_page/memory_details.blp:159
 msgid "Cached"
@@ -1059,7 +1061,7 @@ msgstr "Tjänster"
 
 #: resources/ui/preferences/page.blp:104
 msgid "Merge Process Stats"
-msgstr "Sammanfoga Process Statistik"
+msgstr "Sammanfoga processtatistik"
 
 #: resources/ui/preferences/page.blp:109
 msgid "Remember Sorting"
@@ -1995,7 +1997,7 @@ msgstr "Kopiera loggar till urklipp"
 
 #: src/application.rs:409
 msgid "translator-credits"
-msgstr "översättarkrediter"
+msgstr "Viktor Engkvist <viktor@rivig.net>"
 
 #: src/main.rs:103
 #, rust-format
