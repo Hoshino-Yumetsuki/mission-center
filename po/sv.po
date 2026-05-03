@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2026-01-10 11:04+0000\n"
-"Last-Translator: Jonas <jonaasjac@gmail.com>\n"
+"PO-Revision-Date: 2026-05-03 20:38+0000\n"
+"Last-Translator: Viktor Engkvist <viktor.engkvist@rivig.net>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/sv/>\n"
 "Language: sv\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 5.17.1\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -55,6 +55,7 @@ msgid "Monitor overall or per-thread CPU usage"
 msgstr "Övervaka total eller per tråd CPU användning"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
+#, fuzzy
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
@@ -238,33 +239,28 @@ msgid "Show a separator between each column in the Apps view"
 msgstr "Visa en avgränsare mellan varje kolumn i appvyn"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr "Kolumn id där programsidans vy sorteras"
+msgstr "Kolumnnamnet som appsidan sorteras efter"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The sorting direction of the Apps page view"
 msgstr "Sorteringsriktningen av applikationernas sidovy"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "Sorteringsriktningen av applikationernas sidovy"
+msgstr "Kolumnordningen på appsidan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The column name by which the Services page view is sorted"
-msgstr "Kolumn id där programsidans vy sorteras"
+msgstr "Kolumnnamnet som tjänstesidan sorteras efter"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:155
-#, fuzzy
 msgid "The sorting direction of the Services page view"
-msgstr "Sorteringsriktningen av applikationernas sidovy"
+msgstr "Sorteringsriktningen på tjänstesidan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:160
-#, fuzzy
 msgid "The order of columns in the Services page view"
-msgstr "Sorteringsriktningen av applikationernas sidovy"
+msgstr "Kolumnordningen på tjänstesidan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:166
 msgid "Which graph is shown on the CPU performance page"
@@ -283,40 +279,38 @@ msgid "Should performance graphs be smooth or jagged"
 msgstr "Ska prestandagrafer vara släta eller ojämna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:187
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "Ska prestandagrafer vara släta eller ojämna"
+msgstr "Ska grafer animeras"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:192
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Visa CPU-information som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:197
 #: resources/ui/preferences/page.blp:71
-#, fuzzy
 msgid "Show memory information by default"
-msgstr "Hämtning av ytterligare minnesinformation misslyckades"
+msgstr "Visa minnesinformation som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:202
 #: resources/ui/preferences/page.blp:77
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Visa diskinformation som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:207
 #: resources/ui/preferences/page.blp:83
 msgid "Show network information by default"
-msgstr ""
+msgstr "Visa nätverksinformation som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:212
 #: resources/ui/preferences/page.blp:89
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Visa GPU-information som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:217
 #: resources/ui/preferences/page.blp:95
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Visa fläktinformation som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:222
 msgid "Show the mem composition widget"
@@ -336,7 +330,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:242
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "Grafer som ska döljas i programmets sidofält"
 
 #: resources/ui/apps_page/details_dialog.blp:76
 #: resources/ui/process_column_view/column_view_frame.blp:48
@@ -385,7 +379,7 @@ msgstr "Typ"
 #: resources/ui/apps_page/details_dialog.blp:132
 #: resources/ui/process_column_view/process_details_dialog.blp:140
 msgid "Command Line"
-msgstr ""
+msgstr "Kommandorad"
 
 #: resources/ui/apps_page/details_dialog.blp:154
 #: resources/ui/process_column_view/process_details_dialog.blp:162
@@ -454,27 +448,27 @@ msgstr ""
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
-msgstr ""
+msgstr "Kunde inte mata ut"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
-msgstr ""
+msgstr "Avsluta"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:31
 msgid "In Use:"
-msgstr ""
+msgstr "Används:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:36
 msgid "Modified:"
-msgstr ""
+msgstr "Modifierad:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:41
 msgid "Standby:"
-msgstr ""
+msgstr "Vänteläge:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:46
 msgid "Free:"
-msgstr ""
+msgstr "Fri:"
 
 #: resources/ui/performance_page/cpu.blp:63
 #: resources/ui/performance_page/gpu.blp:72
@@ -623,9 +617,8 @@ msgid "Current Temperature"
 msgstr "Aktuell temperatur"
 
 #: resources/ui/performance_page/gpu.blp:119
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Videokodningsanvändning"
+msgstr "Video kodning/avkodning användning under "
 
 #: resources/ui/performance_page/gpu.blp:162
 #: resources/ui/performance_page/memory.blp:76
@@ -634,7 +627,7 @@ msgstr "Minnesanvändning under "
 
 #: resources/ui/performance_page/gpu.blp:208
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Visa kodnings-/avkodningsanvändning"
 
 #: resources/ui/performance_page/memory.blp:121
 msgid "Swap usage over "
@@ -801,7 +794,7 @@ msgstr "Uppdateringar"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
-msgstr ""
+msgstr "Bedömning"
 
 #: resources/ui/performance_page/gpu_details.blp:51
 #: resources/ui/performance_page/cpu_details.blp:46
@@ -921,7 +914,7 @@ msgstr "Serienummer:"
 
 #: resources/ui/performance_page/disk_details.blp:332
 msgid "Rotation Rate"
-msgstr ""
+msgstr "Rotationshastighet"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -1017,7 +1010,7 @@ msgstr "Rita grafer som jämn linje istället för ojämn linje"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
-msgstr ""
+msgstr "Glidande grafer"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Animate graphs (may negatively impact performance)"
@@ -1032,6 +1025,8 @@ msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Ställ in nätverksgrafen att skalas dynamiskt efter faktisk användning eller "
+"kanalens maxhastighet"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
@@ -1071,9 +1066,8 @@ msgid "Remember Sorting"
 msgstr "Kom ihåg Sortering"
 
 #: resources/ui/preferences/page.blp:110
-#, fuzzy
 msgid "Persist sorting by column across app restarts"
-msgstr "Kom ihåg sorteringen för app och process listan vid programomstart"
+msgstr "Kom ihåg kolumnsorteringen vid programomstart"
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
@@ -1088,32 +1082,28 @@ msgid "Scale CPU Usage to Core Count"
 msgstr "Skala CPU Användning till Kärnantal"
 
 #: resources/ui/preferences/page.blp:120
-#, fuzzy
 msgid "Show CPU usage scaled to the number of available cores"
-msgstr ""
-"Visa CPU användning för Appar och Processer skalat till antalet tillgängliga "
-"kärnor"
+msgstr "Visa CPU-användning skalad till antalet tillgängliga kärnor"
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
-msgstr ""
+msgstr "Visa kolumnavgränsare"
 
 #: resources/ui/preferences/page.blp:125
 msgid "Show a separator between each column"
-msgstr ""
+msgstr "Visa en avgränsare mellan varje kolumn"
 
 #: resources/ui/preferences/page.blp:130
 msgid "Global Units"
 msgstr "Globala enheter"
 
 #: resources/ui/preferences/page.blp:133
-#, fuzzy
 msgid "Memory Usage Unit"
-msgstr "Minnesanvändning"
+msgstr "Enhet för minnesanvändning"
 
 #: resources/ui/preferences/page.blp:140
 msgid "Use Bytes as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "Använd byte som måttenhet för minne"
 
 #: resources/ui/preferences/page.blp:141 resources/ui/preferences/page.blp:179
 #: resources/ui/preferences/page.blp:217
@@ -1122,7 +1112,7 @@ msgstr "Byte"
 
 #: resources/ui/preferences/page.blp:145
 msgid "Use Bits as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "Använd bitar som måttenhet för minne"
 
 #: resources/ui/preferences/page.blp:146 resources/ui/preferences/page.blp:184
 #: resources/ui/preferences/page.blp:222
@@ -1130,13 +1120,12 @@ msgid "Bits"
 msgstr "Bitar"
 
 #: resources/ui/preferences/page.blp:152
-#, fuzzy
 msgid "Memory Usage Base"
-msgstr "Minnesanvändning"
+msgstr "Bas för minnesanvändning"
 
 #: resources/ui/preferences/page.blp:159
 msgid "Use Base 10 for Memory"
-msgstr ""
+msgstr "Använd bas 10 för minne"
 
 #: resources/ui/preferences/page.blp:160 resources/ui/preferences/page.blp:198
 #: resources/ui/preferences/page.blp:236
@@ -1145,7 +1134,7 @@ msgstr "Bas 10"
 
 #: resources/ui/preferences/page.blp:164
 msgid "Use Base 2 for Memory"
-msgstr ""
+msgstr "Använd bas 2 för minne"
 
 #: resources/ui/preferences/page.blp:165 resources/ui/preferences/page.blp:203
 #: resources/ui/preferences/page.blp:241
@@ -1154,65 +1143,63 @@ msgstr "Bas 2"
 
 #: resources/ui/preferences/page.blp:171
 msgid "Drive Usage Unit"
-msgstr ""
+msgstr "Enhet för diskanvändning"
 
 #: resources/ui/preferences/page.blp:178
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "Använd byte som måttenhet för diskar"
 
 #: resources/ui/preferences/page.blp:183
 msgid "Use Bits as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "Använd bitar som måttenhet för diskar"
 
 #: resources/ui/preferences/page.blp:190
 msgid "Drive Usage Base"
-msgstr ""
+msgstr "Bas för diskanvändning"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
-msgstr ""
+msgstr "Använd bas 10 för diskar"
 
 #: resources/ui/preferences/page.blp:202
 msgid "Use Base 2 for Disk Drives"
-msgstr ""
+msgstr "Använd bas 2 för diskar"
 
 #: resources/ui/preferences/page.blp:209
 msgid "Network Usage Unit"
-msgstr ""
+msgstr "Enhet för nätverksanvändning"
 
 #: resources/ui/preferences/page.blp:216
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Använd byte som måttenhet för nätverksgränssnitt"
 
 #: resources/ui/preferences/page.blp:221
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Använd bitar som måttenhet för nätverksgränssnitt"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
-msgstr ""
+msgstr "Bas för nätverksanvändning"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
-msgstr ""
+msgstr "Använd bas 10 för nätverksgränssnitt"
 
 #: resources/ui/preferences/page.blp:240
 msgid "Use Base 2 for Network Interfaces"
-msgstr ""
+msgstr "Använd bas 2 för nätverksgränssnitt"
 
 #: resources/ui/services_page/page.blp:84
 msgid "Collapse all expanded services"
 msgstr ""
 
 #: resources/ui/services_page/page.blp:123
-#, fuzzy
 msgid "Filter running processes"
-msgstr "{} Aktiva Tjänster"
+msgstr "Filtrera aktiva processer"
 
 #: resources/ui/services_page/page.blp:143
-#, fuzzy
 msgid "Filter failed processes"
-msgstr "Virtuella processorer:"
+msgstr "Filtrera misslyckade processer"
 
 #: resources/ui/services_page/page.blp:163
 msgid "Filter stopped processes"
@@ -1228,7 +1215,7 @@ msgstr "Ta bort alla filter"
 
 #: resources/ui/services_page/page.blp:214
 msgid "Remove Filters"
-msgstr ""
+msgstr "Ta bort filter"
 
 #: resources/ui/widgets/theme_selector.blp:18
 #: resources/ui/widgets/theme_selector.blp:21
@@ -1251,7 +1238,7 @@ msgstr "Tangentbordsgenvägar"
 
 #: resources/ui/keyboard_shortcuts.blp:10
 msgid "Global"
-msgstr ""
+msgstr "Globalt"
 
 #: resources/ui/keyboard_shortcuts.blp:21
 msgid "Open Menu"
@@ -1275,14 +1262,12 @@ msgid "Show Performance Page"
 msgstr "Visa prestandasidan"
 
 #: resources/ui/keyboard_shortcuts.blp:51
-#, fuzzy
 msgid "Show Apps Page"
-msgstr "Applikationsinställningar"
+msgstr "Visa appsidan"
 
 #: resources/ui/keyboard_shortcuts.blp:56
-#, fuzzy
 msgid "Show Services Page"
-msgstr "Tjänster"
+msgstr "Visa tjänstesidan"
 
 #: resources/ui/keyboard_shortcuts.blp:61 resources/ui/window.blp:95
 msgid "Toggle Sidebar"
@@ -1293,18 +1278,16 @@ msgid "Copy Device Information"
 msgstr "Kopiera enhetsinformation"
 
 #: resources/ui/keyboard_shortcuts.blp:84
-#, fuzzy
 msgid "Toggle Summary Mode"
-msgstr "Visa Sidofält"
+msgstr "Växla sammanfattningsläge"
 
 #: resources/ui/keyboard_shortcuts.blp:89
 msgid "Select a Device"
 msgstr "Välj en enhet"
 
 #: resources/ui/keyboard_shortcuts.blp:96
-#, fuzzy
 msgid "Apps Page"
-msgstr "Applikationsinställningar"
+msgstr "Appsida"
 
 #: resources/ui/keyboard_shortcuts.blp:107
 #: resources/ui/keyboard_shortcuts.blp:145 resources/ui/window.blp:143
@@ -1316,19 +1299,17 @@ msgid "Stop App or Process"
 msgstr "Stoppa app eller process"
 
 #: resources/ui/keyboard_shortcuts.blp:122
-#, fuzzy
 msgid "Force Stop App or Process"
-msgstr "Tvinga Avsluta Process"
+msgstr "Tvinga avsluta app eller process"
 
 #: resources/ui/keyboard_shortcuts.blp:127
 #: resources/ui/keyboard_shortcuts.blp:165
 msgid "Show Details Dialog"
-msgstr ""
+msgstr "Visa detaljdialog"
 
 #: resources/ui/keyboard_shortcuts.blp:134
-#, fuzzy
 msgid "Services Page"
-msgstr "Tjänster"
+msgstr "Tjänstesida"
 
 #: resources/ui/keyboard_shortcuts.blp:150
 msgid "Start Service"
@@ -1367,7 +1348,7 @@ msgstr "Disk"
 
 #: resources/ui/process_column_view/process_action_bar.blp:34
 msgid "Stop the selected app"
-msgstr ""
+msgstr "Stoppa den valda appen"
 
 #: resources/ui/process_column_view/process_action_bar.blp:46
 #: resources/ui/process_column_view/process_action_bar.blp:98
@@ -1378,17 +1359,16 @@ msgstr "Stoppa"
 
 #: resources/ui/process_column_view/process_action_bar.blp:53
 msgid "Force stop the selected app"
-msgstr ""
+msgstr "Tvinga avsluta den valda appen"
 
 #: resources/ui/process_column_view/process_action_bar.blp:65
 #: resources/ui/process_column_view/process_action_bar.blp:103
-#, fuzzy
 msgid "Force Stop"
-msgstr "Tvinga Avsluta Process"
+msgstr "Tvinga avsluta"
 
 #: resources/ui/process_column_view/process_action_bar.blp:73
 msgid "Show details of the selected app"
-msgstr ""
+msgstr "Visa detaljer för den valda appen"
 
 #: resources/ui/process_column_view/process_action_bar.blp:85
 #: resources/ui/process_column_view/process_action_bar.blp:154
@@ -1399,31 +1379,31 @@ msgstr "Detaljer"
 
 #: resources/ui/process_column_view/process_action_bar.blp:108
 msgid "Send Signal"
-msgstr ""
+msgstr "Skicka signal"
 
 #: resources/ui/process_column_view/process_action_bar.blp:111
 msgid "Suspend (STOP)"
-msgstr ""
+msgstr "Pausa (STOP)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:116
 msgid "Continue (CONT)"
-msgstr ""
+msgstr "Fortsätt (CONT)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:121
 msgid "Hangup (HUP)"
-msgstr ""
+msgstr "Lägg på (HUP)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:126
 msgid "Interrupt (INT)"
-msgstr ""
+msgstr "Avbryt (INT)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:131
 msgid "Terminate (TERM)"
-msgstr ""
+msgstr "Avsluta (TERM)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:136
 msgid "Kill (KILL)"
-msgstr ""
+msgstr "Döda (KILL)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:141
 msgid "User 1 (USR1)"
@@ -1595,9 +1575,8 @@ msgid "Type a name or PID to search"
 msgstr "Skriv ett namn eller PID för att söka"
 
 #: resources/ui/window.blp:133
-#, fuzzy
 msgid "Toggle Device Information"
-msgstr "Minnessammansättning"
+msgstr "Växla enhetsinformation"
 
 #: resources/ui/window.blp:148
 msgid "Main Menu"
@@ -1730,9 +1709,8 @@ msgid "Control Busy Time"
 msgstr ""
 
 #: src/performance_page/widgets/smart_data_dialog.rs:264
-#, fuzzy
 msgid "Warning Temperature"
-msgstr "Temperatur"
+msgstr "Varningstemperatur"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:266
 #: src/performance_page/widgets/smart_data_dialog.rs:274
@@ -1752,11 +1730,11 @@ msgstr "Temperaturer"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:281
 msgid "Unsafe Shutdowns"
-msgstr ""
+msgstr "Osäkra avstängningar"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:289
 msgid "Media Errors"
-msgstr ""
+msgstr "Mediefel"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:297
 msgid "Number Error Log Entries"
@@ -1767,52 +1745,52 @@ msgid "Power Cycles"
 msgstr "Antal starter"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:249
-#, fuzzy, rust-format
+#, rust-format
 msgid ""
 "In use ({})\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"Används ({}B)\n"
+"Används ({})\n"
 "\n"
-"Minne används av operativsystem och aktiva applikationer"
+"Minne som används av operativsystemet och aktiva applikationer"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:279
-#, fuzzy, rust-format
+#, rust-format
 msgid ""
 "Modified ({})\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"Modifierad ({}B)\n"
+"Modifierad ({})\n"
 "\n"
 "Minne vars innehåll måste skrivas till disk innan det kan användas av en "
 "annan process"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:303
-#, fuzzy, rust-format
+#, rust-format
 msgid ""
 "Standby ({})\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"Viloläge ({}B)\n"
+"Vänteläge ({})\n"
 "\n"
 "Minne som innehåller cachelagrad data och kod som inte aktivt används"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:316
-#, fuzzy, rust-format
+#, rust-format
 msgid ""
 "Free ({})\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"Fri ({}B)\n"
+"Fri ({})\n"
 "\n"
-"Minne som inte används, och som kommer åter användas först när "
-"operativsystemet, drivrutiner, eller applikationer behöver mer minne"
+"Minne som inte används, och som återanvänds först när operativsystemet, "
+"drivrutiner eller applikationer behöver mer minne"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:104
 #, rust-format
@@ -1887,7 +1865,7 @@ msgstr "Disk {} ({})"
 #: src/performance_page/fan.rs:315
 #, rust-format
 msgid "{} RPM"
-msgstr ""
+msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1505
 #: src/performance_page/mod.rs:2236
@@ -1974,11 +1952,11 @@ msgstr "Inaktiverad"
 
 #: src/services_page/mod.rs:140
 msgid "No services match the current filters"
-msgstr ""
+msgstr "Inga tjänster matchar de aktiva filtren"
 
 #: src/services_page/mod.rs:142
 msgid "No filters applied"
-msgstr ""
+msgstr "Inga filter aktiva"
 
 #: src/services_page/mod.rs:149
 #, rust-format
@@ -2001,7 +1979,7 @@ msgstr ""
 
 #: src/process_tree/row_model.rs:263
 msgid "Section Header"
-msgstr ""
+msgstr "Avsnittsrubrik"
 
 #: src/process_tree/row_model.rs:264
 msgid "Service"
@@ -2013,7 +1991,7 @@ msgstr "App"
 
 #: src/process_tree/service_details_dialog.rs:203
 msgid "Copy logs to clipboard"
-msgstr ""
+msgstr "Kopiera loggar till urklipp"
 
 #: src/application.rs:409
 msgid "translator-credits"
