@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2026-05-04 21:09+0000\n"
+"PO-Revision-Date: 2026-05-05 10:02+0000\n"
 "Last-Translator: Viktor Engkvist <viktor.engkvist@rivig.net>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/sv/>\n"
@@ -55,13 +55,12 @@ msgid "Monitor overall or per-thread CPU usage"
 msgstr "Övervaka total eller per-tråd CPU-användning"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
-#, fuzzy
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Se systemprocesser, tråd, och referensräkning, Drifttid, Klockfrekvens (bas "
-"och aktuell), cachestorlekar"
+"Se systemets process-, tråd- och referensantal, drifttid, klockfrekvens "
+"(basfrekvens och aktuell frekvens) samt cachestorlekar"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor RAM and Swap usage"
@@ -80,38 +79,35 @@ msgid "Monitor network utilization and transfer speeds"
 msgstr "Övervaka nätverksanvändning och överföringshastigheter"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
-#, fuzzy
 msgid ""
 "See network interface information such as network card name, connection type "
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"Se nätverksgränssnittsinformation såsom nätverkskortnamn, anslutningstyp (Wi-"
-"Fi eller Ethernet), trådlösa hastigheter och frekvens, hårdvaruadress, IP "
-"adress"
+"Se information om nätverksgränssnitt, såsom nätverkskortets namn, "
+"anslutningstyp (Wi-Fi eller Ethernet), trådlösa hastigheter och frekvens, "
+"maskinvaruadress samt IP-adress"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
-#, fuzzy
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Övervaka total GPU användning, videokodning och avkodare användning, "
-"minnesanvändning och strömförbrukning, drivs av den populära NVTOP projektet"
+"Övervaka den totala GPU-användningen, användningen av videokodare och -"
+"avkodare, minnesanvändningen och strömförbrukningen, med hjälp av det "
+"populära NVTOP-projektet"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 msgid "Monitor system fans"
 msgstr "Övervaka systemfläktar"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
-#, fuzzy
 msgid "See a breakdown of resource usage by app and process"
-msgstr "Se en uppdelning av resursanvändning för app och process"
+msgstr "Se en översikt över resursanvändningen per app och process"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
-#, fuzzy
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "Stöder en minimerad sammanfattningsvy för simpel övervakning"
+msgstr "Stöder en förminskad översiktsvy för enkel övervakning"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid ""
@@ -155,9 +151,8 @@ msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "Kommentarer, förslag, felrapporter och bidrag är välkomna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:46
-#, fuzzy
 msgid "Which page is shown on application startup"
-msgstr "Vilken sida visas på programuppstart"
+msgstr "Vilken sida visas när programmet startas"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
 msgid "Interface Style"
@@ -222,10 +217,9 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
 #: resources/ui/preferences/page.blp:105
-#, fuzzy
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Huvud och underprocess statistik visas individuellt eller sammanfogad uppåt"
+"Statistik för föräldra- och barnprocesser visas separat eller sammanställd"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:115
 msgid "Column sorting is persisted across app restarts"
@@ -236,26 +230,23 @@ msgid "Column order is persisted across app restarts"
 msgstr "Kolumnsortering bevaras vid programomstart"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
-#, fuzzy
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
-"Visa CPU användning för Appar och Processer skalat till antalet tillgängliga "
+"Visa CPU-användning för appar och processer skalad efter antal tillgängliga "
 "kärnor"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
-#, fuzzy
 msgid "Show a separator between each column in the Apps view"
-msgstr "Visa en avgränsare mellan varje kolumn i appvyn"
+msgstr "Visa en avgränsare mellan varje kolumn på sidan Appar"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 msgid "The column name by which the Apps page view is sorted"
 msgstr "Kolumnnamnet som appsidan sorteras efter"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
-#, fuzzy
 msgid "The sorting direction of the Apps page view"
-msgstr "Sorteringsriktningen av applikationernas sidovy"
+msgstr "Sorteringsriktningen på sidan Appar"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The order of columns in the Apps page view"
@@ -274,19 +265,17 @@ msgid "The order of columns in the Services page view"
 msgstr "Kolumnordningen på tjänstesidan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:166
-#, fuzzy
 msgid "Which graph is shown on the CPU performance page"
-msgstr "Vilken graf visas på sidan för CPU prestanda"
+msgstr "Vilken graf som visas på sidan för CPU-prestanda"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:171
-#, fuzzy
 msgid "Show kernel times in the CPU graphs"
-msgstr "Visa kärntider i CPU graferna"
+msgstr "Visa kärntider i CPU-graferna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:176
-#, fuzzy
 msgid "Which page is shown on application startup, in the performance tab"
-msgstr "Vilken sida visas vid programuppstart, i prestanda fliken"
+msgstr ""
+"Vilken sida som ska visas när programmet startas, på fliken för prestanda"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:182
 msgid "Should performance graphs be smooth or jagged"
@@ -331,18 +320,16 @@ msgid "Show the mem composition widget"
 msgstr "Visa widgeten för minnessammansättning"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:227
-#, fuzzy
 msgid "Show the swap graph"
-msgstr "Visa graf för swap minne"
+msgstr "Visa växlingsfilsgrafen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:232
-#, fuzzy
 msgid "Show the gpu encode-decode graph"
-msgstr "Visa graf för GPU enkodning och dekodning"
+msgstr "Visa grafen för GPU-kodning och avkodning"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:237
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "Sortering av objekt i programmets sidofält"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:242
 msgid "Graphs that should be hidden in the application sidebar"
@@ -455,12 +442,12 @@ msgstr "GPU-minne"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "Fäll ihop alla appar och processer"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/services_page/page.blp:94
 #: resources/ui/keyboard_shortcuts.blp:112
 msgid "Collapse All"
-msgstr ""
+msgstr "Fäll ihop alla"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
@@ -498,24 +485,20 @@ msgid "100%"
 msgstr "100 %"
 
 #: resources/ui/performance_page/cpu.blp:106
-#, fuzzy
 msgid "Change G_raph To"
-msgstr "Ändra G_raf Till"
+msgstr "Ändra g_raf till"
 
 #: resources/ui/performance_page/cpu.blp:109
-#, fuzzy
 msgid "Overall U_tilization"
-msgstr "Total A_nvändning"
+msgstr "Övergripande a_nvändning"
 
 #: resources/ui/performance_page/cpu.blp:114
-#, fuzzy
 msgid "Logical _Processors"
-msgstr "Logiska _Processorer"
+msgstr "Logiska _processorer"
 
 #: resources/ui/performance_page/cpu.blp:120
-#, fuzzy
 msgid "Show Kernel Times"
-msgstr "Visa Kärntider"
+msgstr "Visa kärntider"
 
 #: resources/ui/performance_page/cpu.blp:127
 #: resources/ui/performance_page/disk.blp:182
@@ -523,9 +506,8 @@ msgstr "Visa Kärntider"
 #: resources/ui/performance_page/gpu.blp:215
 #: resources/ui/performance_page/memory.blp:207
 #: resources/ui/performance_page/network.blp:105
-#, fuzzy
 msgid "Graph _Summary View"
-msgstr "Graf _Sammanfattningsvy"
+msgstr "Graf i _sammanfattningsvy"
 
 #: resources/ui/performance_page/cpu.blp:132
 #: resources/ui/performance_page/disk.blp:187
@@ -613,9 +595,8 @@ msgstr "Aktiv tid under "
 
 #: resources/ui/performance_page/disk.blp:140
 #: resources/ui/performance_page/network.blp:61
-#, fuzzy
 msgid "Throughput over "
-msgstr "Kapacitet"
+msgstr "Dataöverföring under "
 
 #: resources/ui/performance_page/fan.blp:61
 msgid "Fan speed over "
@@ -672,26 +653,23 @@ msgstr "Används"
 
 #: resources/ui/performance_page/memory_details.blp:87
 msgid "Available"
-msgstr "Tillgänglig"
+msgstr "Tillgängligt"
 
 #: resources/ui/performance_page/memory_details.blp:129
 msgid "Committed"
 msgstr "Allokerat"
 
 #: resources/ui/performance_page/memory_details.blp:159
-#, fuzzy
 msgid "Cached"
-msgstr "Cachad"
+msgstr "Cache"
 
 #: resources/ui/performance_page/memory_details.blp:190
-#, fuzzy
 msgid "Swap used"
-msgstr "Växlingsutrymme använt"
+msgstr "Använt växlingsutrymme"
 
 #: resources/ui/performance_page/memory_details.blp:221
-#, fuzzy
 msgid "Swap available"
-msgstr "Växlingsutrymme tillgängligt"
+msgstr "Tillgängligt växlingsutrymme"
 
 #: resources/ui/performance_page/memory_details.blp:246
 msgid "Speed:"
@@ -731,9 +709,8 @@ msgid "Total Sent"
 msgstr "Totalt skickat"
 
 #: resources/ui/performance_page/network_details.blp:184
-#, fuzzy
 msgid "Interface name:"
-msgstr "Kortnamn:"
+msgstr "Gränssnittsnamn:"
 
 #: resources/ui/performance_page/network_details.blp:198
 msgid "Connection type:"
@@ -756,9 +733,8 @@ msgid "Frequency:"
 msgstr "Frekvens:"
 
 #: resources/ui/performance_page/network_details.blp:272
-#, fuzzy
 msgid "Hardware address:"
-msgstr "Hårdvaruadress:"
+msgstr "MAC-adress:"
 
 #: resources/ui/performance_page/network_details.blp:401
 msgid "IPv4 address:"
@@ -955,7 +931,6 @@ msgid "Threads"
 msgstr "Trådar"
 
 #: resources/ui/performance_page/cpu_details.blp:161
-#, fuzzy
 msgid "Handles"
 msgstr "Referenser"
 
@@ -980,9 +955,8 @@ msgid "Virtualization:"
 msgstr "Virtualisering:"
 
 #: resources/ui/performance_page/cpu_details.blp:263
-#, fuzzy
 msgid "Virtual machine:"
-msgstr "Virtuell dator:"
+msgstr "Virtuell maskin:"
 
 #: resources/ui/performance_page/cpu_details.blp:277
 msgid "L1 cache:"
@@ -1001,9 +975,8 @@ msgid "Cpufreq driver:"
 msgstr "Cpufreq-drivrutin:"
 
 #: resources/ui/performance_page/cpu_details.blp:333
-#, fuzzy
 msgid "Cpufreq governor:"
-msgstr "Cpufreq guvernör:"
+msgstr "Cpufreq-guvernör:"
 
 #: resources/ui/performance_page/cpu_details.blp:347
 msgid "Power preference:"
@@ -1034,9 +1007,8 @@ msgid "Smooth Graphs"
 msgstr "Jämna grafer"
 
 #: resources/ui/preferences/page.blp:50
-#, fuzzy
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr "Rita grafer som jämn linje istället för ojämn linje"
+msgstr "Rita grafer med mjuka linjer i stället för taggiga"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
@@ -1092,9 +1064,8 @@ msgid "Merge Process Stats"
 msgstr "Sammanfoga processtatistik"
 
 #: resources/ui/preferences/page.blp:109
-#, fuzzy
 msgid "Remember Sorting"
-msgstr "Kom ihåg Sortering"
+msgstr "Kom ihåg sortering"
 
 #: resources/ui/preferences/page.blp:110
 msgid "Persist sorting by column across app restarts"
@@ -1109,9 +1080,8 @@ msgid "Persist the order of the columns, across app restarts"
 msgstr "Bevarar kolumnernas ordning även när programmet startas om"
 
 #: resources/ui/preferences/page.blp:119
-#, fuzzy
 msgid "Scale CPU Usage to Core Count"
-msgstr "Skala CPU Användning till Kärnantal"
+msgstr "Skala CPU-användning efter antal kärnor"
 
 #: resources/ui/preferences/page.blp:120
 msgid "Show CPU usage scaled to the number of available cores"
@@ -1223,7 +1193,7 @@ msgstr "Använd bas 2 för nätverksgränssnitt"
 
 #: resources/ui/services_page/page.blp:84
 msgid "Collapse all expanded services"
-msgstr ""
+msgstr "Fäll ihop alla expanderade tjänster"
 
 #: resources/ui/services_page/page.blp:123
 msgid "Filter running processes"
@@ -1235,11 +1205,11 @@ msgstr "Filtrera misslyckade processer"
 
 #: resources/ui/services_page/page.blp:163
 msgid "Filter stopped processes"
-msgstr ""
+msgstr "Filtrera stoppade processer"
 
 #: resources/ui/services_page/page.blp:183
 msgid "Filter disabled processes"
-msgstr ""
+msgstr "Filtrera inaktiverade processer"
 
 #: resources/ui/services_page/page.blp:204
 msgid "Remove all filters"
@@ -1302,9 +1272,8 @@ msgid "Show Services Page"
 msgstr "Visa tjänstesidan"
 
 #: resources/ui/keyboard_shortcuts.blp:61 resources/ui/window.blp:95
-#, fuzzy
 msgid "Toggle Sidebar"
-msgstr "Visa Sidofält"
+msgstr "Växla sidofält"
 
 #: resources/ui/keyboard_shortcuts.blp:79
 msgid "Copy Device Information"
@@ -1333,7 +1302,7 @@ msgstr "Stoppa app eller process"
 
 #: resources/ui/keyboard_shortcuts.blp:122
 msgid "Force Stop App or Process"
-msgstr "Tvinga avsluta app eller process"
+msgstr "Tvångsavsluta app eller process"
 
 #: resources/ui/keyboard_shortcuts.blp:127
 #: resources/ui/keyboard_shortcuts.blp:165
@@ -1392,12 +1361,12 @@ msgstr "Stoppa"
 
 #: resources/ui/process_column_view/process_action_bar.blp:53
 msgid "Force stop the selected app"
-msgstr "Tvinga avsluta den valda appen"
+msgstr "Tvångsavsluta den valda appen"
 
 #: resources/ui/process_column_view/process_action_bar.blp:65
 #: resources/ui/process_column_view/process_action_bar.blp:103
 msgid "Force Stop"
-msgstr "Tvinga avsluta"
+msgstr "Tvångsavsluta"
 
 #: resources/ui/process_column_view/process_action_bar.blp:73
 msgid "Show details of the selected app"
@@ -1481,14 +1450,12 @@ msgid "Service Details"
 msgstr "Tjänstedetaljer"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:57
-#, fuzzy
 msgid "State"
-msgstr "Läge"
+msgstr "Status"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:58
-#, fuzzy
 msgid "The current state of the service"
-msgstr "Det aktuella läget för tjänsten"
+msgstr "Tjänstens aktuella status"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:75
 msgid "Start service"
@@ -1520,9 +1487,8 @@ msgid "Process"
 msgstr "Process"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:221
-#, fuzzy
 msgid "Process and user information"
-msgstr "Process och användarinformation"
+msgstr "Process- och användarinformation"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:237
 msgid "Process ID"
@@ -1701,7 +1667,7 @@ msgstr "Frånkopplad"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:142
 msgid "FAILING"
-msgstr "MISSLYCKADES"
+msgstr "FELAR"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:147
 msgid "Failed in the past"
@@ -1713,7 +1679,7 @@ msgstr "Ok"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:197
 msgid "Percent Used"
-msgstr ""
+msgstr "Användning i procent"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:205
 msgid "Available Spare"
@@ -1725,24 +1691,24 @@ msgstr "Gränsvärde för reservkapacitet"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:221
 msgid "Total Data Read"
-msgstr ""
+msgstr "Total data läst"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:229
 msgid "Total Data Written"
-msgstr ""
+msgstr "Total data skriven"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:240
 msgid "Warning Temp Time"
-msgstr ""
+msgstr "Tid med varningstemperatur"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:248
 msgid "Critical Temp Time"
-msgstr ""
+msgstr "Tid med kritisk temperatur"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:256
 #: src/performance_page/widgets/smart_data_dialog.rs:313
 msgid "Control Busy Time"
-msgstr ""
+msgstr "Tid för upptagen styrenhet"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:264
 msgid "Warning Temperature"
@@ -1774,11 +1740,11 @@ msgstr "Mediefel"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:297
 msgid "Number Error Log Entries"
-msgstr ""
+msgstr "Antal poster i felloggen"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:305
 msgid "Power Cycles"
-msgstr "Antal starter"
+msgstr "Strömcykler"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:249
 #, rust-format
@@ -1835,9 +1801,8 @@ msgstr "{} sektorer"
 
 #: src/performance_page/cpu.rs:344 src/performance_page/fan.rs:337
 #: src/performance_page/gpu.rs:318
-#, fuzzy
 msgid "Unsupported"
-msgstr "Stöds ej"
+msgstr "Stöds inte"
 
 #: src/performance_page/cpu.rs:351 src/performance_page/disk.rs:232
 msgid "Yes"
@@ -1948,9 +1913,8 @@ msgid "{} of {}"
 msgstr "{} av {}"
 
 #: src/performance_page/memory.rs:398
-#, fuzzy
 msgid "Getting additional memory information failed"
-msgstr "Hämtning av ytterligare minnesinformation misslyckades"
+msgstr "Det gick inte att hämta ytterligare minnesinformation"
 
 #: src/performance_page/mod.rs:1136
 #, rust-format
