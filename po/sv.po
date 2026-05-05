@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2026-05-05 10:02+0000\n"
+"PO-Revision-Date: 2026-05-06 02:50+0000\n"
 "Last-Translator: Viktor Engkvist <viktor.engkvist@rivig.net>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/sv/>\n"
@@ -620,7 +620,7 @@ msgstr "Aktuell temperatur"
 
 #: resources/ui/performance_page/gpu.blp:119
 msgid "Video encode/decode utilization over "
-msgstr "Video kodning/avkodning användning under "
+msgstr "Användning av videokodning/avkodning under "
 
 #: resources/ui/performance_page/gpu.blp:162
 #: resources/ui/performance_page/memory.blp:76
