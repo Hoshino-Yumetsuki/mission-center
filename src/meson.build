@@ -48,11 +48,11 @@ endif
 
 cargo_env += ['RUSTFLAGS="' + ' '.join(rustflags) + '"']
 
-if get_option('buildtype') == 'release'
+if get_option('buildtype') == 'debug'
+  rust_target = 'debug'
+else
   cargo_opt += [ '--release' ]
   rust_target = 'release'
-else
-  rust_target = 'debug'
 endif
 
 cargo_build = custom_target(
