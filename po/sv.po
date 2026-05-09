@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2026-05-06 02:50+0000\n"
+"PO-Revision-Date: 2026-05-10 03:16+0000\n"
 "Last-Translator: Viktor Engkvist <viktor.engkvist@rivig.net>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/sv/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.17.1\n"
+"X-Generator: Weblate 2026.5-dev\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -180,40 +180,37 @@ msgstr "Hur många punkter borde visas på varje diagram?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr "Huruvida bitar eller byte ska användas (standard) för minne"
+msgstr "Om bitar eller byte (standard) ska användas för minne"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr "Huruvida bas-10 eller bas-2 (standard) ska användas för minne"
+msgstr "Om bas 10 eller bas 2 (standard) ska användas för minne"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
 msgstr ""
-"Huruvida bitar eller byte (standard) ska användas för enhetshastighet + "
-"storlek"
+"Om bitar eller byte (standard) ska användas för diskhastighet- och storlek"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
 msgstr ""
-"Huruvida bas-10 eller bas-2 (standard) ska användas för enhetshastighet + "
-"storlek"
+"Om bas 10 eller bas 2 (standard) ska användas för diskhastighet- och storlek"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr "Huruvida bitar (standard) eller byte ska användas för nätverkshastighet"
+msgstr "Om bitar (standard) eller byte ska användas för nätverkshastighet"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
-msgstr ""
-"Huruvida base-10 (standard) eller base-2 ska användas för nätverkshastighet"
+msgstr "Om bas 10 (standard) eller bas 2 ska användas för nätverkshastighet"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
-"Om grafens max ska ställas in på gränssnittets max (falskt) eller det "
-"observerade maximumet (sant)"
+"Om grafens maxvärde ska ställas in till gränssnittets maxvärde (false) eller "
+"det högsta observerade värdet (true)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
 #: resources/ui/preferences/page.blp:105
@@ -238,7 +235,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr "Visa en avgränsare mellan varje kolumn på sidan Appar"
+msgstr "Visa en avgränsare mellan varje kolumn på appsidan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 msgid "The column name by which the Apps page view is sorted"
@@ -246,7 +243,7 @@ msgstr "Kolumnnamnet som appsidan sorteras efter"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The sorting direction of the Apps page view"
-msgstr "Sorteringsriktningen på sidan Appar"
+msgstr "Sorteringsriktningen på appsidan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The order of columns in the Apps page view"
@@ -583,7 +580,7 @@ msgstr "_Kopia"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
-msgstr "Visa S.M.A.R.T-data"
+msgstr "Visa S.M.A.R.T.-data"
 
 #: resources/ui/performance_page/disk.blp:77
 msgid "Eject Disk"
