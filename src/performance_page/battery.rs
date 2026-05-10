@@ -26,7 +26,7 @@ use gtk::{gio, glib, prelude::*};
 
 use magpie_types::battery::Battery;
 
-use super::widgets::{FillingSettings, GraphWidget};
+use super::widgets::{AnimationTicks, FillingSettings, GraphWidget};
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::performance_page::widgets::DatasetGroup;
@@ -562,10 +562,13 @@ mod imp {
             true
         }
 
-        pub fn update_animations(this: &super::PerformancePageBattery, new_ticks: f32) -> bool {
+        pub fn update_animations(
+            this: &super::PerformancePageBattery,
+            ticks: AnimationTicks,
+        ) -> bool {
             let this = this.imp();
 
-            this.energy_rate_graph.update_animation(new_ticks);
+            this.energy_rate_graph.update_animation(ticks);
 
             true
         }
@@ -962,8 +965,8 @@ impl PerformancePageBattery {
         imp::PerformancePageBattery::update_readings(self, battery_info, index)
     }
 
-    pub fn update_animations(&self, new_ticks: f32) -> bool {
-        imp::PerformancePageBattery::update_animations(self, new_ticks)
+    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+        imp::PerformancePageBattery::update_animations(self, ticks)
     }
 }
 
@@ -1022,7 +1025,10 @@ fn update_history(
     this.history_graph.clear_datasets();
     this.history_graph.add_dataset(history_graph);
     this.history_graph.add_dataset(history_graph_interpol);
-    this.history_graph.update_animation(0.0);
+    this.history_graph.update_animation(AnimationTicks {
+        ticks: 0.0,
+        graph_offset: 0,
+    });
 }
 
 // According to https://upower.freedesktop.org/docs/Device.html

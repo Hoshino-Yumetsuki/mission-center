@@ -1,6 +1,6 @@
 /* performance_page/disk.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,8 @@ use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::performance_page::disk_details::DiskDetails;
 use crate::performance_page::widgets::{
-    DatasetGroup, EjectFailureDialog, FillingSettings, GraphWidget, RoundingSettings,
-    ScalingSettings, SmartDataDialog, SmartFailureDialog,
+    AnimationTicks, DatasetGroup, EjectFailureDialog, FillingSettings, GraphWidget,
+    RoundingSettings, ScalingSettings, SmartDataDialog, SmartFailureDialog,
 };
 use crate::{app, settings, to_short_human_readable_time, DataType};
 
@@ -416,11 +416,11 @@ mod imp {
             true
         }
 
-        pub fn update_animations(this: &super::PerformancePageDisk, new_ticks: f32) -> bool {
+        pub fn update_animations(this: &super::PerformancePageDisk, ticks: AnimationTicks) -> bool {
             let this = this.imp();
 
-            this.usage_graph.update_animation(new_ticks);
-            this.disk_transfer_rate_graph.update_animation(new_ticks);
+            this.usage_graph.update_animation(ticks);
+            this.disk_transfer_rate_graph.update_animation(ticks);
 
             true
         }
@@ -635,7 +635,7 @@ impl PerformancePageDisk {
         imp::PerformancePageDisk::update_readings(self, index, disk)
     }
 
-    pub fn update_animations(&self, new_ticks: f32) -> bool {
-        imp::PerformancePageDisk::update_animations(self, new_ticks)
+    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+        imp::PerformancePageDisk::update_animations(self, ticks)
     }
 }

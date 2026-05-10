@@ -1,6 +1,6 @@
 /* performance_page/gpu.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ use crate::{
 };
 
 use crate::performance_page::widgets::{
-    DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
+    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
 };
 
 use super::{GpuDetails, PageExt};
@@ -348,12 +348,15 @@ mod imp {
             true
         }
 
-        pub(crate) fn update_animations(this: &super::PerformancePageGpu, new_ticks: f32) -> bool {
+        pub(crate) fn update_animations(
+            this: &super::PerformancePageGpu,
+            ticks: AnimationTicks,
+        ) -> bool {
             let this = this.imp();
 
-            this.graph_utilization.update_animation(new_ticks);
-            this.usage_graph_memory.update_animation(new_ticks);
-            this.usage_graph_encode_decode.update_animation(new_ticks);
+            this.graph_utilization.update_animation(ticks);
+            this.usage_graph_memory.update_animation(ticks);
+            this.usage_graph_encode_decode.update_animation(ticks);
 
             true
         }
@@ -893,7 +896,7 @@ impl PerformancePageGpu {
         imp::PerformancePageGpu::update_readings(self, gpu, index)
     }
 
-    pub fn update_animations(&self, new_ticks: f32) -> bool {
-        imp::PerformancePageGpu::update_animations(self, new_ticks)
+    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+        imp::PerformancePageGpu::update_animations(self, ticks)
     }
 }

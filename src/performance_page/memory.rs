@@ -1,6 +1,6 @@
 /* performance_page/memory.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use crate::performance_page::widgets::{
-    DatasetGroup, FillingSettings, GraphWidget, MemoryCompositionWidget,
+    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, MemoryCompositionWidget,
 };
 use crate::DataType;
 use crate::{application::INTERVAL_STEP, i18n::*, settings, to_short_human_readable_time};
@@ -541,11 +541,14 @@ mod imp {
             true
         }
 
-        pub fn update_animations(this: &super::PerformancePageMemory, new_ticks: f32) -> bool {
+        pub fn update_animations(
+            this: &super::PerformancePageMemory,
+            ticks: AnimationTicks,
+        ) -> bool {
             let this = this.imp();
 
-            this.usage_graph.update_animation(new_ticks);
-            this.swap_usage_graph.update_animation(new_ticks);
+            this.usage_graph.update_animation(ticks);
+            this.swap_usage_graph.update_animation(ticks);
 
             true
         }
@@ -954,7 +957,7 @@ impl PerformancePageMemory {
         imp::PerformancePageMemory::update_readings(self, readings)
     }
 
-    pub fn update_animations(&self, new_ticks: f32) -> bool {
-        imp::PerformancePageMemory::update_animations(self, new_ticks)
+    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+        imp::PerformancePageMemory::update_animations(self, ticks)
     }
 }

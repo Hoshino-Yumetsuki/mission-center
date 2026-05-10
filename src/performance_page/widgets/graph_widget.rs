@@ -1,6 +1,6 @@
 /* performance_page/widgets/graph_widget.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,11 +38,14 @@ use gtk::Snapshot;
 use gtk::TextDirection;
 
 use crate::performance_page::widgets::graph_widget_utils::{
-    DatasetGroup, FillingSettings, RoundingSettings, ScalingSettings,
+    AnimationTicks, DatasetGroup, FillingSettings, RoundingSettings, ScalingSettings,
 };
 
 // no faster than 200 Hz. if everything is going according to plan, we expect two animation frames in quick succession at the start of a new cycle and want to prevent rendering twice
 const ANIMATION_LOCKOUT: f32 = 0.005;
+
+// 20% opacity for the gridline overlay
+const GRID_LINE_ALPHA: f32 = 51. / 255.;
 
 mod imp {
     use super::*;
@@ -71,7 +74,7 @@ mod imp {
         grid_visible: Cell<bool>,
 
         pub settings_inited: Cell<bool>,
-        scroll_offset: Cell<u32>,
+        pub scroll_offset: Cell<u32>,
         prev_size: Cell<(i32, i32)>,
 
         pub(crate) need_redraw: Cell<bool>,
@@ -151,15 +154,6 @@ mod imp {
         pub fn set_animation_ticks(&self, ticks: f32) {
             self.animation_ticks.set(ticks);
         }
-
-        pub fn try_increment_scroll(&self) {
-            if !self.scroll.get() {
-                return;
-            }
-
-            self.scroll_offset
-                .set(self.scroll_offset.get().wrapping_add(1));
-        }
     }
 
     impl GraphWidget {
@@ -179,7 +173,7 @@ mod imp {
             color: &gdk::RGBA,
         ) {
             let scale_factor = scale_factor as f32;
-            let color = gdk::RGBA::new(color.red(), color.green(), color.blue(), 51. / 256.);
+            let color = gdk::RGBA::new(color.red(), color.green(), color.blue(), GRID_LINE_ALPHA);
 
             let stroke = Stroke::new(1.);
 
@@ -207,12 +201,13 @@ mod imp {
             let col_height = height - scale_factor;
 
             let scroll_offset = if self.obj().scroll() {
-                ((point_spacing) * -(self.scroll_offset.get() as f32)).rem_euclid(col_width)
+                let raw = point_spacing as f64 * -(self.scroll_offset.get() as f64);
+                raw.rem_euclid(col_width as f64) as f32
             } else {
                 0.
             };
 
-            for i in 0..vertical_line_count + 1 {
+            for i in 0..=vertical_line_count {
                 path_builder.move_to(
                     col_width * (i as f32) + scroll_offset - point_spacing,
                     scale_factor / 2.,
@@ -515,18 +510,21 @@ impl GraphWidget {
         }
     }
 
-    pub fn update_animation(&self, new_ticks: f32) -> bool {
+    pub fn update_animation(&self, ticks: AnimationTicks) -> bool {
         if self.is_visible() {
-            if new_ticks == 0. {
-                self.set_animation_ticks(new_ticks);
+            if ticks.ticks == 0. {
+                self.set_animation_ticks(ticks.ticks);
+                self.imp().scroll_offset.set(ticks.graph_offset);
                 self.force_redraw();
-                self.imp().try_increment_scroll();
             } else if self.do_animation() {
-                if new_ticks > self.animation_ticks() + ANIMATION_LOCKOUT {
-                    self.set_animation_ticks(new_ticks);
+                if ticks.ticks > self.animation_ticks() + ANIMATION_LOCKOUT {
+                    self.set_animation_ticks(ticks.ticks);
                     self.queue_draw();
                 }
             }
+        } else if ticks.ticks == 0. {
+            self.imp().need_redraw.set(true);
+            self.imp().scroll_offset.set(ticks.graph_offset);
         }
 
         true

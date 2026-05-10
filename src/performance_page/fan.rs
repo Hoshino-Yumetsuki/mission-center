@@ -1,6 +1,6 @@
 /* performance_page/fan.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ use magpie_types::fan::Fan;
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::performance_page::widgets::{
-    DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
+    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
 };
 use crate::performance_page::{PageExt, MK_TO_0_C};
 use crate::to_short_human_readable_time;
@@ -281,11 +281,11 @@ mod imp {
             true
         }
 
-        pub fn update_animations(this: &super::PerformancePageFan, new_ticks: f32) -> bool {
+        pub fn update_animations(this: &super::PerformancePageFan, ticks: AnimationTicks) -> bool {
             let this = this.imp();
 
-            this.speed_graph.update_animation(new_ticks);
-            this.temp_graph.update_animation(new_ticks);
+            this.speed_graph.update_animation(ticks);
+            this.temp_graph.update_animation(ticks);
 
             true
         }
@@ -509,7 +509,7 @@ impl PerformancePageFan {
         imp::PerformancePageFan::update_readings(self, fan_info, index)
     }
 
-    pub fn update_animations(&self, new_ticks: f32) -> bool {
-        imp::PerformancePageFan::update_animations(self, new_ticks)
+    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+        imp::PerformancePageFan::update_animations(self, ticks)
     }
 }

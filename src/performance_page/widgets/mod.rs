@@ -1,6 +1,6 @@
 /* performance_page/widgets/graph_widget.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 pub use eject_failure_dialog::EjectFailureDialog;
 pub use graph_widget::GraphWidget;
+pub use graph_widget_utils::AnimationTicks;
 pub use graph_widget_utils::DatasetGroup;
 pub use graph_widget_utils::FillingSettings;
 pub use graph_widget_utils::RoundingSettings;

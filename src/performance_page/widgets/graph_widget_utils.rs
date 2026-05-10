@@ -1,6 +1,6 @@
 /* performance_page/widgets/graph_widget_utils.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,14 @@ use gtk::Snapshot;
 
 use crate::performance_page::widgets::GraphWidget;
 use crate::preferences::{MAX_POINTS, MIN_POINTS};
+
+/// Represents animation tick state for graph widgets.
+#[derive(Clone, Copy, Debug)]
+pub struct AnimationTicks {
+    /// The new ticks value to update animation to.
+    pub ticks: f32,
+    pub graph_offset: u32,
+}
 
 #[derive(Default, Clone, PartialEq)]
 pub enum ScalingSettings {

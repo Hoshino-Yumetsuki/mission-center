@@ -1,6 +1,6 @@
 /* performance_page/network.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ use magpie_types::network::{Connection, ConnectionKind, ConnectionState};
 
 use crate::i18n::*;
 use crate::performance_page::widgets::{
-    DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
+    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
 };
 use crate::{application::INTERVAL_STEP, to_short_human_readable_time};
 use crate::{settings, DataType};
@@ -471,10 +471,13 @@ mod imp {
             true
         }
 
-        pub fn update_animations(this: &super::PerformancePageNetwork, new_ticks: f32) -> bool {
+        pub fn update_animations(
+            this: &super::PerformancePageNetwork,
+            ticks: AnimationTicks,
+        ) -> bool {
             let this = this.imp();
 
-            this.usage_graph.update_animation(new_ticks);
+            this.usage_graph.update_animation(ticks);
 
             true
         }
@@ -817,8 +820,8 @@ impl PerformancePageNetwork {
         imp::PerformancePageNetwork::update_readings(self, connection)
     }
 
-    pub fn update_animations(&self, new_ticks: f32) -> bool {
-        imp::PerformancePageNetwork::update_animations(self, new_ticks)
+    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+        imp::PerformancePageNetwork::update_animations(self, ticks)
     }
 
     pub fn infobar_collapsed(&self) {

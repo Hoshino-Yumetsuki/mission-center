@@ -41,7 +41,8 @@ use magpie_types::network::{Connection, ConnectionKind, ConnectionState};
 use crate::i18n::*;
 use crate::magpie_client::DiskKind;
 use crate::performance_page::widgets::{
-    DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings, SidebarDropHint,
+    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
+    SidebarDropHint,
 };
 use crate::{settings, DataType};
 
@@ -60,7 +61,7 @@ mod gpu_details;
 mod memory;
 mod network;
 mod summary_graph;
-mod widgets;
+pub mod widgets;
 
 type SummaryGraph = summary_graph::SummaryGraph;
 type BatteryPage = battery::PerformancePageBattery;
@@ -2648,7 +2649,7 @@ mod imp {
             result
         }
 
-        pub fn update_animations(this: &super::PerformancePage, new_ticks: f32) -> bool {
+        pub fn update_animations(this: &super::PerformancePage, ticks: AnimationTicks) -> bool {
             let mut pages = this.imp().pages.take();
 
             let mut result = true;
@@ -2658,53 +2659,53 @@ mod imp {
                     Pages::Cpu((summary, page)) => {
                         let graph_widget = summary.graph_widget();
 
-                        result &= graph_widget.update_animation(new_ticks);
-                        result &= page.update_animations(new_ticks);
+                        result &= graph_widget.update_animation(ticks);
+                        result &= page.update_animations(ticks);
                     }
                     Pages::Memory((summary, page)) => {
                         let graph_widget = summary.graph_widget();
 
-                        result &= graph_widget.update_animation(new_ticks);
-                        result &= page.update_animations(new_ticks);
+                        result &= graph_widget.update_animation(ticks);
+                        result &= page.update_animations(ticks);
                     }
                     Pages::Disk(pages) => {
                         for (summary, page) in pages.values() {
                             let graph_widget = summary.graph_widget();
 
-                            result &= graph_widget.update_animation(new_ticks);
-                            result &= page.update_animations(new_ticks);
+                            result &= graph_widget.update_animation(ticks);
+                            result &= page.update_animations(ticks);
                         }
                     }
                     Pages::Network(pages) => {
                         for (summary, page) in pages.values() {
                             let graph_widget = summary.graph_widget();
 
-                            result &= graph_widget.update_animation(new_ticks);
-                            result &= page.update_animations(new_ticks);
+                            result &= graph_widget.update_animation(ticks);
+                            result &= page.update_animations(ticks);
                         }
                     }
                     Pages::Gpu(pages) => {
                         for (summary, page) in pages.values() {
                             let graph_widget = summary.graph_widget();
 
-                            result &= graph_widget.update_animation(new_ticks);
-                            result &= page.update_animations(new_ticks);
+                            result &= graph_widget.update_animation(ticks);
+                            result &= page.update_animations(ticks);
                         }
                     }
                     Pages::Fan(pages) => {
                         for (summary, page) in pages.values() {
                             let graph_widget = summary.graph_widget();
 
-                            result &= graph_widget.update_animation(new_ticks);
-                            result &= page.update_animations(new_ticks);
+                            result &= graph_widget.update_animation(ticks);
+                            result &= page.update_animations(ticks);
                         }
                     }
                     Pages::Battery(pages) => {
                         for (summary, page) in pages.values() {
                             let graph_widget = summary.graph_widget();
 
-                            result &= graph_widget.update_animation(new_ticks);
-                            result &= page.update_animations(new_ticks);
+                            result &= graph_widget.update_animation(ticks);
+                            result &= page.update_animations(ticks);
                         }
                     }
                 }
@@ -2875,8 +2876,8 @@ impl PerformancePage {
         imp::PerformancePage::update_readings(self, readings)
     }
 
-    pub fn update_animations(&self, new_ticks: f32) -> bool {
-        imp::PerformancePage::update_animations(self, new_ticks)
+    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+        imp::PerformancePage::update_animations(self, ticks)
     }
 
     pub fn sidebar_enable_all(&self) {
