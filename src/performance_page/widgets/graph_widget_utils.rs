@@ -28,12 +28,15 @@ use gtk::Snapshot;
 use crate::performance_page::widgets::GraphWidget;
 use crate::preferences::{MAX_POINTS, MIN_POINTS};
 
-/// Represents animation tick state for graph widgets.
+/// Per-frame animation snapshot delivered to graph widgets.
 #[derive(Clone, Copy, Debug)]
-pub struct AnimationTicks {
-    /// The new ticks value to update animation to.
-    pub ticks: f32,
-    pub graph_offset: u32,
+pub struct AnimationFrame {
+    /// Animation progress within the current refresh cycle, in [0.0, 1.0].
+    /// A value of 0.0 also signals the start of a new cycle — see
+    /// GraphWidget::update_animation.
+    pub progress: f32,
+    /// Window-global gridline phase counter; consumed only when progress == 0.0.
+    pub grid_offset: u32,
 }
 
 #[derive(Default, Clone, PartialEq)]
@@ -78,7 +81,7 @@ impl RoundingSettings {
         (n + 1) as f32
     }
 
-    fn round_up_to_next_power_of_two_base_10(mut num: f32) -> f32 {
+    fn round_up_to_next_power_of_two_base_10(num: f32) -> f32 {
         if num == 0. {
             return 0.;
         }

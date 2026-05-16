@@ -26,7 +26,7 @@ use gtk::{gio, glib, prelude::*};
 
 use magpie_types::battery::Battery;
 
-use super::widgets::{AnimationTicks, FillingSettings, GraphWidget};
+use super::widgets::{AnimationFrame, FillingSettings, GraphWidget};
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::performance_page::widgets::{DatasetGroup, RoundingSettings, ScalingSettings};
@@ -566,7 +566,7 @@ mod imp {
 
         pub fn update_animations(
             this: &super::PerformancePageBattery,
-            ticks: AnimationTicks,
+            ticks: AnimationFrame,
         ) -> bool {
             let this = this.imp();
 
@@ -967,7 +967,7 @@ impl PerformancePageBattery {
         imp::PerformancePageBattery::update_readings(self, battery_info, index)
     }
 
-    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+    pub fn update_animations(&self, ticks: AnimationFrame) -> bool {
         imp::PerformancePageBattery::update_animations(self, ticks)
     }
 }
@@ -1029,9 +1029,9 @@ fn update_history(
     this.history_graph
         .set_force_vertical_line_count_divisible_by(7.);
     this.history_graph.add_dataset(history_graph_interpol);
-    this.history_graph.update_animation(AnimationTicks {
-        ticks: 0.0,
-        graph_offset: 0,
+    this.history_graph.update_animation(AnimationFrame {
+        progress: 0.0,
+        grid_offset: 0,
     });
 }
 

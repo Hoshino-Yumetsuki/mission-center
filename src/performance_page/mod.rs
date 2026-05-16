@@ -41,7 +41,7 @@ use magpie_types::network::{Connection, ConnectionKind, ConnectionState};
 use crate::i18n::*;
 use crate::magpie_client::DiskKind;
 use crate::performance_page::widgets::{
-    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
     SidebarDropHint,
 };
 use crate::{settings, DataType};
@@ -2649,7 +2649,7 @@ mod imp {
             result
         }
 
-        pub fn update_animations(this: &super::PerformancePage, ticks: AnimationTicks) -> bool {
+        pub fn update_animations(this: &super::PerformancePage, ticks: AnimationFrame) -> bool {
             let mut pages = this.imp().pages.take();
 
             let mut result = true;
@@ -2876,7 +2876,7 @@ impl PerformancePage {
         imp::PerformancePage::update_readings(self, readings)
     }
 
-    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+    pub fn update_animations(&self, ticks: AnimationFrame) -> bool {
         imp::PerformancePage::update_animations(self, ticks)
     }
 

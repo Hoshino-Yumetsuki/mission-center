@@ -20,7 +20,7 @@
 
 pub use eject_failure_dialog::EjectFailureDialog;
 pub use graph_widget::GraphWidget;
-pub use graph_widget_utils::AnimationTicks;
+pub use graph_widget_utils::AnimationFrame;
 pub use graph_widget_utils::DatasetGroup;
 pub use graph_widget_utils::FillingSettings;
 pub use graph_widget_utils::RoundingSettings;

@@ -30,7 +30,7 @@ use magpie_types::fan::Fan;
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::performance_page::widgets::{
-    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
 };
 use crate::performance_page::{PageExt, MK_TO_0_C};
 use crate::to_short_human_readable_time;
@@ -281,7 +281,7 @@ mod imp {
             true
         }
 
-        pub fn update_animations(this: &super::PerformancePageFan, ticks: AnimationTicks) -> bool {
+        pub fn update_animations(this: &super::PerformancePageFan, ticks: AnimationFrame) -> bool {
             let this = this.imp();
 
             this.speed_graph.update_animation(ticks);
@@ -509,7 +509,7 @@ impl PerformancePageFan {
         imp::PerformancePageFan::update_readings(self, fan_info, index)
     }
 
-    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+    pub fn update_animations(&self, ticks: AnimationFrame) -> bool {
         imp::PerformancePageFan::update_animations(self, ticks)
     }
 }

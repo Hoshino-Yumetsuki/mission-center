@@ -34,7 +34,7 @@ use crate::{
 };
 
 use crate::performance_page::widgets::{
-    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
 };
 
 use super::{GpuDetails, PageExt};
@@ -350,7 +350,7 @@ mod imp {
 
         pub(crate) fn update_animations(
             this: &super::PerformancePageGpu,
-            ticks: AnimationTicks,
+            ticks: AnimationFrame,
         ) -> bool {
             let this = this.imp();
 
@@ -896,7 +896,7 @@ impl PerformancePageGpu {
         imp::PerformancePageGpu::update_readings(self, gpu, index)
     }
 
-    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+    pub fn update_animations(&self, ticks: AnimationFrame) -> bool {
         imp::PerformancePageGpu::update_animations(self, ticks)
     }
 }

@@ -31,7 +31,7 @@ use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::performance_page::disk_details::DiskDetails;
 use crate::performance_page::widgets::{
-    AnimationTicks, DatasetGroup, EjectFailureDialog, FillingSettings, GraphWidget,
+    AnimationFrame, DatasetGroup, EjectFailureDialog, FillingSettings, GraphWidget,
     RoundingSettings, ScalingSettings, SmartDataDialog, SmartFailureDialog,
 };
 use crate::{app, settings, to_short_human_readable_time, DataType};
@@ -416,7 +416,7 @@ mod imp {
             true
         }
 
-        pub fn update_animations(this: &super::PerformancePageDisk, ticks: AnimationTicks) -> bool {
+        pub fn update_animations(this: &super::PerformancePageDisk, ticks: AnimationFrame) -> bool {
             let this = this.imp();
 
             this.usage_graph.update_animation(ticks);
@@ -635,7 +635,7 @@ impl PerformancePageDisk {
         imp::PerformancePageDisk::update_readings(self, index, disk)
     }
 
-    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+    pub fn update_animations(&self, ticks: AnimationFrame) -> bool {
         imp::PerformancePageDisk::update_animations(self, ticks)
     }
 }

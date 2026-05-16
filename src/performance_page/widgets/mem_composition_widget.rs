@@ -37,6 +37,8 @@ use magpie_types::memory::Memory;
 use super::GRAPH_RADIUS;
 use crate::i18n::i18n_f;
 
+const FILL_ALPHA: f32 = 50. / 255.;
+
 mod imp {
     use super::*;
     use crate::DataType;
@@ -214,7 +216,7 @@ mod imp {
                 base_color.red(),
                 base_color.green(),
                 base_color.blue(),
-                50. / 256.,
+                FILL_ALPHA,
             );
 
             let stroke = Stroke::new(1.);

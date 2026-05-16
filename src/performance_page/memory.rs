@@ -25,7 +25,7 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use crate::performance_page::widgets::{
-    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, MemoryCompositionWidget,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, MemoryCompositionWidget,
 };
 use crate::DataType;
 use crate::{application::INTERVAL_STEP, i18n::*, settings, to_short_human_readable_time};
@@ -543,7 +543,7 @@ mod imp {
 
         pub fn update_animations(
             this: &super::PerformancePageMemory,
-            ticks: AnimationTicks,
+            ticks: AnimationFrame,
         ) -> bool {
             let this = this.imp();
 
@@ -957,7 +957,7 @@ impl PerformancePageMemory {
         imp::PerformancePageMemory::update_readings(self, readings)
     }
 
-    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+    pub fn update_animations(&self, ticks: AnimationFrame) -> bool {
         imp::PerformancePageMemory::update_animations(self, ticks)
     }
 }

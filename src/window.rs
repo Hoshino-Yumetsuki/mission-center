@@ -29,7 +29,7 @@ use gtk::glib::{g_debug, ControlFlow};
 use gtk::{gdk, gio, glib};
 
 use crate::application::INTERVAL_STEP;
-use crate::performance_page::widgets::AnimationTicks;
+use crate::performance_page::widgets::AnimationFrame;
 use crate::widgets::ListCell;
 use crate::widgets::ThemeSelector;
 use crate::{app, magpie_client::Readings, settings};
@@ -364,7 +364,7 @@ mod imp {
                 collapse_threshold: Cell::new(0),
                 last_refresh: Cell::new(0),
                 cached_refresh_ticks: Cell::new(1),
-                global_scroll_ticks: Cell::new(0),
+                global_scroll_ticks: Cell::new(1),
             }
         }
     }
@@ -1071,14 +1071,14 @@ impl MissionCenterWindow {
 
             move || {
                 if let Some(this) = this.upgrade() {
-                    this.update_animations(AnimationTicks {
-                        ticks: ((Self::get_current_timestamp()
+                    this.update_animations(AnimationFrame {
+                        progress: ((Self::get_current_timestamp()
                             .saturating_sub(this.imp().last_refresh.get())
                             as f64
                             / 1_000_000.)
                             / (this.imp().cached_refresh_ticks.get() as f64 * INTERVAL_STEP))
                             .clamp(0., 1.) as f32,
-                        graph_offset: this.imp().global_scroll_ticks.get(),
+                        grid_offset: this.imp().global_scroll_ticks.get(),
                     });
                 }
 
@@ -1180,18 +1180,18 @@ impl MissionCenterWindow {
 
         this.last_refresh.set(Self::get_current_timestamp());
 
-        let graph_offset = self.imp().global_scroll_ticks.get().wrapping_add(1);
-        self.imp().global_scroll_ticks.set(graph_offset);
+        let grid_offset = self.imp().global_scroll_ticks.get().wrapping_add(1);
+        self.imp().global_scroll_ticks.set(grid_offset);
 
-        self.update_animations(AnimationTicks {
-            ticks: 0.,
-            graph_offset,
+        self.update_animations(AnimationFrame {
+            progress: 0.,
+            grid_offset,
         });
 
         result
     }
 
-    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+    pub fn update_animations(&self, ticks: AnimationFrame) -> bool {
         let mut result = true;
 
         let this = self.imp();
@@ -1199,7 +1199,7 @@ impl MissionCenterWindow {
         g_debug!(
             "MissionCenter",
             "Updating with {} animation ticks",
-            ticks.ticks
+            ticks.progress
         );
 
         result &= this.performance_page.update_animations(ticks);

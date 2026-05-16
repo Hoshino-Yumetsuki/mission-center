@@ -29,7 +29,7 @@ use magpie_types::network::{Connection, ConnectionKind, ConnectionState};
 
 use crate::i18n::*;
 use crate::performance_page::widgets::{
-    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
 };
 use crate::{application::INTERVAL_STEP, to_short_human_readable_time};
 use crate::{settings, DataType};
@@ -473,7 +473,7 @@ mod imp {
 
         pub fn update_animations(
             this: &super::PerformancePageNetwork,
-            ticks: AnimationTicks,
+            ticks: AnimationFrame,
         ) -> bool {
             let this = this.imp();
 
@@ -820,7 +820,7 @@ impl PerformancePageNetwork {
         imp::PerformancePageNetwork::update_readings(self, connection)
     }
 
-    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+    pub fn update_animations(&self, ticks: AnimationFrame) -> bool {
         imp::PerformancePageNetwork::update_animations(self, ticks)
     }
 

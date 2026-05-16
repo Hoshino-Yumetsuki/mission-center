@@ -38,7 +38,7 @@ use gtk::Snapshot;
 use gtk::TextDirection;
 
 use crate::performance_page::widgets::graph_widget_utils::{
-    AnimationTicks, DatasetGroup, FillingSettings, RoundingSettings, ScalingSettings,
+    AnimationFrame, DatasetGroup, FillingSettings, RoundingSettings, ScalingSettings,
 };
 
 // no faster than 200 Hz. if everything is going according to plan, we expect two animation frames in quick succession at the start of a new cycle and want to prevent rendering twice
@@ -66,7 +66,7 @@ mod imp {
         #[property(get, set = Self::set_vertical_line_count)]
         vertical_line_count: Cell<u32>,
         #[property(get, set)]
-        animation_ticks: Cell<f32>,
+        animation_progress: Cell<f32>,
         #[property(get, set = Self::set_do_animation)]
         do_animation: Cell<bool>,
         #[property(get, set = Self::set_smooth_graphs)]
@@ -97,7 +97,7 @@ mod imp {
                 base_color: Cell::new(gdk::RGBA::new(0., 0., 0., 1.)),
                 horizontal_line_count: Cell::new(9),
                 vertical_line_count: Cell::new(6),
-                animation_ticks: Cell::new(0.),
+                animation_progress: Cell::new(0.),
                 do_animation: Cell::new(false),
                 smooth_graphs: Cell::new(false),
                 scroll: Cell::new(true),
@@ -158,10 +158,6 @@ mod imp {
                 self.do_animation.set(smooth);
                 self.obj().force_redraw();
             }
-        }
-
-        pub fn set_animation_ticks(&self, ticks: f32) {
-            self.animation_ticks.set(ticks);
         }
     }
 
@@ -283,7 +279,7 @@ mod imp {
                 snapshot.save();
                 let spacing = width / (self.data_points.get() - 2) as f32;
                 snapshot.translate(&graphene::Point::new(
-                    spacing * (1. - self.animation_ticks.get()),
+                    spacing * (1. - self.animation_progress.get()),
                     0.,
                 ));
                 snapshot.append_node(baze.clone());
@@ -541,21 +537,21 @@ impl GraphWidget {
         }
     }
 
-    pub fn update_animation(&self, ticks: AnimationTicks) -> bool {
+    pub fn update_animation(&self, ticks: AnimationFrame) -> bool {
         if self.is_visible() {
-            if ticks.ticks == 0. {
-                self.set_animation_ticks(ticks.ticks);
-                self.imp().scroll_offset.set(ticks.graph_offset);
+            if ticks.progress == 0. {
+                self.set_animation_progress(ticks.progress);
+                self.imp().scroll_offset.set(ticks.grid_offset);
                 self.force_redraw();
             } else if self.do_animation() {
-                if ticks.ticks > self.animation_ticks() + ANIMATION_LOCKOUT {
-                    self.set_animation_ticks(ticks.ticks);
+                if ticks.progress > self.animation_progress() + ANIMATION_LOCKOUT {
+                    self.set_animation_progress(ticks.progress);
                     self.queue_draw();
                 }
             }
-        } else if ticks.ticks == 0. {
+        } else if ticks.progress == 0. {
             self.imp().need_redraw.set(true);
-            self.imp().scroll_offset.set(ticks.graph_offset);
+            self.imp().scroll_offset.set(ticks.grid_offset);
         }
 
         true
@@ -766,7 +762,9 @@ impl GraphWidget {
     }
 
     pub fn point_spacing_factor(&self) -> f32 {
-        1. / (self.data_points() - (if self.do_animation() { 2 } else { 1 })) as f32
+        let subtract = if self.do_animation() { 2 } else { 1 };
+        let denom = self.data_points().saturating_sub(subtract).max(1);
+        1. / denom as f32
     }
 
     pub fn reset_auto_scaling(&self) {

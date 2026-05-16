@@ -26,7 +26,7 @@ use gtk::glib::g_critical;
 use gtk::{gio, glib, prelude::*};
 
 use crate::performance_page::widgets::{
-    AnimationTicks, DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
 };
 use crate::DataType;
 use crate::{application::INTERVAL_STEP, i18n::*, settings, to_short_human_readable_time};
@@ -631,7 +631,7 @@ mod imp {
             true
         }
 
-        pub fn update_animations(this: &super::PerformancePageCpu, ticks: AnimationTicks) -> bool {
+        pub fn update_animations(this: &super::PerformancePageCpu, ticks: AnimationFrame) -> bool {
             let this = this.imp();
 
             let widgets = this.graph_widgets.take();
@@ -1122,7 +1122,7 @@ impl PerformancePageCpu {
         imp::PerformancePageCpu::update_readings(self, readings)
     }
 
-    pub fn update_animations(&self, ticks: AnimationTicks) -> bool {
+    pub fn update_animations(&self, ticks: AnimationFrame) -> bool {
         imp::PerformancePageCpu::update_animations(self, ticks)
     }
 }
