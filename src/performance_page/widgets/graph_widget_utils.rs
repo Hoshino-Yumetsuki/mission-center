@@ -57,6 +57,7 @@ pub enum RoundingSettings {
     Pow2,
     Pow2Base10,
     Integer,
+    Pow10,
 }
 
 impl RoundingSettings {
@@ -77,7 +78,7 @@ impl RoundingSettings {
         (n + 1) as f32
     }
 
-    fn round_up_to_next_power_of_two_base_10(num: f32) -> f32 {
+    fn round_up_to_next_power_of_two_base_10(mut num: f32) -> f32 {
         if num == 0. {
             return 0.;
         }
@@ -90,12 +91,27 @@ impl RoundingSettings {
         Self::round_up_to_next_power_of_two((num / num_below).ceil()).min(1000.) * num_below
     }
 
+    fn round_up_to_next_power_of_ten(mut n: f32) -> f32 {
+        let mut negative_multiplier = 1.;
+
+        if n == 0. {
+            return 0.;
+        } else if n < 0. {
+            negative_multiplier = -1.;
+            n = n.abs()
+        }
+
+        let magnitude = 10_f32.powi(n.log10().floor() as i32);
+        (n / magnitude).ceil() * magnitude * negative_multiplier
+    }
+
     pub fn apply_up_rounding(&self, f: f32) -> f32 {
         match self {
             RoundingSettings::NoRounding => f,
             RoundingSettings::Pow2 => Self::round_up_to_next_power_of_two(f),
             RoundingSettings::Pow2Base10 => Self::round_up_to_next_power_of_two_base_10(f),
             RoundingSettings::Integer => f.ceil(),
+            RoundingSettings::Pow10 => Self::round_up_to_next_power_of_ten(f),
         }
     }
 
@@ -103,6 +119,7 @@ impl RoundingSettings {
         match self {
             RoundingSettings::NoRounding => f,
             RoundingSettings::Integer => f.floor(),
+            RoundingSettings::Pow10 => Self::round_up_to_next_power_of_ten(f),
             _ => f, // generally rounding down on logs is problematic
         }
     }

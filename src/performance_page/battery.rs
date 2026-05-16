@@ -29,8 +29,7 @@ use magpie_types::battery::Battery;
 use super::widgets::{AnimationTicks, FillingSettings, GraphWidget};
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
-use crate::performance_page::widgets::DatasetGroup;
-use crate::performance_page::widgets::ScalingSettings;
+use crate::performance_page::widgets::{DatasetGroup, RoundingSettings, ScalingSettings};
 use crate::performance_page::PageExt;
 use crate::to_long_human_readable_time;
 use crate::to_short_human_readable_time;
@@ -366,6 +365,9 @@ mod imp {
                 energy_rate_graph.dataset_settings.high_watermark = 0.;
                 energy_rate_graph.dataset_settings.low_watermark = 0.;
                 energy_rate_graph.dataset_settings.fill = FillingSettings::FillToZero;
+                energy_rate_graph.dataset_settings.rounding_settings = RoundingSettings::Pow10;
+                this.energy_rate_graph
+                    .set_force_horizontal_line_count_divisible_by(2.);
             } else {
                 energy_rate_graph = DatasetGroup::new();
                 energy_rate_graph.dataset_settings.high_watermark = 1.;
@@ -1024,6 +1026,8 @@ fn update_history(
     this.history_graph.set_data_points(TOTAL_SECS);
     this.history_graph.clear_datasets();
     this.history_graph.add_dataset(history_graph);
+    this.history_graph
+        .set_force_vertical_line_count_divisible_by(7.);
     this.history_graph.add_dataset(history_graph_interpol);
     this.history_graph.update_animation(AnimationTicks {
         ticks: 0.0,

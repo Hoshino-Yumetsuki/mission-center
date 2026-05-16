@@ -47,6 +47,9 @@ const ANIMATION_LOCKOUT: f32 = 0.005;
 // 20% opacity for the gridline overlay
 const GRID_LINE_ALPHA: f32 = 51. / 255.;
 
+const GRID_VERTICAL_LINE_IDEAL_PIXEL_WIDTH: f32 = 60.;
+const GRID_HORIZONTAL_LINE_IDEAL_PIXEL_WIDTH: f32 = 50.;
+
 mod imp {
     use super::*;
     use crate::performance_page::widgets::GRAPH_RADIUS;
@@ -73,6 +76,10 @@ mod imp {
         #[property(get, set)]
         grid_visible: Cell<bool>,
 
+        #[property(get, set)]
+        pub force_vertical_line_count_divisible_by: Cell<f32>,
+        #[property(get, set)]
+        pub force_horizontal_line_count_divisible_by: Cell<f32>,
         pub settings_inited: Cell<bool>,
         pub scroll_offset: Cell<u32>,
         prev_size: Cell<(i32, i32)>,
@@ -94,6 +101,8 @@ mod imp {
                 do_animation: Cell::new(false),
                 smooth_graphs: Cell::new(false),
                 scroll: Cell::new(true),
+                force_horizontal_line_count_divisible_by: Cell::new(2.),
+                force_vertical_line_count_divisible_by: Cell::new(1.),
                 grid_visible: Cell::new(true),
                 settings_inited: Cell::new(false),
                 scroll_offset: Cell::new(0),
@@ -413,8 +422,30 @@ impl GraphWidget {
                 let width = obj.width() as f32;
                 let height = obj.height() as f32;
 
-                obj.set_vertical_line_count((width / 60.).round().max(6.) as u32);
-                obj.set_horizontal_line_count((height / 60.).round().max(9.) as u32);
+                fn compute_line_count(
+                    pixel_size: f32,
+                    ideal_pix: f32,
+                    force_divisible: f32,
+                ) -> u32 {
+                    let raw_num_lines = pixel_size / ideal_pix;
+                    let num_lines = if force_divisible > 1. {
+                        (raw_num_lines / force_divisible).round() * force_divisible - 1.0
+                    } else {
+                        raw_num_lines.round()
+                    };
+                    num_lines.max(force_divisible - 1.0) as u32
+                }
+
+                obj.set_vertical_line_count(compute_line_count(
+                    width,
+                    GRID_VERTICAL_LINE_IDEAL_PIXEL_WIDTH,
+                    obj.force_vertical_line_count_divisible_by(),
+                ));
+                obj.set_horizontal_line_count(compute_line_count(
+                    height,
+                    GRID_HORIZONTAL_LINE_IDEAL_PIXEL_WIDTH,
+                    obj.force_horizontal_line_count_divisible_by(),
+                ));
 
                 None
             }
