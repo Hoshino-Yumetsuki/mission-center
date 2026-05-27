@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2025-02-24 17:34+0000\n"
-"Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
+"PO-Revision-Date: 2026-05-28 08:11+0000\n"
+"Last-Translator: murllock329 <jyeo7505@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ko/>\n"
 "Language: ko\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.10.1-dev\n"
+"X-Generator: Weblate 2026.6.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -200,6 +200,7 @@ msgid ""
 msgstr "비트(기본) 또는 바이트 단위를 네트워크 속도 표기에 사용할 지 여부"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
+#, fuzzy
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr "비트(기본) 또는 바이트 단위를 네트워크 속도 표기에 사용할 지 여부"
 
@@ -417,18 +418,16 @@ msgstr "메모리"
 
 #: resources/ui/apps_page/details_dialog.blp:243
 #: resources/ui/process_column_view/process_details_dialog.blp:251
-#, fuzzy
 msgid "Drives"
-msgstr "{}번 디스크 ({})"
+msgstr "드라이브"
 
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/process_column_view/column_view_frame.blp:78
 #: resources/ui/process_column_view/process_details_dialog.blp:276
 #: src/process_tree/column_view_frame.rs:579
 #: src/process_tree/column_view_frame.rs:588
-#, fuzzy
 msgid "Network"
-msgstr "네트워크(_N)"
+msgstr "네트워크"
 
 #: resources/ui/apps_page/details_dialog.blp:293
 #: resources/ui/process_column_view/column_view_frame.blp:84
@@ -436,27 +435,25 @@ msgstr "네트워크(_N)"
 #: src/performance_page/gpu.rs:358 src/performance_page/mod.rs:1397
 #: src/performance_page/mod.rs:2159 src/process_tree/column_view_frame.rs:594
 #: src/process_tree/column_view_frame.rs:611
-#, fuzzy
 msgid "GPU"
-msgstr "GPU(_G)"
+msgstr "GPU"
 
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/process_column_view/column_view_frame.blp:90
 #: resources/ui/process_column_view/process_details_dialog.blp:326
 #: src/process_tree/column_view_frame.rs:598
 #: src/process_tree/column_view_frame.rs:617
-#, fuzzy
 msgid "GPU Memory"
-msgstr "{}번 GPU"
+msgstr "GPU 메모리"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "앱과 프로세스를 모두 접습니다"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/services_page/page.blp:94
 #: resources/ui/keyboard_shortcuts.blp:112
 msgid "Collapse All"
-msgstr ""
+msgstr "모두 접기"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
@@ -508,7 +505,7 @@ msgstr "논리 프로세서(_P)"
 
 #: resources/ui/performance_page/cpu.blp:120
 msgid "Show Kernel Times"
-msgstr ""
+msgstr "커널 시간 보기"
 
 #: resources/ui/performance_page/cpu.blp:127
 #: resources/ui/performance_page/disk.blp:182
@@ -882,9 +879,8 @@ msgid "PCI Express speed:"
 msgstr "PCI 익스프레스 속도:"
 
 #: resources/ui/performance_page/gpu_details.blp:566
-#, fuzzy
 msgid "Max PCI Express speed:"
-msgstr "PCI 익스프레스 속도:"
+msgstr "최대 PCI 익스프레스 속도:"
 
 #: resources/ui/performance_page/gpu_details.blp:582
 msgid "PCI bus address:"
@@ -892,13 +888,15 @@ msgstr "PCI 버스 주소:"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
 msgid "Failed To Get SMART Data"
-msgstr ""
+msgstr "SMART 데이터를 가져오는 데 실패했습니다"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
 msgid ""
 "There was a problem fetching SMART data. Try running from the command line "
 "to get more information."
 msgstr ""
+"SMART 데이터를 페칭하는 중 문제가 발생했습니다. 자세한 정보를 보려면 "
+"명령어에서 실행하십시오."
 
 #: resources/ui/performance_page/disk_details.blp:63
 msgid "Read speed"
@@ -939,15 +937,15 @@ msgstr "시스템 디스크:"
 
 #: resources/ui/performance_page/disk_details.blp:300
 msgid "WWN:"
-msgstr ""
+msgstr "WWN:"
 
 #: resources/ui/performance_page/disk_details.blp:316
 msgid "Serial:"
-msgstr ""
+msgstr "시리얼:"
 
 #: resources/ui/performance_page/disk_details.blp:332
 msgid "Rotation Rate"
-msgstr ""
+msgstr "회전 속도"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -1003,90 +1001,87 @@ msgstr "L3 캐시:"
 
 #: resources/ui/performance_page/cpu_details.blp:319
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Cpufreq 드라이버:"
 
 #: resources/ui/performance_page/cpu_details.blp:333
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Cpufreq 조정기:"
 
 #: resources/ui/performance_page/cpu_details.blp:347
-#, fuzzy
 msgid "Power preference:"
-msgstr "기본 설정(_P)"
+msgstr "전원 설정:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "일반 설정"
+msgstr "일반"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
-msgstr ""
+msgstr "갱신 간격"
 
 #: resources/ui/preferences/page.blp:10
-#, fuzzy
 msgid "In seconds"
-msgstr "{} 초"
+msgstr "설정 초마다 갱신"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
 msgstr ""
 
 #: resources/ui/preferences/page.blp:46 resources/ui/keyboard_shortcuts.blp:68
-#, fuzzy
 msgid "Performance Page"
-msgstr "성능"
+msgstr "성능 페이지"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "부드러운 그래프"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "날카로운 선 대신 부드러운 선으로 그래프를 그립니다"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
-msgstr ""
+msgstr "슬라이드 그래프"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Animate graphs (may negatively impact performance)"
-msgstr ""
+msgstr "그래프를 자연스럽게 움직입니다 (성능이 저하될 수 있습니다)"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "동적으로 네트워크 그래프를 조정"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"실제 사용량 또는 채널의 최대 속도에 맞춰 네트워크 그래프 크기를 동적으로 "
+"조정합니다"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "CPU 정보 보기"
 
 #: resources/ui/preferences/page.blp:70
-#, fuzzy
 msgid "Show Memory Information"
-msgstr "메모리 사용량"
+msgstr "메모리 정보 보기"
 
 #: resources/ui/preferences/page.blp:76
 msgid "Show Disk Information"
-msgstr ""
+msgstr "디스크 정보 보기"
 
 #: resources/ui/preferences/page.blp:82
 msgid "Show Network Information"
-msgstr ""
+msgstr "네트워크 정보 보기"
 
 #: resources/ui/preferences/page.blp:88
 msgid "Show GPU Information"
-msgstr ""
+msgstr "GPU 정보 보기"
 
 #: resources/ui/preferences/page.blp:94
 msgid "Show Fan Information"
-msgstr ""
+msgstr "팬 정보 보기"
 
 #: resources/ui/preferences/page.blp:101
 #, fuzzy
@@ -1102,184 +1097,179 @@ msgid "Remember Sorting"
 msgstr "정렬 상태 기억"
 
 #: resources/ui/preferences/page.blp:110
-#, fuzzy
 msgid "Persist sorting by column across app restarts"
-msgstr "앱을 다시 시작할 때마다 앱 및 프로세스 목록의 정렬 상태를 기억합니다"
+msgstr "앱을 다시 시작할 때마다 목록의 정렬 상태를 기억합니다"
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
-msgstr ""
+msgstr "목록 순서 기억"
 
 #: resources/ui/preferences/page.blp:115
-#, fuzzy
 msgid "Persist the order of the columns, across app restarts"
-msgstr "앱을 다시 시작할 때마다 앱 및 프로세스 목록의 정렬 상태를 기억합니다"
+msgstr "앱을 다시 시작할 때마다 목록의 순서를 기억합니다"
 
 #: resources/ui/preferences/page.blp:119
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "코어 수에 맞춰서 CPU 사용량 조정"
 
 #: resources/ui/preferences/page.blp:120
 msgid "Show CPU usage scaled to the number of available cores"
-msgstr ""
+msgstr "활성된 코어 수에 맞춰서 CPU 사용량을 조정합니다"
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
-msgstr ""
+msgstr "목록 경계선 보기"
 
 #: resources/ui/preferences/page.blp:125
 msgid "Show a separator between each column"
-msgstr ""
+msgstr "각 목록마다 경계선을 표시합니다"
 
 #: resources/ui/preferences/page.blp:130
 msgid "Global Units"
 msgstr ""
 
 #: resources/ui/preferences/page.blp:133
-#, fuzzy
 msgid "Memory Usage Unit"
-msgstr "메모리 사용량"
+msgstr "메모리 사용량 단위"
 
 #: resources/ui/preferences/page.blp:140
 msgid "Use Bytes as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "메모리 측정에 바이트 단위 사용"
 
 #: resources/ui/preferences/page.blp:141 resources/ui/preferences/page.blp:179
 #: resources/ui/preferences/page.blp:217
 msgid "Bytes"
-msgstr ""
+msgstr "바이트"
 
 #: resources/ui/preferences/page.blp:145
 msgid "Use Bits as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "메모리 측정에 비트 단위 사용"
 
 #: resources/ui/preferences/page.blp:146 resources/ui/preferences/page.blp:184
 #: resources/ui/preferences/page.blp:222
 msgid "Bits"
-msgstr ""
+msgstr "비트"
 
 #: resources/ui/preferences/page.blp:152
-#, fuzzy
 msgid "Memory Usage Base"
-msgstr "메모리 사용량"
+msgstr "메모리 사용량 기수"
 
 #: resources/ui/preferences/page.blp:159
 msgid "Use Base 10 for Memory"
-msgstr ""
+msgstr "메모리 용량에 10진법 사용"
 
 #: resources/ui/preferences/page.blp:160 resources/ui/preferences/page.blp:198
 #: resources/ui/preferences/page.blp:236
 msgid "Base 10"
-msgstr ""
+msgstr "10진법"
 
 #: resources/ui/preferences/page.blp:164
 msgid "Use Base 2 for Memory"
-msgstr ""
+msgstr "메모리 용량에 2진법 사용"
 
 #: resources/ui/preferences/page.blp:165 resources/ui/preferences/page.blp:203
 #: resources/ui/preferences/page.blp:241
 msgid "Base 2"
-msgstr ""
+msgstr "2진법"
 
 #: resources/ui/preferences/page.blp:171
 msgid "Drive Usage Unit"
-msgstr ""
+msgstr "드라이브 사용량 단위"
 
 #: resources/ui/preferences/page.blp:178
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "디스크 드라이브 측정에 바이트 단위 사용"
 
 #: resources/ui/preferences/page.blp:183
 msgid "Use Bits as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "디스크 드라이브 측정에 비트 단위 사용"
 
 #: resources/ui/preferences/page.blp:190
 msgid "Drive Usage Base"
-msgstr ""
+msgstr "드라이브 사용량 기수"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
-msgstr ""
+msgstr "디스크 드라이브에 10진법 사용"
 
 #: resources/ui/preferences/page.blp:202
 msgid "Use Base 2 for Disk Drives"
-msgstr ""
+msgstr "디스크 드라이브에 2진법 사용"
 
 #: resources/ui/preferences/page.blp:209
 msgid "Network Usage Unit"
-msgstr ""
+msgstr "네트워크 사용량 단위"
 
 #: resources/ui/preferences/page.blp:216
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "네트워크 인터페이스 측정에 바이트 단위 사용"
 
 #: resources/ui/preferences/page.blp:221
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "네트워크 인터페이스 측정에 비트 단위 사용"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
-msgstr ""
+msgstr "네트워크 사용량 기수"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
-msgstr ""
+msgstr "네트워크 인터페이스에 10진법 사용"
 
 #: resources/ui/preferences/page.blp:240
 msgid "Use Base 2 for Network Interfaces"
-msgstr ""
+msgstr "네트워크 인터페이스에 2진법 사용"
 
 #: resources/ui/services_page/page.blp:84
 msgid "Collapse all expanded services"
-msgstr ""
+msgstr "펼친 서비스 항목을 모두 접습니다"
 
 #: resources/ui/services_page/page.blp:123
 msgid "Filter running processes"
-msgstr ""
+msgstr "실행 중인 프로세스를 필터링합니다"
 
 #: resources/ui/services_page/page.blp:143
-#, fuzzy
 msgid "Filter failed processes"
-msgstr "가상 프로세서:"
+msgstr "실행 실패된 프로세서를 필터링합니다"
 
 #: resources/ui/services_page/page.blp:163
 msgid "Filter stopped processes"
-msgstr ""
+msgstr "실행 정지된 프로세스를 필터링합니다"
 
 #: resources/ui/services_page/page.blp:183
 msgid "Filter disabled processes"
-msgstr ""
+msgstr "비활성화된 프로세스를 필터링합니다"
 
 #: resources/ui/services_page/page.blp:204
 msgid "Remove all filters"
-msgstr ""
+msgstr "모든 필터링을 제거합니다"
 
 #: resources/ui/services_page/page.blp:214
 msgid "Remove Filters"
-msgstr ""
+msgstr "필터링 제거"
 
 #: resources/ui/widgets/theme_selector.blp:18
 #: resources/ui/widgets/theme_selector.blp:21
 msgid "Follow system style"
-msgstr ""
+msgstr "시스템 스타일 따르기"
 
 #: resources/ui/widgets/theme_selector.blp:35
 #: resources/ui/widgets/theme_selector.blp:38
 msgid "Light style"
-msgstr ""
+msgstr "라이트 스타일"
 
 #: resources/ui/widgets/theme_selector.blp:53
 #: resources/ui/widgets/theme_selector.blp:56
 msgid "Dark style"
-msgstr ""
+msgstr "다크 스타일"
 
 #: resources/ui/keyboard_shortcuts.blp:5
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "키보드 단축키"
 
 #: resources/ui/keyboard_shortcuts.blp:10
 msgid "Global"
-msgstr ""
+msgstr "전체"
 
 #: resources/ui/keyboard_shortcuts.blp:21
 msgid "Open Menu"
