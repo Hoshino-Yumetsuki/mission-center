@@ -171,6 +171,12 @@
             <summary>Which graph is shown on the CPU performance page</summary>
         </key>
 
+        <key name="performance-page-cpu-graph-bottom" type="i">
+            <range min="0" max="3"/>
+            <default>1</default>
+            <summary>Which graph is shown on the bottom graph of the CPU performance page</summary>
+        </key>
+
         <key name="performance-page-kernel-times" type="b">
             <default>false</default>
             <summary>Show kernel times in the CPU graphs</summary>

@@ -25,74 +25,134 @@ template $PerformancePageCpu : Box {
 
   orientation: vertical;
 
-  WindowHandle {
-    child: Box description {
+  Grid {
+    row-spacing: 10;
+
+    Box top {
       orientation: vertical;
-      margin-top: 2;
-      spacing: 7;
-      hexpand: true;
+      layout {
+        column: '0';
+        row: '0';
+        row-span: 7;
+      }
+
+      WindowHandle {
+        child: Box description {
+          orientation: vertical;
+          margin-top: 2;
+          spacing: 7;
+          hexpand: true;
+
+          Box {
+            spacing: 20;
+
+            Label {
+              styles [
+                "title-1",
+              ]
+
+              hexpand: true;
+              halign: start;
+              label: _("CPU");
+            }
+
+            Label cpu_name {
+              styles [
+                "title-3",
+              ]
+
+              halign: end;
+              ellipsize: middle;
+              selectable: true;
+            }
+          }
+          Box {
+            Label {
+              styles [
+                "caption",
+              ]
+
+              label: _("Utilization over ");
+            }
+            Label graph_max_duration {
+              styles [
+                "caption",
+              ]
+
+              hexpand: true;
+              halign: start;
+            }
+            Label {
+              styles [
+                "caption",
+              ]
+
+              label: _("100%");
+            }
+          }
+        };
+      }
+
+      Grid usage_graphs {
+        row-spacing: 7;
+        column-spacing: 7;
+        vexpand: true;
+        hexpand: true;
+
+        height-request: 20;
+        width-request: 100;
+
+        row-homogeneous: true;
+        column-homogeneous: true;
+      }
+    }
+    Box bottom_graph_box {
+      layout {
+        column: '0';
+        row: '7';
+        row-span: 3;
+      }
 
       Box {
-        spacing: 20;
+        orientation: vertical;
 
-        Label {
-          styles [
-            "title-1",
-          ]
+        Box {
+          Label bottom_graph_label {
+            styles [
+              "caption",
+            ]
 
-          hexpand: true;
-          halign: start;
-          label: _("CPU");
+            ellipsize: middle;
+          }
+          Label {
+            styles [
+              "caption",
+            ]
+
+            hexpand: true;
+            halign: start;
+            label: bind graph_max_duration.label;
+          }
+
+          Label bottom_graph_total {
+            styles [
+              "caption",
+            ]
+          }
         }
 
-        Label cpu_name {
-          styles [
-            "title-3",
-          ]
+        $GraphWidget bottom_graph {
+          vexpand: true;
+          hexpand: true;
 
-          halign: end;
-          ellipsize: middle;
-          selectable: true;
+          width-request: 50;
+          height-request: 30;
+
+          base-color: bind template.base-color;
+          scroll: true;
         }
       }
-      Box {
-        Label {
-          styles [
-            "caption",
-          ]
-
-          label: _("Utilization over ");
-        }
-        Label graph_max_duration {
-          styles [
-            "caption",
-          ]
-
-          hexpand: true;
-          halign: start;
-        }
-        Label {
-          styles [
-            "caption",
-          ]
-
-          label: _("100%");
-        }
-      }
-    };
-  }
-
-  Grid usage_graphs {
-    row-spacing: 7;
-    column-spacing: 7;
-    vexpand: true;
-    hexpand: true;
-
-    height-request: 100;
-    width-request: 100;
-
-    row-homogeneous: true;
-    column-homogeneous: true;
+    }
   }
 
   PopoverMenu context_menu {
@@ -104,7 +164,7 @@ template $PerformancePageCpu : Box {
 menu context_menu_model {
   section {
     submenu {
-      label: _("Change G_raph To");
+      label: _("Change _Top Graph To");
 
       item {
         label: _("Overall U_tilization");
@@ -124,6 +184,30 @@ menu context_menu_model {
       item {
         label: _("All Threads _Stacked");
         action: "graph.all-threads-stacked";
+      }
+    }
+
+    submenu {
+      label: _("Change B_ottom Graph To");
+
+      item {
+        label: _("_Power Draw");
+        action: "graph.cpu_power";
+      }
+
+      item {
+        label: _("_Temperature");
+        action: "graph.cpu_temperature";
+      }
+
+      item {
+        label: _("_Clock Speed");
+        action: "graph.cpu_clocks";
+      }
+
+      item {
+        label: _("_None");
+        action: "graph.cpu_none";
       }
     }
 

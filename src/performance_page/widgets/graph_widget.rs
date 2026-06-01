@@ -669,8 +669,6 @@ impl GraphWidget {
 
         self.imp().data_sets.set(sets);
 
-        self.force_redraw();
-
         it
     }
 
@@ -692,8 +690,6 @@ impl GraphWidget {
         let it = sets[index].dataset_settings.low_watermark;
 
         self.imp().data_sets.set(sets);
-
-        self.force_redraw();
 
         it
     }

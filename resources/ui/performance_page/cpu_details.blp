@@ -212,6 +212,30 @@ Box root {
         selectable: true;
       }
     }
+
+    Box {
+      visible: bind temperature.visible;
+      orientation: vertical;
+      spacing: 3;
+
+      Label {
+        styles [
+          "caption",
+        ]
+
+        halign: start;
+        label: _("Temperature");
+      }
+
+      Label temperature {
+        styles [
+          "title-4",
+        ]
+
+        halign: start;
+        selectable: true;
+      }
+    }
   }
 
   Grid system_info {

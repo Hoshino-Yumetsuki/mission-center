@@ -35,6 +35,9 @@ use crate::performance_page::widgets::{
 use crate::performance_page::{PageExt, MK_TO_0_C};
 use crate::to_short_human_readable_time;
 
+pub const TEMPERATURE_HIGH_WATERMARK: f32 = 45.;
+pub const TEMPERATURE_LOW_WATERMARK: f32 = 35.;
+
 mod imp {
     use super::*;
 
@@ -480,8 +483,8 @@ impl PerformancePageFan {
 
         let mut temp_dataset = DatasetGroup::new();
         temp_dataset.dataset_settings.scaling_settings = ScalingSettings::StickyUpDown;
-        temp_dataset.dataset_settings.high_watermark = 45.;
-        temp_dataset.dataset_settings.low_watermark = 35.;
+        temp_dataset.dataset_settings.high_watermark = TEMPERATURE_HIGH_WATERMARK;
+        temp_dataset.dataset_settings.low_watermark = TEMPERATURE_LOW_WATERMARK;
 
         this.imp().temp_graph.add_dataset(temp_dataset);
 
