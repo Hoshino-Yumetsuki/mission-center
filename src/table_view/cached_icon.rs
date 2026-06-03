@@ -24,6 +24,7 @@ use std::hash::Hash;
 use adw::glib::Bytes;
 use adw::{gdk, gio};
 use gtk::gdk_pixbuf::Pixbuf;
+use gtk::prelude::WidgetExt;
 use gtk::Image;
 
 use magpie_types::apps::icon::Icon;
@@ -108,6 +109,7 @@ impl CachedIcon {
             Self::Empty => Self::apply_blank(image),
             Self::Id(id) => Self::set_icon_from_stringlike(image, &id),
             Self::CachedData((img, caches)) => {
+                let width = width * image.scale_factor().max(1);
                 let pixbuf = match caches.get(&width) {
                     Some(pixbuf) => pixbuf,
                     None => {

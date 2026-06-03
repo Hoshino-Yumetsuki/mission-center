@@ -38,6 +38,7 @@ mod imp {
 
         sig_id: Cell<Option<glib::SignalHandlerId>>,
         sig_light_icon: Cell<Option<glib::SignalHandlerId>>,
+        sig_scale_factor: Cell<Option<glib::SignalHandlerId>>,
         sig_name: Cell<Option<glib::SignalHandlerId>>,
         sig_content_type: Cell<Option<glib::SignalHandlerId>>,
         sig_children_changed: Cell<Option<glib::SignalHandlerId>>,
@@ -54,6 +55,7 @@ mod imp {
 
                 sig_id: Cell::new(None),
                 sig_light_icon: Cell::new(None),
+                sig_scale_factor: Cell::new(None),
                 sig_name: Cell::new(None),
                 sig_content_type: Cell::new(None),
                 sig_children_changed: Cell::new(None),
@@ -98,6 +100,26 @@ mod imp {
 
             model.imp().light_icon().apply_to_image(&self.icon);
 
+            // Re-decode the icon when the device scale factor changes so raster icons stay sharp.
+            // The image may not be realized yet at bind time (reporting a scale factor of 1), and
+            // the window can be moved between monitors with different scales.
+            let sig_scale_factor = self.icon.connect_scale_factor_notify({
+                let this = this.clone();
+                move |_| {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let this = this.imp();
+
+                    let Some(model) = this.model.take().upgrade() else {
+                        return;
+                    };
+                    model.imp().light_icon().apply_to_image(&this.icon);
+                    this.model.set(model.downgrade());
+                }
+            });
+            self.sig_scale_factor.set(Some(sig_scale_factor));
+
             let sig_name = model.connect_name_notify({
                 let this = this.clone();
                 move |model| {
@@ -139,6 +161,11 @@ mod imp {
 
         pub fn unbind(&self) {
             self.expander.replace(glib::WeakRef::default());
+
+            if let Some(sig_id) = self.sig_scale_factor.take() {
+                self.icon.disconnect(sig_id);
+            }
+
             let Some(model) = self.model.take().upgrade() else {
                 return;
             };
