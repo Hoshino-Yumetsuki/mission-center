@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2025-05-07 15:02+0000\n"
-"Last-Translator: Ilham Fauzan <ilhamfzx@gmail.com>\n"
+"PO-Revision-Date: 2026-06-06 01:01+0000\n"
+"Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/mission-"
 "center/mission-center/id/>\n"
 "Language: id\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.12-dev\n"
+"X-Generator: Weblate 2026.6\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -38,7 +38,7 @@ msgstr "Pengembang Mission Center"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor system resource usage"
-msgstr "Pemantauan penggunaan sumber daya sistem"
+msgstr "Memantau penggunaan sumber daya sistem"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
 #, fuzzy
@@ -94,9 +94,9 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Pantau penggunaan GPU secara keseluruhan, penggunaan encoder dan decoder "
-"video, penggunaan memori, dan konsumsi daya, didukung oleh proyek NVTOP yang "
-"populer"
+"Memantau penggunaan GPU secara keseluruhan, penggunaan encoder dan decoder "
+"video, penggunaan memori, serta konsumsi daya, didukung oleh proyek NVTOP "
+"yang populer"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
 #, fuzzy
@@ -109,8 +109,7 @@ msgstr "Lihat rincian penggunaan sumber daya berdasarkan aplikasi dan proses"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr ""
-"Mendukung tampilan ringkasan yang diperkecil untuk pemantauan sederhana"
+msgstr "Mendukung tampilan ringkasan mini untuk pemantauan sederhana"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 #, fuzzy
@@ -159,7 +158,7 @@ msgstr "Komentar, saran, laporan bug, dan kontribusi dipersilakan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:46
 msgid "Which page is shown on application startup"
-msgstr "Halaman mana yang akan ditampilkan saat aplikasi dimulai"
+msgstr "Halaman yang ditampilkan saat aplikasi dimulai"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
 #, fuzzy
@@ -168,7 +167,7 @@ msgstr "Nama antarmuka:"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
-msgstr ""
+msgstr "Apakah gaya antarmuka terang atau gelap yang harus digunakan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 msgid "DEPRECATED! NO LONGER IN USE!"
@@ -179,8 +178,8 @@ msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
 msgstr ""
-"Seberapa cepat data dan tampilan seharusnya diperbarui (dengan kelipatan "
-"50ms)"
+"Seberapa cepat data harus disegarkan dan UI diperbarui (dalam kelipatan 50 "
+"md)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 #, fuzzy
@@ -189,33 +188,42 @@ msgstr "Berapa banyak titik yang ditampilkan setiap grafik?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr ""
+msgstr "Apakah akan menggunakan bit atau byte (default) untuk memori"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr ""
+msgstr "Apakah akan menggunakan basis-10 atau basis-2 (default) untuk memori"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
 msgstr ""
+"Apakah akan menggunakan bit atau byte (default) untuk kecepatan + ukuran "
+"drive"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
 msgstr ""
+"Apakah akan menggunakan basis-10 atau basis-2 (default) untuk kecepatan + "
+"ukuran drive"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
 msgstr ""
+"Apakah akan menggunakan bit (default) atau Byte untuk kecepatan jaringan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
 msgstr ""
+"Apakah akan menggunakan basis-10 (default) atau basis-2 untuk kecepatan "
+"jaringan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Apakah maksimum grafik akan diatur ke maksimum antarmuka (false) atau ke "
+"maksimum yang teramati (true)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
 #: resources/ui/preferences/page.blp:105
@@ -226,7 +234,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:115
 msgid "Column sorting is persisted across app restarts"
-msgstr "Pengurutan kolom dipertahankan saat aplikasi dimulai ulang"
+msgstr "Penyortiran kolom dipertahankan saat aplikasi dijalankan ulang"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
 #, fuzzy
@@ -237,10 +245,12 @@ msgstr "Pengurutan kolom dipertahankan saat aplikasi dimulai ulang"
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
+"Tampilkan penggunaan CPU untuk Aplikasi dan Proses yang diskalakan sesuai "
+"jumlah inti yang tersedia"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr ""
+msgstr "Tampilkan pemisah di antara setiap kolom pada tampilan Aplikasi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 #, fuzzy
@@ -249,22 +259,19 @@ msgstr "Id kolom yang digunakan untuk mengurutkan tampilan halaman Aplikasi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The sorting direction of the Apps page view"
-msgstr "Arah pengurutan tampilan halaman Aplikasi"
+msgstr "Arah penyortiran pada tampilan halaman Aplikasi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "Arah pengurutan tampilan halaman Aplikasi"
+msgstr "Urutan kolom pada tampilan halaman Aplikasi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The column name by which the Services page view is sorted"
-msgstr "Id kolom yang digunakan untuk mengurutkan tampilan halaman Aplikasi"
+msgstr "Nama kolom yang digunakan untuk menyortir tampilan halaman Layanan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:155
-#, fuzzy
 msgid "The sorting direction of the Services page view"
-msgstr "Arah pengurutan tampilan halaman Aplikasi"
+msgstr "Arah penyortiran pada tampilan halaman Layanan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:160
 #, fuzzy
@@ -286,41 +293,41 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:182
 msgid "Should performance graphs be smooth or jagged"
-msgstr ""
+msgstr "Apakah grafik performa harus halus atau bergerigi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:187
 msgid "Should graphs be animated"
-msgstr ""
+msgstr "Apakah grafik harus dianimasikan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:192
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr ""
+msgstr "Tampilkan informasi CPU secara default"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:197
 #: resources/ui/preferences/page.blp:71
 msgid "Show memory information by default"
-msgstr ""
+msgstr "Tampilkan informasi memori secara default"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:202
 #: resources/ui/preferences/page.blp:77
 msgid "Show disk information by default"
-msgstr ""
+msgstr "Tampilkan informasi disk secara default"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:207
 #: resources/ui/preferences/page.blp:83
 msgid "Show network information by default"
-msgstr ""
+msgstr "Tampilkan informasi jaringan secara default"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:212
 #: resources/ui/preferences/page.blp:89
 msgid "Show GPU information by default"
-msgstr ""
+msgstr "Tampilkan informasi GPU secara default"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:217
 #: resources/ui/preferences/page.blp:95
 msgid "Show fan information by default"
-msgstr ""
+msgstr "Tampilkan informasi kipas secara default"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:222
 #, fuzzy
@@ -329,7 +336,7 @@ msgstr "Komposisi Memori"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:227
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Tampilkan grafik swap"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:232
 #, fuzzy
@@ -338,11 +345,11 @@ msgstr "Tampilkan grafik GPU encode‐decode"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:237
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "Urutan entri di bilah sisi aplikasi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:242
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "Grafik yang harus disembunyikan di bilah sisi aplikasi"
 
 #: resources/ui/apps_page/details_dialog.blp:76
 #: resources/ui/process_column_view/column_view_frame.blp:48
@@ -380,7 +387,7 @@ msgstr "PID"
 #: src/process_tree/service_details_dialog.rs:262
 #: src/process_tree/service_details_dialog.rs:270
 msgid "N/A"
-msgstr "N/A"
+msgstr "T/A"
 
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
@@ -392,7 +399,7 @@ msgstr "Tipe:"
 #: resources/ui/apps_page/details_dialog.blp:132
 #: resources/ui/process_column_view/process_details_dialog.blp:140
 msgid "Command Line"
-msgstr ""
+msgstr "Baris Perintah"
 
 #: resources/ui/apps_page/details_dialog.blp:154
 #: resources/ui/process_column_view/process_details_dialog.blp:162
@@ -424,9 +431,8 @@ msgstr "Memori"
 
 #: resources/ui/apps_page/details_dialog.blp:243
 #: resources/ui/process_column_view/process_details_dialog.blp:251
-#, fuzzy
 msgid "Drives"
-msgstr "Disk {} ({})"
+msgstr "Drive"
 
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/process_column_view/column_view_frame.blp:78
@@ -444,7 +450,7 @@ msgstr "_Jaringan"
 #: src/performance_page/mod.rs:2159 src/process_tree/column_view_frame.rs:594
 #: src/process_tree/column_view_frame.rs:611
 msgid "GPU"
-msgstr "_GPU"
+msgstr "GPU"
 
 #: resources/ui/apps_page/details_dialog.blp:318
 #: resources/ui/process_column_view/column_view_frame.blp:90
@@ -457,36 +463,36 @@ msgstr "GPU {}"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr ""
+msgstr "Ciutkan semua aplikasi dan proses"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/services_page/page.blp:94
 #: resources/ui/keyboard_shortcuts.blp:112
 msgid "Collapse All"
-msgstr ""
+msgstr "Ciutkan Semua"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
-msgstr ""
+msgstr "Gagal Mengeluarkan"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
-msgstr ""
+msgstr "Hentikan"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:31
 msgid "In Use:"
-msgstr ""
+msgstr "Digunakan:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:36
 msgid "Modified:"
-msgstr ""
+msgstr "Dimodifikasi:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:41
 msgid "Standby:"
-msgstr ""
+msgstr "Siaga:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:46
 msgid "Free:"
-msgstr ""
+msgstr "Bebas:"
 
 #: resources/ui/performance_page/cpu.blp:63
 #: resources/ui/performance_page/gpu.blp:72
@@ -559,7 +565,7 @@ msgstr "_Memori"
 #: resources/ui/performance_page/memory.blp:225
 #: resources/ui/performance_page/network.blp:123
 msgid "_Drive"
-msgstr ""
+msgstr "_Drive"
 
 #: resources/ui/performance_page/cpu.blp:150
 #: resources/ui/performance_page/disk.blp:205
@@ -586,7 +592,7 @@ msgstr "_GPU"
 #: resources/ui/performance_page/memory.blp:240
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_Kipas"
 
 #: resources/ui/performance_page/cpu.blp:168
 #: resources/ui/performance_page/disk.blp:223
@@ -599,32 +605,28 @@ msgstr "_Salin"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
-msgstr ""
+msgstr "Tampilkan Data SMART"
 
 #: resources/ui/performance_page/disk.blp:77
 msgid "Eject Disk"
-msgstr ""
+msgstr "Keluarkan Disk"
 
 #: resources/ui/performance_page/disk.blp:99
-#, fuzzy
 msgid "Active time over "
-msgstr "Waktu aktif"
+msgstr "Waktu aktif selama "
 
 #: resources/ui/performance_page/disk.blp:140
 #: resources/ui/performance_page/network.blp:61
-#, fuzzy
 msgid "Throughput over "
-msgstr "Hasil"
+msgstr "Throughput selama "
 
 #: resources/ui/performance_page/fan.blp:61
-#, fuzzy
 msgid "Fan speed over "
-msgstr "Penggunaan Memori"
+msgstr "Kecepatan kipas selama "
 
 #: resources/ui/performance_page/fan.blp:112
-#, fuzzy
 msgid "Temperature over "
-msgstr "Suhu"
+msgstr "Suhu selama "
 
 #: resources/ui/performance_page/fan_details.blp:59
 #, fuzzy
@@ -633,7 +635,7 @@ msgstr "Kecepatan"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
-msgstr ""
+msgstr "Persentase PWM"
 
 #: resources/ui/performance_page/fan_details.blp:125
 #, fuzzy
@@ -642,7 +644,7 @@ msgstr "Suhu"
 
 #: resources/ui/performance_page/gpu.blp:119
 msgid "Video encode/decode utilization over "
-msgstr "Utilisasi encode/decode video "
+msgstr "Penggunaan encode/decode video selama "
 
 #: resources/ui/performance_page/gpu.blp:162
 #: resources/ui/performance_page/memory.blp:76
@@ -652,7 +654,7 @@ msgstr "Penggunaan Memori "
 
 #: resources/ui/performance_page/gpu.blp:208
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Tampilkan Penggunaan Encode/Decode"
 
 #: resources/ui/performance_page/memory.blp:121
 #, fuzzy
@@ -661,7 +663,7 @@ msgstr "Penggunaan Memori Swap "
 
 #: resources/ui/performance_page/memory.blp:172
 msgid "Memory composition"
-msgstr "Komposisi Memori"
+msgstr "Komposisi memori"
 
 #: resources/ui/performance_page/memory.blp:196
 #, fuzzy
@@ -670,7 +672,7 @@ msgstr "Komposisi Memori"
 
 #: resources/ui/performance_page/memory.blp:200
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Tampilkan Penggunaan Swap"
 
 #: resources/ui/performance_page/memory_details.blp:58
 msgid "In use"
@@ -772,11 +774,11 @@ msgstr "Alamat IPv6:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
-msgstr ""
+msgstr "Data SMART"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:48
 msgid "Last Updated"
-msgstr ""
+msgstr "Terakhir Diperbarui"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
 #, fuzzy
@@ -785,31 +787,29 @@ msgstr "Mengambil power"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
-msgstr ""
+msgstr "Kesehatan Drive"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:120
 msgid "SMART Test Status"
-msgstr ""
+msgstr "Status Tes SMART"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:149
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:174
 msgid "Attribute"
-msgstr ""
+msgstr "Atribut"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:156
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:181
 msgid "Value"
-msgstr ""
+msgstr "Nilai"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:168
-#, fuzzy
 msgid "ID"
-msgstr "PID"
+msgstr "ID"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:187
-#, fuzzy
 msgid "Normalized"
-msgstr "Normal"
+msgstr "Ternormalisasi"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:193
 #, fuzzy
@@ -818,7 +818,7 @@ msgstr "Utas"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:199
 msgid "Worst"
-msgstr ""
+msgstr "Terburuk"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:211
 #, fuzzy
@@ -827,7 +827,7 @@ msgstr "Kecepatan Pembaruan"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
-msgstr ""
+msgstr "Penilaian"
 
 #: resources/ui/performance_page/gpu_details.blp:51
 #: resources/ui/performance_page/cpu_details.blp:46
@@ -840,31 +840,26 @@ msgstr "Kecepatan Clock"
 
 #: resources/ui/performance_page/gpu_details.blp:132
 #: resources/ui/performance_page/cpu_details.blp:91
-#, fuzzy
 msgid "Power Draw"
-msgstr "Mengambil power"
+msgstr "Daya yang Digunakan"
 
 #: resources/ui/performance_page/gpu_details.blp:200
 #: src/performance_page/gpu.rs:552
-#, fuzzy
 msgid "Memory Usage"
 msgstr "Penggunaan Memori"
 
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:629
-#, fuzzy
 msgid "Shared Memory Usage"
-msgstr "Penggunaan Memori"
+msgstr "Penggunaan Memori Bersama"
 
 #: resources/ui/performance_page/gpu_details.blp:332
-#, fuzzy
 msgid "Memory Speed"
 msgstr "Kecepatan Memori"
 
 #: resources/ui/performance_page/gpu_details.blp:407
-#, fuzzy
 msgid "Video encode"
-msgstr "Encode/decode video"
+msgstr "Encode video"
 
 #: resources/ui/performance_page/gpu_details.blp:453
 #, fuzzy
@@ -898,13 +893,15 @@ msgstr "Alamat bus PCI:"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
 msgid "Failed To Get SMART Data"
-msgstr ""
+msgstr "Gagal Mengambil Data SMART"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
 msgid ""
 "There was a problem fetching SMART data. Try running from the command line "
 "to get more information."
 msgstr ""
+"Terjadi masalah saat mengambil data SMART. Coba jalankan dari baris perintah "
+"untuk mendapatkan informasi lebih lanjut."
 
 #: resources/ui/performance_page/disk_details.blp:63
 msgid "Read speed"
@@ -915,9 +912,8 @@ msgid "Write speed"
 msgstr "Kecepatan tulis"
 
 #: resources/ui/performance_page/disk_details.blp:130
-#, fuzzy
 msgid "Total Read"
-msgstr "Total diterima"
+msgstr "Total Baca"
 
 #: resources/ui/performance_page/disk_details.blp:159
 #, fuzzy
@@ -946,15 +942,15 @@ msgstr "Disk sistem:"
 
 #: resources/ui/performance_page/disk_details.blp:300
 msgid "WWN:"
-msgstr ""
+msgstr "WWN:"
 
 #: resources/ui/performance_page/disk_details.blp:316
 msgid "Serial:"
-msgstr ""
+msgstr "Serial:"
 
 #: resources/ui/performance_page/disk_details.blp:332
 msgid "Rotation Rate"
-msgstr ""
+msgstr "Kecepatan Putar"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -1010,26 +1006,23 @@ msgstr "Cache L3:"
 
 #: resources/ui/performance_page/cpu_details.blp:319
 msgid "Cpufreq driver:"
-msgstr ""
+msgstr "Driver cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:333
 msgid "Cpufreq governor:"
-msgstr ""
+msgstr "Governor cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:347
-#, fuzzy
 msgid "Power preference:"
-msgstr "_Preferensi"
+msgstr "Preferensi daya:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "Pengaturan Umum"
+msgstr "Umum"
 
 #: resources/ui/preferences/page.blp:9
-#, fuzzy
 msgid "Update Interval"
-msgstr "Jangka waktu update"
+msgstr "Interval Pembaruan"
 
 #: resources/ui/preferences/page.blp:10
 #, fuzzy
@@ -1047,33 +1040,35 @@ msgstr "Performa"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
-msgstr ""
+msgstr "Grafik Halus"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr ""
+msgstr "Gambar grafik sebagai garis halus alih-alih garis bergerigi"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
-msgstr ""
+msgstr "Grafik Bergeser"
 
 #: resources/ui/preferences/page.blp:55
 msgid "Animate graphs (may negatively impact performance)"
-msgstr ""
+msgstr "Animasikan grafik (dapat berdampak negatif pada performa)"
 
 #: resources/ui/preferences/page.blp:59
 msgid "Scale Network Graphs Dynamically"
-msgstr ""
+msgstr "Skalakan Grafik Jaringan Secara Dinamis"
 
 #: resources/ui/preferences/page.blp:60
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
 msgstr ""
+"Atur grafik jaringan agar diskalakan secara dinamis sesuai penggunaan aktual "
+"atau kecepatan maksimum kanal"
 
 #: resources/ui/preferences/page.blp:64
 msgid "Show CPU Information"
-msgstr ""
+msgstr "Tampilkan Informasi CPU"
 
 #: resources/ui/preferences/page.blp:70
 #, fuzzy
@@ -1082,19 +1077,19 @@ msgstr "Komposisi Memori"
 
 #: resources/ui/preferences/page.blp:76
 msgid "Show Disk Information"
-msgstr ""
+msgstr "Tampilkan Informasi Disk"
 
 #: resources/ui/preferences/page.blp:82
 msgid "Show Network Information"
-msgstr ""
+msgstr "Tampilkan Informasi Jaringan"
 
 #: resources/ui/preferences/page.blp:88
 msgid "Show GPU Information"
-msgstr ""
+msgstr "Tampilkan Informasi GPU"
 
 #: resources/ui/preferences/page.blp:94
 msgid "Show Fan Information"
-msgstr ""
+msgstr "Tampilkan Informasi Kipas"
 
 #: resources/ui/preferences/page.blp:101
 #, fuzzy
@@ -1107,7 +1102,7 @@ msgstr "Satukan Statistik Proses"
 
 #: resources/ui/preferences/page.blp:109
 msgid "Remember Sorting"
-msgstr "Ingat Pengurutan"
+msgstr "Ingat Penyortiran"
 
 #: resources/ui/preferences/page.blp:110
 #, fuzzy
@@ -1117,7 +1112,7 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
-msgstr ""
+msgstr "Ingat Urutan Kolom"
 
 #: resources/ui/preferences/page.blp:115
 #, fuzzy
@@ -1127,19 +1122,20 @@ msgstr ""
 
 #: resources/ui/preferences/page.blp:119
 msgid "Scale CPU Usage to Core Count"
-msgstr ""
+msgstr "Skalakan Penggunaan CPU ke Jumlah Inti"
 
 #: resources/ui/preferences/page.blp:120
 msgid "Show CPU usage scaled to the number of available cores"
 msgstr ""
+"Tampilkan penggunaan CPU yang diskalakan sesuai jumlah inti yang tersedia"
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
-msgstr ""
+msgstr "Tampilkan Pemisah Kolom"
 
 #: resources/ui/preferences/page.blp:125
 msgid "Show a separator between each column"
-msgstr ""
+msgstr "Tampilkan pemisah di antara setiap kolom"
 
 #: resources/ui/preferences/page.blp:130
 msgid "Global Units"
@@ -1152,21 +1148,21 @@ msgstr "Penggunaan Memori"
 
 #: resources/ui/preferences/page.blp:140
 msgid "Use Bytes as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "Gunakan Byte sebagai Satuan Pengukuran untuk Memori"
 
 #: resources/ui/preferences/page.blp:141 resources/ui/preferences/page.blp:179
 #: resources/ui/preferences/page.blp:217
 msgid "Bytes"
-msgstr ""
+msgstr "Byte"
 
 #: resources/ui/preferences/page.blp:145
 msgid "Use Bits as a Unit of Measurement for Memory"
-msgstr ""
+msgstr "Gunakan Bit sebagai Satuan Pengukuran untuk Memori"
 
 #: resources/ui/preferences/page.blp:146 resources/ui/preferences/page.blp:184
 #: resources/ui/preferences/page.blp:222
 msgid "Bits"
-msgstr ""
+msgstr "Bit"
 
 #: resources/ui/preferences/page.blp:152
 #, fuzzy
@@ -1175,77 +1171,77 @@ msgstr "Penggunaan Memori"
 
 #: resources/ui/preferences/page.blp:159
 msgid "Use Base 10 for Memory"
-msgstr ""
+msgstr "Gunakan Basis 10 untuk Memori"
 
 #: resources/ui/preferences/page.blp:160 resources/ui/preferences/page.blp:198
 #: resources/ui/preferences/page.blp:236
 msgid "Base 10"
-msgstr ""
+msgstr "Basis 10"
 
 #: resources/ui/preferences/page.blp:164
 msgid "Use Base 2 for Memory"
-msgstr ""
+msgstr "Gunakan Basis 2 untuk Memori"
 
 #: resources/ui/preferences/page.blp:165 resources/ui/preferences/page.blp:203
 #: resources/ui/preferences/page.blp:241
 msgid "Base 2"
-msgstr ""
+msgstr "Basis 2"
 
 #: resources/ui/preferences/page.blp:171
 msgid "Drive Usage Unit"
-msgstr ""
+msgstr "Satuan Penggunaan Drive"
 
 #: resources/ui/preferences/page.blp:178
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "Gunakan Byte sebagai Satuan Pengukuran untuk Drive Disk"
 
 #: resources/ui/preferences/page.blp:183
 msgid "Use Bits as a Unit of Measurement for Disk Drives"
-msgstr ""
+msgstr "Gunakan Bit sebagai Satuan Pengukuran untuk Drive Disk"
 
 #: resources/ui/preferences/page.blp:190
 msgid "Drive Usage Base"
-msgstr ""
+msgstr "Basis Penggunaan Drive"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
-msgstr ""
+msgstr "Gunakan Basis 10 untuk Drive Disk"
 
 #: resources/ui/preferences/page.blp:202
 msgid "Use Base 2 for Disk Drives"
-msgstr ""
+msgstr "Gunakan Basis 2 untuk Drive Disk"
 
 #: resources/ui/preferences/page.blp:209
 msgid "Network Usage Unit"
-msgstr ""
+msgstr "Satuan Penggunaan Jaringan"
 
 #: resources/ui/preferences/page.blp:216
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Gunakan Byte sebagai Satuan Pengukuran untuk Antarmuka Jaringan"
 
 #: resources/ui/preferences/page.blp:221
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Gunakan Bit sebagai Satuan Pengukuran untuk Antarmuka Jaringan"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
-msgstr ""
+msgstr "Basis Penggunaan Jaringan"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
-msgstr ""
+msgstr "Gunakan Basis 10 untuk Antarmuka Jaringan"
 
 #: resources/ui/preferences/page.blp:240
 msgid "Use Base 2 for Network Interfaces"
-msgstr ""
+msgstr "Gunakan Basis 2 untuk Antarmuka Jaringan"
 
 #: resources/ui/services_page/page.blp:84
 msgid "Collapse all expanded services"
-msgstr ""
+msgstr "Ciutkan semua layanan yang diperluas"
 
 #: resources/ui/services_page/page.blp:123
 msgid "Filter running processes"
-msgstr ""
+msgstr "Filter proses yang berjalan"
 
 #: resources/ui/services_page/page.blp:143
 #, fuzzy
@@ -1254,51 +1250,51 @@ msgstr "Prosesor virtual:"
 
 #: resources/ui/services_page/page.blp:163
 msgid "Filter stopped processes"
-msgstr ""
+msgstr "Filter proses yang dihentikan"
 
 #: resources/ui/services_page/page.blp:183
 msgid "Filter disabled processes"
-msgstr ""
+msgstr "Filter proses yang dinonaktifkan"
 
 #: resources/ui/services_page/page.blp:204
 msgid "Remove all filters"
-msgstr ""
+msgstr "Hapus semua filter"
 
 #: resources/ui/services_page/page.blp:214
 msgid "Remove Filters"
-msgstr ""
+msgstr "Hapus Filter"
 
 #: resources/ui/widgets/theme_selector.blp:18
 #: resources/ui/widgets/theme_selector.blp:21
 msgid "Follow system style"
-msgstr ""
+msgstr "Ikuti gaya sistem"
 
 #: resources/ui/widgets/theme_selector.blp:35
 #: resources/ui/widgets/theme_selector.blp:38
 msgid "Light style"
-msgstr ""
+msgstr "Gaya terang"
 
 #: resources/ui/widgets/theme_selector.blp:53
 #: resources/ui/widgets/theme_selector.blp:56
 msgid "Dark style"
-msgstr ""
+msgstr "Gaya gelap"
 
 #: resources/ui/keyboard_shortcuts.blp:5
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Pintasan Keyboard"
 
 #: resources/ui/keyboard_shortcuts.blp:10
 msgid "Global"
-msgstr ""
+msgstr "Global"
 
 #: resources/ui/keyboard_shortcuts.blp:21
 msgid "Open Menu"
-msgstr ""
+msgstr "Buka Menu"
 
 #: resources/ui/keyboard_shortcuts.blp:26
 #: resources/ui/keyboard_shortcuts.blp:31
 msgid "Close Window"
-msgstr ""
+msgstr "Tutup Jendela"
 
 #: resources/ui/keyboard_shortcuts.blp:36
 #, fuzzy
@@ -1307,12 +1303,11 @@ msgstr "_Preferensi"
 
 #: resources/ui/keyboard_shortcuts.blp:41
 msgid "Show Keyboard Shortcuts"
-msgstr ""
+msgstr "Tampilkan Pintasan Keyboard"
 
 #: resources/ui/keyboard_shortcuts.blp:46
-#, fuzzy
 msgid "Show Performance Page"
-msgstr "Performa"
+msgstr "Tampilkan Halaman Performa"
 
 #: resources/ui/keyboard_shortcuts.blp:51
 #, fuzzy
@@ -1321,16 +1316,15 @@ msgstr "Pengaturan Halaman Aplikasi"
 
 #: resources/ui/keyboard_shortcuts.blp:56
 msgid "Show Services Page"
-msgstr ""
+msgstr "Tampilkan Halaman Layanan"
 
 #: resources/ui/keyboard_shortcuts.blp:61 resources/ui/window.blp:95
 msgid "Toggle Sidebar"
-msgstr "Alih Bilah Sisi"
+msgstr "Alihkan Bilah Sisi"
 
 #: resources/ui/keyboard_shortcuts.blp:79
-#, fuzzy
 msgid "Copy Device Information"
-msgstr "Komposisi Memori"
+msgstr "Salin Informasi Perangkat"
 
 #: resources/ui/keyboard_shortcuts.blp:84
 #, fuzzy
@@ -1339,7 +1333,7 @@ msgstr "Alih Bilah Sisi"
 
 #: resources/ui/keyboard_shortcuts.blp:89
 msgid "Select a Device"
-msgstr ""
+msgstr "Pilih Perangkat"
 
 #: resources/ui/keyboard_shortcuts.blp:96
 #, fuzzy
@@ -1349,12 +1343,11 @@ msgstr "Pengaturan Halaman Aplikasi"
 #: resources/ui/keyboard_shortcuts.blp:107
 #: resources/ui/keyboard_shortcuts.blp:145 resources/ui/window.blp:143
 msgid "Search"
-msgstr ""
+msgstr "Cari"
 
 #: resources/ui/keyboard_shortcuts.blp:117
-#, fuzzy
 msgid "Stop App or Process"
-msgstr "Hentikan Proses"
+msgstr "Hentikan Aplikasi atau Proses"
 
 #: resources/ui/keyboard_shortcuts.blp:122
 #, fuzzy
@@ -1364,7 +1357,7 @@ msgstr "Hentikan Paksa Proses"
 #: resources/ui/keyboard_shortcuts.blp:127
 #: resources/ui/keyboard_shortcuts.blp:165
 msgid "Show Details Dialog"
-msgstr ""
+msgstr "Tampilkan Dialog Detail"
 
 #: resources/ui/keyboard_shortcuts.blp:134
 #, fuzzy
@@ -1373,7 +1366,7 @@ msgstr "Performa"
 
 #: resources/ui/keyboard_shortcuts.blp:150
 msgid "Start Service"
-msgstr ""
+msgstr "Mulai Layanan"
 
 #: resources/ui/keyboard_shortcuts.blp:155
 #, fuzzy
@@ -1382,7 +1375,7 @@ msgstr "Hentikan Proses"
 
 #: resources/ui/keyboard_shortcuts.blp:160
 msgid "Restart Service"
-msgstr ""
+msgstr "Mulai Ulang Layanan"
 
 #. The `Name` column should be default aligned
 #. The column that contains the context menu button should be default aligned
@@ -1404,22 +1397,22 @@ msgstr "Memori"
 #: src/performance_page/mod.rs:1131 src/process_tree/column_view_frame.rs:565
 #: src/process_tree/column_view_frame.rs:573
 msgid "Drive"
-msgstr ""
+msgstr "Drive"
 
 #: resources/ui/process_column_view/process_action_bar.blp:34
 msgid "Stop the selected app"
-msgstr ""
+msgstr "Hentikan aplikasi yang dipilih"
 
 #: resources/ui/process_column_view/process_action_bar.blp:46
 #: resources/ui/process_column_view/process_action_bar.blp:98
 #: resources/ui/process_column_view/service_action_bar.blp:66
 #: resources/ui/process_column_view/service_action_bar.blp:123
 msgid "Stop"
-msgstr ""
+msgstr "Hentikan"
 
 #: resources/ui/process_column_view/process_action_bar.blp:53
 msgid "Force stop the selected app"
-msgstr ""
+msgstr "Paksa hentikan aplikasi yang dipilih"
 
 #: resources/ui/process_column_view/process_action_bar.blp:65
 #: resources/ui/process_column_view/process_action_bar.blp:103
@@ -1429,96 +1422,96 @@ msgstr "Hentikan Paksa Proses"
 
 #: resources/ui/process_column_view/process_action_bar.blp:73
 msgid "Show details of the selected app"
-msgstr ""
+msgstr "Tampilkan detail aplikasi yang dipilih"
 
 #: resources/ui/process_column_view/process_action_bar.blp:85
 #: resources/ui/process_column_view/process_action_bar.blp:154
 #: resources/ui/process_column_view/service_action_bar.blp:105
 #: resources/ui/process_column_view/service_action_bar.blp:135
 msgid "Details"
-msgstr ""
+msgstr "Detail"
 
 #: resources/ui/process_column_view/process_action_bar.blp:108
 msgid "Send Signal"
-msgstr ""
+msgstr "Kirim Sinyal"
 
 #: resources/ui/process_column_view/process_action_bar.blp:111
 msgid "Suspend (STOP)"
-msgstr ""
+msgstr "Tangguhkan (STOP)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:116
 msgid "Continue (CONT)"
-msgstr ""
+msgstr "Lanjutkan (CONT)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:121
 msgid "Hangup (HUP)"
-msgstr ""
+msgstr "Putuskan (HUP)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:126
 msgid "Interrupt (INT)"
-msgstr ""
+msgstr "Interupsi (INT)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:131
 msgid "Terminate (TERM)"
-msgstr ""
+msgstr "Akhiri (TERM)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:136
 msgid "Kill (KILL)"
-msgstr ""
+msgstr "Kill (KILL)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:141
 msgid "User 1 (USR1)"
-msgstr ""
+msgstr "Pengguna 1 (USR1)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:146
 msgid "User 2 (USR2)"
-msgstr ""
+msgstr "Pengguna 2 (USR2)"
 
 #: resources/ui/process_column_view/process_details_dialog.blp:84
 msgid "App ID"
-msgstr ""
+msgstr "ID Aplikasi"
 
 #: resources/ui/process_column_view/service_action_bar.blp:35
 msgid "Start the selected service"
-msgstr ""
+msgstr "Mulai layanan yang dipilih"
 
 #: resources/ui/process_column_view/service_action_bar.blp:47
 #: resources/ui/process_column_view/service_action_bar.blp:118
 msgid "Start"
-msgstr ""
+msgstr "Mulai"
 
 #: resources/ui/process_column_view/service_action_bar.blp:54
 msgid "Stop the selected service"
-msgstr ""
+msgstr "Hentikan layanan yang dipilih"
 
 #: resources/ui/process_column_view/service_action_bar.blp:74
 msgid "Restart the selected service"
-msgstr ""
+msgstr "Mulai ulang layanan yang dipilih"
 
 #: resources/ui/process_column_view/service_action_bar.blp:86
 #: resources/ui/process_column_view/service_action_bar.blp:128
 msgid "Restart"
-msgstr ""
+msgstr "Mulai Ulang"
 
 #: resources/ui/process_column_view/service_action_bar.blp:93
 msgid "Show details of the selected service"
-msgstr ""
+msgstr "Tampilkan detail layanan yang dipilih"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:33
 msgid "Service Details"
-msgstr ""
+msgstr "Detail Layanan"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:57
 msgid "State"
-msgstr ""
+msgstr "Status"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:58
 msgid "The current state of the service"
-msgstr ""
+msgstr "Status layanan saat ini"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:75
 msgid "Start service"
-msgstr ""
+msgstr "Mulai layanan"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:90
 #, fuzzy
@@ -1527,19 +1520,19 @@ msgstr "Hentikan Proses"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:106
 msgid "Restart service"
-msgstr ""
+msgstr "Mulai ulang layanan"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:164
 msgid "Description"
-msgstr ""
+msgstr "Deskripsi"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:194
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:213
 msgid "Enabled"
-msgstr ""
+msgstr "Diaktifkan"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:220
 #: src/process_tree/row_model.rs:266
@@ -1549,7 +1542,7 @@ msgstr "Proses"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:221
 msgid "Process and user information"
-msgstr ""
+msgstr "Informasi proses dan pengguna"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:237
 #, fuzzy
@@ -1558,29 +1551,27 @@ msgstr "Proses"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:269
 msgid "User"
-msgstr ""
+msgstr "Pengguna"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:301
 msgid "Group"
-msgstr ""
+msgstr "Grup"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:333
 msgid "File Location"
-msgstr ""
+msgstr "Lokasi File"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:356
 msgid "Logs"
-msgstr ""
+msgstr "Log"
 
 #: resources/ui/about_system_dialog.blp:36
-#, fuzzy
 msgid "System Info"
-msgstr "Disk sistem:"
+msgstr "Info Sistem"
 
 #: resources/ui/about_system_dialog.blp:65
-#, fuzzy
 msgid "Operating System Information"
-msgstr "Komposisi Memori"
+msgstr "Informasi Sistem Operasi"
 
 #: resources/ui/about_system_dialog.blp:108
 #: resources/ui/about_system_dialog.blp:226
@@ -1591,11 +1582,11 @@ msgstr "Versi Vulkan:"
 
 #: resources/ui/about_system_dialog.blp:136
 msgid "Package Manager"
-msgstr ""
+msgstr "Manajer Paket"
 
 #: resources/ui/about_system_dialog.blp:164
 msgid "Package Manager Version"
-msgstr ""
+msgstr "Versi Manajer Paket"
 
 #: resources/ui/about_system_dialog.blp:183
 #, fuzzy
@@ -1604,7 +1595,7 @@ msgstr "Komposisi Memori"
 
 #: resources/ui/about_system_dialog.blp:198
 msgid "Kernel Release"
-msgstr ""
+msgstr "Rilis Kernel"
 
 #: resources/ui/about_system_dialog.blp:245
 #, fuzzy
@@ -1613,7 +1604,7 @@ msgstr "Komposisi Memori"
 
 #: resources/ui/about_system_dialog.blp:316
 msgid "Windowing System"
-msgstr ""
+msgstr "Sistem Jendela"
 
 #: resources/ui/about_system_dialog.blp:344
 #, fuzzy
@@ -1622,19 +1613,19 @@ msgstr "Mesin virtual:"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
-msgstr ""
+msgstr "Aktifkan Semua"
 
 #: resources/ui/window.blp:54
 msgid "Disable All"
-msgstr ""
+msgstr "Nonaktifkan Semua"
 
 #: resources/ui/window.blp:59
 msgid "Reset to Default"
-msgstr ""
+msgstr "Setel Ulang ke Default"
 
 #: resources/ui/window.blp:64
 msgid "Devices"
-msgstr ""
+msgstr "Perangkat"
 
 #: resources/ui/window.blp:70
 #, fuzzy
@@ -1652,7 +1643,7 @@ msgstr "Komposisi Memori"
 
 #: resources/ui/window.blp:148
 msgid "Main Menu"
-msgstr ""
+msgstr "Menu Utama"
 
 #: resources/ui/window.blp:178
 msgid "Loading..."
@@ -1668,7 +1659,7 @@ msgstr "Aplikasi"
 
 #: resources/ui/window.blp:212
 msgid "Services"
-msgstr ""
+msgstr "Layanan"
 
 #: resources/ui/window.blp:237
 msgid "_Preferences"
@@ -1676,7 +1667,7 @@ msgstr "_Preferensi"
 
 #: resources/ui/window.blp:242
 msgid "_Keyboard Shortcuts"
-msgstr ""
+msgstr "_Pintasan Keyboard"
 
 #: resources/ui/window.blp:249
 msgid "_About System"
@@ -1691,18 +1682,18 @@ msgstr "_Tentang MissionCenter"
 #, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
-msgstr[0] ""
+msgstr[0] "{} Aplikasi yang Berjalan"
 
 #: src/apps_page/mod.rs:269
 #, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
-msgstr[0] ""
+msgstr[0] "{} Proses yang Berjalan"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
 #, rust-format
 msgid "{} ago"
-msgstr ""
+msgstr "{} yang lalu"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
 #: src/performance_page/cpu.rs:321 src/performance_page/cpu.rs:332
@@ -1720,35 +1711,35 @@ msgstr "Tak diketahui"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:130
 msgid "Pre-Fail"
-msgstr ""
+msgstr "Pra-Gagal"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:131
 msgid "Old-Age"
-msgstr ""
+msgstr "Usia Tua"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:134
 msgid "Online"
-msgstr ""
+msgstr "Online"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:135
 msgid "Offline"
-msgstr ""
+msgstr "Offline"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:142
 msgid "FAILING"
-msgstr ""
+msgstr "GAGAL"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:147
 msgid "Failed in the past"
-msgstr ""
+msgstr "Pernah gagal sebelumnya"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:149
 msgid "Ok"
-msgstr ""
+msgstr "Baik"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:197
 msgid "Percent Used"
-msgstr ""
+msgstr "Persentase Digunakan"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:205
 #, fuzzy
@@ -1757,7 +1748,7 @@ msgstr "Tersedia"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:213
 msgid "Spare Threshold"
-msgstr ""
+msgstr "Ambang Cadangan"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:221
 #, fuzzy
@@ -1766,20 +1757,20 @@ msgstr "Total diterima"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:229
 msgid "Total Data Written"
-msgstr ""
+msgstr "Total Data Ditulis"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:240
 msgid "Warning Temp Time"
-msgstr ""
+msgstr "Waktu Suhu Peringatan"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:248
 msgid "Critical Temp Time"
-msgstr ""
+msgstr "Waktu Suhu Kritis"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:256
 #: src/performance_page/widgets/smart_data_dialog.rs:313
 msgid "Control Busy Time"
-msgstr ""
+msgstr "Waktu Sibuk Kontrol"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:264
 #, fuzzy
@@ -1792,7 +1783,7 @@ msgstr "Suhu"
 #: src/performance_page/fan.rs:296
 #, rust-format
 msgid "{} °C"
-msgstr ""
+msgstr "{} °C"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:272
 #, fuzzy
@@ -1801,73 +1792,73 @@ msgstr "Suhu"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:279
 msgid "Temps"
-msgstr ""
+msgstr "Suhu"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:281
 msgid "Unsafe Shutdowns"
-msgstr ""
+msgstr "Shutdown Tidak Aman"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:289
 msgid "Media Errors"
-msgstr ""
+msgstr "Kesalahan Media"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:297
 msgid "Number Error Log Entries"
-msgstr ""
+msgstr "Jumlah Entri Log Kesalahan"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:305
 msgid "Power Cycles"
-msgstr ""
+msgstr "Siklus Daya"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:249
-#, fuzzy, rust-format
+#, rust-format
 msgid ""
 "In use ({})\n"
 "\n"
 "Memory used by the operating system and running applications"
 msgstr ""
-"({}B) digunakan\n"
+"Digunakan ({})\n"
 "\n"
-"Memori digunakan oleh sistem operasi dan aplikasi berjalan"
+"Memori yang digunakan oleh sistem operasi dan aplikasi yang sedang berjalan"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:279
-#, fuzzy, rust-format
+#, rust-format
 msgid ""
 "Modified ({})\n"
 "\n"
 "Memory whose contents must be written to disk before it can be used by "
 "another process"
 msgstr ""
-"({}B) Termodifikasi\n"
+"Dimodifikasi ({})\n"
 "\n"
 "Memori yang isinya harus ditulis ke disk sebelum dapat digunakan oleh proses "
 "lain"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:303
-#, fuzzy, rust-format
+#, rust-format
 msgid ""
 "Standby ({})\n"
 "\n"
 "Memory that contains cached data and code that is not actively in use"
 msgstr ""
-"({}B) Siap Digunakan\n"
+"Siaga ({})\n"
 "\n"
-"Memori yang berisikan data tercache dan kode yang tidak sedang aktif "
-"digunakan"
+"Memori yang berisi data dan kode cache yang tidak sedang digunakan secara "
+"aktif"
 
 #: src/performance_page/widgets/mem_composition_widget.rs:316
-#, fuzzy, rust-format
+#, rust-format
 msgid ""
 "Free ({})\n"
 "\n"
 "Memory that is not currently in use, and that will be repurposed first when "
 "the operating system, drivers, or applications need more memory"
 msgstr ""
-"({}B) Tersedia\n"
+"Bebas ({})\n"
 "\n"
-"Memori yang saat ini tidak sedang digunakan, dan akan digunakan terlebih "
-"dahulu saat sistem operasi, driver, atau aplikasi yang memerlukan memori "
-"tambahan"
+"Memori yang saat ini tidak digunakan, dan akan digunakan kembali terlebih "
+"dahulu saat sistem operasi, driver, atau aplikasi memerlukan lebih banyak "
+"memori"
 
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:104
 #, fuzzy, rust-format
@@ -1906,19 +1897,16 @@ msgid "SSD"
 msgstr "SSD"
 
 #: src/performance_page/disk.rs:245 src/performance_page/mod.rs:1124
-#, fuzzy
 msgid "NVMe"
 msgstr "NVMe"
 
 #: src/performance_page/disk.rs:246 src/performance_page/mod.rs:1125
-#, fuzzy
 msgid "eMMC"
 msgstr "eMMC"
 
 #: src/performance_page/disk.rs:247 src/performance_page/mod.rs:1126
-#, fuzzy
 msgid "SD"
-msgstr "SSD"
+msgstr "SD"
 
 #: src/performance_page/disk.rs:248 src/performance_page/mod.rs:1127
 #, fuzzy
@@ -1927,15 +1915,15 @@ msgstr "iSCSI"
 
 #: src/performance_page/disk.rs:249 src/performance_page/mod.rs:1128
 msgid "Optical"
-msgstr ""
+msgstr "Optik"
 
 #: src/performance_page/disk.rs:250 src/performance_page/mod.rs:1129
 msgid "Floppy"
-msgstr ""
+msgstr "Floppy"
 
 #: src/performance_page/disk.rs:251 src/performance_page/mod.rs:1130
 msgid "Thumb Drive"
-msgstr ""
+msgstr "Flash Drive"
 
 #: src/performance_page/disk.rs:355
 #, fuzzy, rust-format
@@ -1946,23 +1934,23 @@ msgstr "Disk {} ({})"
 #: src/performance_page/fan.rs:315
 #, rust-format
 msgid "{} RPM"
-msgstr ""
+msgstr "{} RPM"
 
 #: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1505
 #: src/performance_page/mod.rs:2236
 #, rust-format
 msgid "Fan {}"
-msgstr ""
+msgstr "Kipas {}"
 
 #: src/performance_page/fan.rs:276 src/performance_page/mod.rs:1507
 #: src/performance_page/mod.rs:2238
 msgid "Fan"
-msgstr ""
+msgstr "Kipas"
 
 #: src/performance_page/fan.rs:285
 #, rust-format
 msgid "{}%"
-msgstr ""
+msgstr "{}%"
 
 #: src/performance_page/gpu.rs:285
 #, fuzzy
@@ -1982,30 +1970,30 @@ msgstr "Memori"
 
 #: src/performance_page/gpu.rs:599
 msgid "Dedicated and shared memory usage over "
-msgstr ""
+msgstr "Penggunaan memori dedicated dan shared selama "
 
 #: src/performance_page/gpu.rs:645
 msgid "Total Shared Memory"
-msgstr ""
+msgstr "Total Memori Shared"
 
 #: src/performance_page/memory.rs:376
 #, rust-format
 msgid "{} of {}"
-msgstr ""
+msgstr "{} dari {}"
 
 #: src/performance_page/memory.rs:398
 msgid "Getting additional memory information failed"
-msgstr ""
+msgstr "Gagal mendapatkan informasi memori tambahan"
 
 #: src/performance_page/mod.rs:1136
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} {} ({})"
-msgstr "{} {}{}B/s"
+msgstr "{} {} ({})"
 
 #: src/performance_page/mod.rs:2097 src/performance_page/mod.rs:2098
-#, fuzzy, rust-format
+#, rust-format
 msgid "{}: {}"
-msgstr "{}: {} {}bps"
+msgstr "{}: {}"
 
 #: src/services_page/mod.rs:95
 #, fuzzy, rust-format
@@ -2016,40 +2004,39 @@ msgstr[0] "Hentikan Proses"
 #: src/services_page/mod.rs:107 src/process_tree/service_details_dialog.rs:239
 #: src/process_tree/service_details_dialog.rs:314
 msgid "Running"
-msgstr ""
+msgstr "Berjalan"
 
 #: src/services_page/mod.rs:116 src/process_tree/service_details_dialog.rs:241
 #: src/process_tree/service_details_dialog.rs:316
 msgid "Failed"
-msgstr ""
+msgstr "Gagal"
 
 #: src/services_page/mod.rs:125 src/process_tree/service_details_dialog.rs:243
 #: src/process_tree/service_details_dialog.rs:318
 msgid "Stopped"
-msgstr ""
+msgstr "Berhenti"
 
 #: src/services_page/mod.rs:134
 msgid "Disabled"
-msgstr ""
+msgstr "Dinonaktifkan"
 
 #: src/services_page/mod.rs:140
 msgid "No services match the current filters"
-msgstr ""
+msgstr "Tidak ada layanan yang cocok dengan filter saat ini"
 
 #: src/services_page/mod.rs:142
 msgid "No filters applied"
-msgstr ""
+msgstr "Tidak ada filter yang diterapkan"
 
 #: src/services_page/mod.rs:149
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} {} Service"
 msgid_plural "{} {} Services"
-msgstr[0] "Hentikan Proses"
+msgstr[0] "{} {} Layanan"
 
 #: src/services_page/mod.rs:177
-#, fuzzy
 msgid "User Services"
-msgstr "Hentikan Proses"
+msgstr "Layanan Pengguna"
 
 #: src/services_page/mod.rs:182
 #, fuzzy
@@ -2062,12 +2049,11 @@ msgstr ""
 
 #: src/process_tree/row_model.rs:263
 msgid "Section Header"
-msgstr ""
+msgstr "Header Bagian"
 
 #: src/process_tree/row_model.rs:264
-#, fuzzy
 msgid "Service"
-msgstr "Hentikan Proses"
+msgstr "Layanan"
 
 #: src/process_tree/row_model.rs:265
 #, fuzzy
@@ -2076,44 +2062,46 @@ msgstr "Aplikasi"
 
 #: src/process_tree/service_details_dialog.rs:203
 msgid "Copy logs to clipboard"
-msgstr ""
+msgstr "Salin log ke clipboard"
 
 #: src/application.rs:409
 msgid "translator-credits"
-msgstr "Muhammad Hasan Firdaus <hasanteam008@gmail.com>"
+msgstr ""
+"Muhammad Hasan Firdaus <hasanteam008@gmail.com>, \n"
+"Arif Budiman <arifpedia@gmail.com>"
 
 #: src/main.rs:103
 #, rust-format
 msgid "{} year"
 msgid_plural "{} years"
-msgstr[0] ""
+msgstr[0] "{} tahun"
 
 #: src/main.rs:107
 #, rust-format
 msgid "{} month"
 msgid_plural "{} months"
-msgstr[0] ""
+msgstr[0] "{} bulan"
 
 #: src/main.rs:111
 #, rust-format
 msgid "{} day"
 msgid_plural "{} days"
-msgstr[0] ""
+msgstr[0] "{} hari"
 
 #: src/main.rs:115
 #, rust-format
 msgid "{} hour"
 msgid_plural "{} hours"
-msgstr[0] ""
+msgstr[0] "{} jam"
 
 #: src/main.rs:119 src/main.rs:184
 #, rust-format
 msgid "{} minute"
 msgid_plural "{} minutes"
-msgstr[0] ""
+msgstr[0] "{} menit"
 
 #: src/main.rs:123 src/main.rs:182
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} second"
 msgid_plural "{} seconds"
 msgstr[0] "{} detik"
@@ -2130,15 +2118,15 @@ msgstr "{}: {} {}bps"
 #: src/main.rs:162 src/main.rs:165 src/main.rs:168
 #, rust-format
 msgid "{} and {}"
-msgstr ""
+msgstr "{} dan {}"
 
 #: src/main.rs:174
 msgid "Less than a minute"
-msgstr ""
+msgstr "Kurang dari satu menit"
 
 #: src/main.rs:404
 msgid "_Quit"
-msgstr ""
+msgstr "Keluar"
 
 #, fuzzy
 #~ msgid "App Page"
