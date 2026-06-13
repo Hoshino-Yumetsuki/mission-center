@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
 "PO-Revision-Date: 2026-06-14 06:01+0000\n"
-"Last-Translator: Maxim <pudums@yandex.ru>\n"
+"Last-Translator: Anatoly Bogomolov <tolya.bogomolov2019@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ru/>\n"
 "Language: ru\n"
@@ -165,9 +165,8 @@ msgid "Which page is shown on application startup"
 msgstr "Какая страница отображается при запуске приложения"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
-#, fuzzy
 msgid "Interface Style"
-msgstr "Имя интерфейса:"
+msgstr "Стиль интерфейса"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
@@ -190,41 +189,44 @@ msgid "How many points should be displayed on each chart?"
 msgstr "Сколько точек должно быть отображено на каждом графике?"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr "Использовать ли для скорости сети биты (по умолчанию) или байты"
+msgstr "Следует ли использовать биты или байты (по умолчанию) для памяти"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
-#, fuzzy
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr "Использовать ли для скорости сети биты (по умолчанию) или байты"
+msgstr ""
+"Следует ли использовать десятичную или двоичную систему счисления (по "
+"умолчанию) для памяти"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
-#, fuzzy
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
-msgstr "Использовать ли для скорости сети биты (по умолчанию) или байты"
+msgstr ""
+"Следует ли использовать биты или байты (по умолчанию) для скорости и размера "
+"диска"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
-#, fuzzy
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
-msgstr "Использовать ли для скорости сети биты (по умолчанию) или байты"
+msgstr ""
+"Следует ли использовать десятичную или двоичную систему счисления (по "
+"умолчанию) для скорости и размера диска"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr "Использовать ли для скорости сети биты (по умолчанию) или байты"
+msgstr "Следует ли использовать биты (по умолчанию) или байты для скорости сети"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
-#, fuzzy
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
-msgstr "Использовать ли для скорости сети биты (по умолчанию) или байты"
+msgstr ""
+"Следует ли использовать десятичную (по умолчанию) или двоичную систему "
+"счисления для скорости сети"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
 "Устанавливать ли максимальное значение графика на максимальное значение "
-"интерфейса (false) или на максимальное наблюдаемое значение (true)"
+"интерфейса (ложь) или на максимальное наблюдаемое значение (истина)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
 #: resources/ui/preferences/page.blp:105
@@ -238,9 +240,8 @@ msgid "Column sorting is persisted across app restarts"
 msgstr "Сортировка столбцов сохраняется после перезапуска приложения"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr "Сортировка столбцов сохраняется после перезапуска приложения"
+msgstr "Порядок столбцов сохраняется при перезапуске приложения"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 msgid ""
@@ -920,14 +921,12 @@ msgid "Write speed"
 msgstr "Скорость записи"
 
 #: resources/ui/performance_page/disk_details.blp:130
-#, fuzzy
 msgid "Total Read"
-msgstr "Всего получено"
+msgstr "Всего прочитано"
 
 #: resources/ui/performance_page/disk_details.blp:159
-#, fuzzy
 msgid "Total Written"
-msgstr "Всего отправлено"
+msgstr "Всего записано"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
@@ -951,15 +950,15 @@ msgstr "Системный диск:"
 
 #: resources/ui/performance_page/disk_details.blp:300
 msgid "WWN:"
-msgstr ""
+msgstr "WWN:"
 
 #: resources/ui/performance_page/disk_details.blp:316
 msgid "Serial:"
-msgstr ""
+msgstr "Серийный номер:"
 
 #: resources/ui/performance_page/disk_details.blp:332
 msgid "Rotation Rate"
-msgstr ""
+msgstr "Скорость вращения"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -1213,7 +1212,7 @@ msgstr "Использовать биты как единицу измерени
 
 #: resources/ui/preferences/page.blp:190
 msgid "Drive Usage Base"
-msgstr ""
+msgstr "Система счисления использования диска"
 
 #: resources/ui/preferences/page.blp:197
 msgid "Use Base 10 for Disk Drives"
@@ -1229,23 +1228,23 @@ msgstr "Единица использования сети"
 
 #: resources/ui/preferences/page.blp:216
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Использовать байты как единицу измерения сетевых интерфейсов"
 
 #: resources/ui/preferences/page.blp:221
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
-msgstr ""
+msgstr "Использовать биты как единицу измерения сетевых интерфейсов"
 
 #: resources/ui/preferences/page.blp:228
 msgid "Network Usage Base"
-msgstr ""
+msgstr "Система счисления использования сети"
 
 #: resources/ui/preferences/page.blp:235
 msgid "Use Base 10 for Network Interfaces"
-msgstr ""
+msgstr "Использовать десятичную систему счисления для сетевых интерфейсов"
 
 #: resources/ui/preferences/page.blp:240
 msgid "Use Base 2 for Network Interfaces"
-msgstr ""
+msgstr "Использовать двоичную систему счисления для сетевых интерфейсов"
 
 #: resources/ui/services_page/page.blp:84
 #, fuzzy
@@ -1776,13 +1775,12 @@ msgid "Spare Threshold"
 msgstr ""
 
 #: src/performance_page/widgets/smart_data_dialog.rs:221
-#, fuzzy
 msgid "Total Data Read"
-msgstr "Всего получено"
+msgstr "Всего прочитано данных"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:229
 msgid "Total Data Written"
-msgstr ""
+msgstr "Всего записано данных"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:240
 msgid "Warning Temp Time"
@@ -2031,7 +2029,7 @@ msgstr[2] "Службы"
 #: src/services_page/mod.rs:107 src/process_tree/service_details_dialog.rs:239
 #: src/process_tree/service_details_dialog.rs:314
 msgid "Running"
-msgstr "Запущенная"
+msgstr "Запущен"
 
 #: src/services_page/mod.rs:116 src/process_tree/service_details_dialog.rs:241
 #: src/process_tree/service_details_dialog.rs:316
