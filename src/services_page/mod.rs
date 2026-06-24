@@ -76,6 +76,8 @@ mod imp {
         pub failed_services: Cell<u32>,
         pub stopped_services: Cell<u32>,
         pub disabled_services: Cell<u32>,
+
+        pub has_loaded: Cell<bool>,
     }
 
     impl ServicesPage {
@@ -190,6 +192,8 @@ mod imp {
                 failed_services: Cell::new(0),
                 stopped_services: Cell::new(0),
                 disabled_services: Cell::new(0),
+
+                has_loaded: Cell::new(false),
             }
         }
     }
@@ -414,12 +418,6 @@ glib::wrapper! {
 }
 
 impl ServicesPage {
-    pub fn set_initial_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
-        self.update_common(readings);
-
-        true
-    }
-
     fn update_common(&self, readings: &mut crate::magpie_client::Readings) {
         let imp = self.imp();
 
@@ -476,6 +474,13 @@ impl ServicesPage {
         let imp = self.imp();
 
         self.update_common(readings);
+
+        if !imp.has_loaded.get()
+            && (!readings.system_services.is_empty() || !readings.user_services.is_empty())
+        {
+            self.remove_css_class("is-loading");
+            imp.has_loaded.set(true);
+        }
 
         if let Some(row_sorter) = imp.table_view.imp().row_sorter.get() {
             row_sorter.changed(gtk::SorterChange::Different)

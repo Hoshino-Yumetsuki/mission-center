@@ -62,3 +62,25 @@ window checkbutton.theme-selector radio:checked {
 grid.layout-grid picture {
     padding-right: 0.5em;
 }
+
+@keyframes mc-loading-shimmer {
+    0%   { background-position: -200% 0; }
+    100% { background-position:  200% 0; }
+}
+
+.is-loading {
+    background-color: @view_bg_color;
+    background-image: linear-gradient(
+        90deg,
+        alpha(@theme_fg_color, 0.00) 0%,
+        alpha(@theme_fg_color, 0.10) 50%,
+        alpha(@theme_fg_color, 0.00) 100%);
+    background-size: 200% 100%;
+    animation: mc-loading-shimmer 3s linear infinite;
+}
+
+.is-loading label,
+.is-loading image,
+.is-loading picture {
+    opacity: 0;
+}

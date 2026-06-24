@@ -144,6 +144,9 @@ mod imp {
         service_state_connections: RefCell<[Option<glib::SignalHandlerId>; 2]>,
 
         filter: RefCell<gtk::CustomFilter>,
+
+        search_configured: Cell<bool>,
+        search_setup_tries: Cell<u8>,
     }
 
     impl Default for TableView {
@@ -177,6 +180,9 @@ mod imp {
                 service_state_connections: RefCell::new([const { None }; 2]),
 
                 filter: RefCell::new(gtk::CustomFilter::new(|_| true)),
+
+                search_configured: Cell::new(false),
+                search_setup_tries: Cell::new(1),
             }
         }
     }
@@ -470,21 +476,43 @@ mod imp {
 
             // Delay connecting to the search field until Widget::realize to make reasonably sure
             // that the window exists.
-            if let Some(window) = app!().window() {
-                let filter = self.filter.borrow().downgrade();
-                window
-                    .imp()
-                    .header_search_entry
-                    .connect_search_changed(move |_| {
-                        if let Some(filter) = filter.upgrade() {
-                            filter.changed(gtk::FilterChange::Different);
+            if !self.configure_search() {
+                const MAX_SEARCH_SETUP_TRIES: u8 = 5;
+
+                glib::timeout_add_local(std::time::Duration::from_millis(100), {
+                    let this = self.obj().downgrade();
+                    move || {
+                        let Some(this) = this.upgrade() else {
+                            return glib::ControlFlow::Break;
+                        };
+                        let imp = this.imp();
+
+                        imp.search_setup_tries.update(|tries| tries + 1);
+                        if imp.search_setup_tries.get() > MAX_SEARCH_SETUP_TRIES {
+                            g_warning!(
+                                "MissionCenter::TableView",
+                                "Failed to configure search after {} tries, giving up",
+                                MAX_SEARCH_SETUP_TRIES
+                            );
+                            return glib::ControlFlow::Break;
                         }
-                    });
-            } else {
-                g_warning!(
+
+                        if imp.configure_search() {
+                            return glib::ControlFlow::Break;
+                        }
+
+                        g_critical!(
+                            "MissionCenter::TableView",
+                            "Failed to configure search, retrying..."
+                        );
+
+                        glib::ControlFlow::Continue
+                    }
+                });
+
+                g_debug!(
                     "MissionCenter::TableView",
-                    "Failed to get MissionCenterWindow instance; searching and filtering will not \
-                    function."
+                    "Failed to configure search on first try, retrying..."
                 );
             }
 
@@ -680,7 +708,9 @@ mod imp {
 
             self.filter.replace(filter.clone());
 
-            gtk::FilterListModel::new(Some(tree_list_model), Some(filter))
+            let model = gtk::FilterListModel::new(Some(tree_list_model), Some(filter));
+            model.set_incremental(true);
+            model
         }
 
         fn setup_filter_model(
@@ -726,10 +756,10 @@ mod imp {
             }
 
             let tree_list_sorter = gtk::TreeListRowSorter::new(column_view_sorter);
-            (
-                gtk::SortListModel::new(Some(filter_list_model), Some(tree_list_sorter.clone())),
-                tree_list_sorter,
-            )
+            let model =
+                gtk::SortListModel::new(Some(filter_list_model), Some(tree_list_sorter.clone()));
+            model.set_incremental(true);
+            (model, tree_list_sorter)
         }
 
         fn setup_selection_model(
@@ -992,6 +1022,29 @@ mod imp {
         #[inline]
         pub fn format_settings_key(&self, key: &SettingsValues) -> String {
             self.settings_namespace.get().format_value(key)
+        }
+
+        fn configure_search(&self) -> bool {
+            if self.search_configured.get() {
+                return true;
+            }
+
+            let Some(window) = app!().window() else {
+                return false;
+            };
+
+            let filter = self.filter.borrow().downgrade();
+            window
+                .imp()
+                .header_search_entry
+                .connect_search_changed(move |_| {
+                    if let Some(filter) = filter.upgrade() {
+                        filter.changed(gtk::FilterChange::Different);
+                    }
+                });
+
+            self.search_configured.set(true);
+            true
         }
     }
 }

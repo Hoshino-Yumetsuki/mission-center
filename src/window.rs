@@ -24,7 +24,9 @@ use std::sync::OnceLock;
 use std::time::Duration;
 
 use adw::{prelude::*, subclass::prelude::*};
-use glib::{g_critical, idle_add_local_once, ParamSpec, Propagation, Properties, Value};
+use glib::{
+    g_critical, idle_add_local_once, BindingFlags, ParamSpec, Propagation, Properties, Value,
+};
 use gtk::glib::{g_debug, ControlFlow};
 use gtk::{gdk, gio, glib};
 
@@ -296,10 +298,6 @@ mod imp {
         #[template_child]
         pub search_button: TemplateChild<gtk::ToggleButton>,
         #[template_child]
-        pub loading_box: TemplateChild<gtk::Box>,
-        #[template_child]
-        pub loading_spinner: TemplateChild<adw::Spinner>,
-        #[template_child]
         pub stack: TemplateChild<adw::ViewStack>,
 
         #[property(get)]
@@ -324,6 +322,8 @@ mod imp {
         pub last_refresh: Cell<u128>,
         pub cached_refresh_ticks: Cell<u64>,
         pub global_scroll_ticks: Cell<u32>,
+
+        pub(super) services_refresh_counter: Cell<u8>,
     }
 
     impl Default for MissionCenterWindow {
@@ -348,8 +348,6 @@ mod imp {
                 header_tabs: TemplateChild::default(),
                 header_search_entry: TemplateChild::default(),
                 search_button: TemplateChild::default(),
-                loading_box: TemplateChild::default(),
-                loading_spinner: TemplateChild::default(),
                 stack: TemplateChild::default(),
 
                 performance_page_active: Cell::new(true),
@@ -365,6 +363,8 @@ mod imp {
                 last_refresh: Cell::new(0),
                 cached_refresh_ticks: Cell::new(1),
                 global_scroll_ticks: Cell::new(1),
+
+                services_refresh_counter: Cell::new(0),
             }
         }
     }
@@ -442,6 +442,29 @@ mod imp {
                         "Failed to set window-selected-page setting"
                     );
                 });
+        }
+
+        pub(super) fn update_services(&self, readings: &mut Readings) -> bool {
+            const SERVICES_REFRESH_COUNTER_MAX_FOR_EMPTY_LIST: u8 = 5;
+
+            let mut result = true;
+
+            self.services_refresh_counter
+                .update(|c| c.saturating_add(1));
+            let services_refresh_counter = self.services_refresh_counter.get();
+
+            let should_show_services_page = !readings.system_services.is_empty()
+                || !readings.user_services.is_empty()
+                || services_refresh_counter < SERVICES_REFRESH_COUNTER_MAX_FOR_EMPTY_LIST;
+
+            if should_show_services_page {
+                self.services_stack_page.set_visible(true);
+                result &= self.services_page.update_readings(readings);
+            } else {
+                self.services_stack_page.set_visible(false);
+            }
+
+            result
         }
     }
 
@@ -743,6 +766,8 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
+
+            self.split_view.add_css_class("is-loading");
 
             self.configure_actions();
             self.configure_theme_selection();
@@ -1088,9 +1113,12 @@ impl MissionCenterWindow {
     }
 
     pub fn set_initial_readings(&self, mut readings: Readings) {
-        use gtk::glib::*;
-
         self.add_css_class("mission-center-window");
+
+        self.imp().split_view.remove_css_class("is-loading");
+        self.imp().performance_page.add_css_class("is-loading");
+        self.imp().apps_page.add_css_class("is-loading");
+        self.imp().services_page.add_css_class("is-loading");
 
         let ok = self.imp().performance_page.set_initial_readings(&readings);
         if !ok {
@@ -1100,35 +1128,48 @@ impl MissionCenterWindow {
             );
         }
 
+        // Give services its own readings so the apps and services idles can both
+        // be queued before continue_reading() below, keeping them ahead of the
+        // first periodic refresh. Per-service process stats are skipped on this
+        // first batch and filled in by the next refresh; mem_info is copied so the
+        // swap column isn't left permanently hidden.
+        let mut services_readings = Readings::new();
+        services_readings.user_services = std::mem::take(&mut readings.user_services);
+        services_readings.system_services = std::mem::take(&mut readings.system_services);
+        services_readings.mem_info = readings.mem_info.clone();
+
+        idle_add_local_once({
+            let this = self.downgrade();
+            move || {
+                if let Some(this) = this.upgrade() {
+                    let imp = this.imp();
+                    imp.apps_page.update_readings(&mut readings);
+                }
+            }
+        });
+
+        idle_add_local_once({
+            let this = self.downgrade();
+            move || {
+                if let Some(this) = this.upgrade() {
+                    let imp = this.imp();
+                    imp.update_services(&mut services_readings);
+                }
+            }
+        });
+
         self.imp()
             .performance_page
             .add_css_class("mission-center-performance-page");
-
-        let ok = self.imp().apps_page.set_initial_readings(&mut readings);
-        if !ok {
-            g_critical!(
-                "MissionCenter",
-                "Failed to set initial readings for apps page"
-            );
-        }
 
         self.imp()
             .apps_page
             .add_css_class("mission-center-apps-page");
 
-        let ok = self.imp().services_page.set_initial_readings(&mut readings);
-        if !ok {
-            g_critical!(
-                "MissionCenter",
-                "Failed to set initial readings for services page"
-            );
-        }
-
         self.imp()
             .services_page
             .add_css_class("mission-center-services-page");
 
-        self.imp().loading_box.set_visible(false);
         self.imp().header_bar.set_visible(true);
         self.imp().stack.set_visible(true);
 
@@ -1170,13 +1211,7 @@ impl MissionCenterWindow {
 
         result &= this.performance_page.update_readings(readings);
         result &= this.apps_page.update_readings(readings);
-
-        if !readings.system_services.is_empty() || !readings.user_services.is_empty() {
-            this.services_stack_page.set_visible(true);
-            result &= this.services_page.update_readings(readings);
-        } else {
-            this.services_stack_page.set_visible(false);
-        }
+        result &= this.update_services(readings);
 
         this.last_refresh.set(Self::get_current_timestamp());
 

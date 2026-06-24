@@ -86,8 +86,6 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
     content: Adw.ToolbarView window_content {
       [top]
       Adw.HeaderBar header_bar {
-        visible: false;
-
         [start]
         ToggleButton toggle_sidebar_button {
           action-name: "win.toggle-sidebar";
@@ -155,34 +153,7 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
       content: Box {
         orientation: vertical;
 
-        Box loading_box {
-          orientation: vertical;
-
-          spacing: 12;
-
-          valign: center;
-          vexpand: true;
-          halign: center;
-          hexpand: true;
-
-          Adw.Spinner loading_spinner {
-            width-request: 42;
-            height-request: 42;
-          }
-
-          Label {
-            styles [
-              "title-4"
-            ]
-
-            label: _("Loading...");
-            halign: center;
-          }
-        }
-
         Adw.ViewStack stack {
-          visible: false;
-
           hexpand: true;
           vexpand: true;
 
@@ -218,7 +189,6 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
 
       [bottom]
       Adw.ViewSwitcherBar bottom_bar {
-        visible: false;
         stack: stack;
       }
     };

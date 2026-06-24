@@ -65,6 +65,8 @@ mod imp {
 
         pub app_icons: RefCell<HashMap<u32, LightCachedIcon>>,
         pub selected_item: RefCell<RowModel>,
+
+        pub has_loaded: Cell<bool>,
     }
 
     impl Default for AppsPage {
@@ -94,6 +96,8 @@ mod imp {
 
                 app_icons: RefCell::new(HashMap::new()),
                 selected_item: RefCell::new(RowModelBuilder::new().build()),
+
+                has_loaded: Cell::new(false),
             }
         }
     }
@@ -235,16 +239,15 @@ glib::wrapper! {
 }
 
 impl AppsPage {
-    pub fn set_initial_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
-        self.update_common(readings);
-
-        true
-    }
-
     pub fn update_readings(&self, readings: &mut crate::magpie_client::Readings) -> bool {
         let imp = self.imp();
 
         self.update_common(readings);
+
+        if !imp.has_loaded.get() {
+            self.remove_css_class("is-loading");
+            imp.has_loaded.set(true);
+        }
 
         if let Some(row_sorter) = imp.table_view.imp().row_sorter.get() {
             row_sorter.changed(gtk::SorterChange::Different)

@@ -140,6 +140,8 @@ mod imp {
 
         context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
         current_view_action: Cell<gio::SimpleAction>,
+
+        pub has_loaded: Cell<bool>,
     }
 
     impl Default for PerformancePage {
@@ -163,6 +165,8 @@ mod imp {
 
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
+
+                has_loaded: Cell::new(false),
             }
         }
     }
@@ -2868,8 +2872,15 @@ glib::wrapper! {
 
 impl PerformancePage {
     pub fn set_initial_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
-        let ok = imp::PerformancePage::set_up_pages(self, readings);
-        imp::PerformancePage::update_readings(self, readings) && ok
+        let mut ok = imp::PerformancePage::set_up_pages(self, readings);
+        ok &= imp::PerformancePage::update_readings(self, readings);
+
+        if !self.imp().has_loaded.get() {
+            self.remove_css_class("is-loading");
+            self.imp().has_loaded.set(true);
+        }
+
+        ok
     }
 
     pub fn update_readings(&self, readings: &crate::magpie_client::Readings) -> bool {
