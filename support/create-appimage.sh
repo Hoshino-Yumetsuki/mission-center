@@ -11,7 +11,7 @@ ARCH="$(uname -m)"
 SHARUN="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/quick-sharun.sh"
 EXTRA_PACKAGES="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/get-debloated-pkgs.sh"
 
-pacman -Syu --noconfirm base-devel zsync wget gtk4 libadwaita
+pacman -Syu --noconfirm base-devel zsync wget gtk4 libadwaita patchelf
 
 wget "$SHARUN" -O ./quick-sharun
 chmod +x ./quick-sharun
