@@ -268,10 +268,18 @@
             <summary>Show the swap graph</summary>
         </key>
 
-        <key name="performance-page-gpu-encode-decode-usage-visible" type="b">
-            <default>true</default>
-            <summary>Show the gpu encode-decode graph</summary>
+        <key name="performance-page-gpu-graph-middle" type="i">
+            <range min="0" max="5"/>
+            <default>1</default>
+            <summary>Middle Graph's Content and visibility</summary>
         </key>
+
+        <key name="performance-page-gpu-graph-bottom" type="i">
+            <range min="0" max="5"/>
+            <default>2</default>
+            <summary>Bottom Graph's Content and visibility</summary>
+        </key>
+
 
         <key name="performance-sidebar-order" type="s">
             <default>""</default>

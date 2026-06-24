@@ -61,6 +61,17 @@ template $GpuDetails: Box {
       }
     }
 
+    Picture legend_clock {
+      layout {
+        column: '0';
+        row: '1';
+      }
+      visible: true;
+
+      can-shrink: false;
+      content-fit: scale_down;
+    }
+
     Box {
       layout {
         column: '1';
@@ -169,20 +180,15 @@ template $GpuDetails: Box {
       }
     }
 
-    Box {
+    Picture legend_vram {
       layout {
         column: '0';
         row: '3';
       }
+      visible: true;
 
-      visible: bind template.dedicated_memory_available;
-
-      Picture legend_vram {
-        visible: bind template.shared_memory_available;
-
-        can-shrink: false;
-        content-fit: scale_down;
-      }
+      can-shrink: false;
+      content-fit: scale_down;
     }
 
     Box {
@@ -245,20 +251,15 @@ template $GpuDetails: Box {
       }
     }
 
-    Box {
+    Picture legend_gtt {
       layout {
         column: '0';
         row: '4';
       }
+      visible: bind legend_vram.visible;
 
-      visible: bind template.shared_memory_available;
-
-      Picture legend_gtt {
-        visible: bind template.dedicated_memory_available;
-
-        can-shrink: false;
-        content-fit: scale_down;
-      }
+      can-shrink: false;
+      content-fit: scale_down;
     }
 
     Box {
@@ -321,6 +322,17 @@ template $GpuDetails: Box {
       }
     }
 
+    Picture legend_clock_mem {
+      layout {
+        column: '0';
+        row: '5';
+      }
+      visible: bind legend_clock.visible;
+
+      can-shrink: false;
+      content-fit: scale_down;
+    }
+
     Box box_mem_speed {
       layout {
         column: '1';
@@ -375,20 +387,15 @@ template $GpuDetails: Box {
       }
     }
 
-    Box {
+    Picture legend_encode {
       layout {
         column: '0';
         row: '6';
       }
+      visible: true;
 
-      visible: bind template.encode_decode_available;
-
-      Picture legend_encode {
-        visible: bind template.encode_decode_shared inverted;
-
-        can-shrink: false;
-        content-fit: scale_down;
-      }
+      can-shrink: false;
+      content-fit: scale_down;
     }
 
     Grid {
@@ -438,7 +445,7 @@ template $GpuDetails: Box {
 
         margin-start: 20;
 
-        visible: bind template.encode_decode_shared inverted;
+        visible: false;
 
         can-shrink: false;
         content-fit: scale_down;

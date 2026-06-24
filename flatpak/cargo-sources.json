@@ -67,6 +67,32 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
+    "url": "https://static.crates.io/crates/bitfield/bitfield-0.19.4.crate",
+    "sha256": "21ba6517c6b0f2bf08be60e187ab64b038438f22dd755614d8fe4d4098c46419",
+    "dest": "cargo/vendor/bitfield-0.19.4"
+  },
+  {
+    "type": "inline",
+    "contents": "{\"package\": \"21ba6517c6b0f2bf08be60e187ab64b038438f22dd755614d8fe4d4098c46419\", \"files\": {}}",
+    "dest": "cargo/vendor/bitfield-0.19.4",
+    "dest-filename": ".cargo-checksum.json"
+  },
+  {
+    "type": "archive",
+    "archive-type": "tar-gzip",
+    "url": "https://static.crates.io/crates/bitfield-macros/bitfield-macros-0.19.4.crate",
+    "sha256": "f48d6ace212fdf1b45fd6b566bb40808415344642b76c3224c07c8df9da81e97",
+    "dest": "cargo/vendor/bitfield-macros-0.19.4"
+  },
+  {
+    "type": "inline",
+    "contents": "{\"package\": \"f48d6ace212fdf1b45fd6b566bb40808415344642b76c3224c07c8df9da81e97\", \"files\": {}}",
+    "dest": "cargo/vendor/bitfield-macros-0.19.4",
+    "dest-filename": ".cargo-checksum.json"
+  },
+  {
+    "type": "archive",
+    "archive-type": "tar-gzip",
     "url": "https://static.crates.io/crates/bitflags/bitflags-2.11.1.crate",
     "sha256": "c4512299f36f043ab09a583e57bceb5a5aab7a73db1805848e8fef3c9e8c78b3",
     "dest": "cargo/vendor/bitflags-2.11.1"

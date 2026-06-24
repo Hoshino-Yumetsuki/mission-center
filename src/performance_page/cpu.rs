@@ -1114,9 +1114,11 @@ mod imp {
             let mut power = DatasetGroup::new();
             power.dataset_settings.scaling_settings = ScalingSettings::StickyUp;
             power.dataset_settings.rounding_settings = RoundingSettings::Integer;
+            power.dataset_settings.high_watermark = 0.;
 
             let mut clock = DatasetGroup::new();
             clock.dataset_settings.scaling_settings = ScalingSettings::StickyUp;
+            clock.dataset_settings.high_watermark = 0.;
 
             let mut temp = DatasetGroup::new();
             temp.dataset_settings.scaling_settings = ScalingSettings::StickyUpDown;

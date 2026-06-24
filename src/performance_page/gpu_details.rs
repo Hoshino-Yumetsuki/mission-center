@@ -104,6 +104,10 @@ mod imp {
         pub legend_vram: TemplateChild<gtk::Picture>,
         #[template_child]
         pub legend_gtt: TemplateChild<gtk::Picture>,
+        #[template_child]
+        pub legend_clock: TemplateChild<gtk::Picture>,
+        #[template_child]
+        pub legend_clock_mem: TemplateChild<gtk::Picture>,
 
         #[property(get, set)]
         clock_speed_available: Cell<bool>,
@@ -180,6 +184,8 @@ mod imp {
                 legend_decode: TemplateChild::default(),
                 legend_vram: TemplateChild::default(),
                 legend_gtt: TemplateChild::default(),
+                legend_clock: TemplateChild::default(),
+                legend_clock_mem: TemplateChild::default(),
 
                 clock_speed_available: Cell::new(true),
                 power_draw_available: Cell::new(true),
@@ -281,6 +287,11 @@ mod imp {
             self.legend_gtt
                 .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
             self.legend_vram
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
+
+            self.legend_clock_mem
+                .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-gpu.svg"));
+            self.legend_clock
                 .set_resource(Some("/io/missioncenter/MissionCenter/line-solid-gpu.svg"));
         }
     }
@@ -447,5 +458,31 @@ impl GpuDetails {
 
     pub fn legend_gtt(&self) -> &gtk::Picture {
         &self.imp().legend_gtt
+    }
+
+    pub fn legend_clock(&self) -> &gtk::Picture {
+        &self.imp().legend_gtt
+    }
+
+    pub fn legend_clock_mem(&self) -> &gtk::Picture {
+        &self.imp().legend_gtt
+    }
+}
+
+impl GpuDetails {
+    pub fn set_legend_clock_visible(&self, v: bool) {
+        self.imp().legend_clock.set_visible(v)
+    }
+
+    pub fn set_legend_memory_visible(&self, v: bool) {
+        self.imp().legend_vram.set_visible(v)
+    }
+
+    pub fn set_legend_enc_dec_visible(&self, v: bool) {
+        self.imp().legend_encode.set_visible(v)
+    }
+
+    pub fn is_both_clocks_visible(&self) -> bool {
+        self.clock_speed_available() || self.memory_speed_available()
     }
 }

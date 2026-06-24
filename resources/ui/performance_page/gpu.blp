@@ -23,7 +23,6 @@ using Gtk 4.0;
 template $PerformancePageGpu: Box {
   orientation: vertical;
   margin-bottom: 10;
-  spacing: 7;
 
   WindowHandle {
     child: Box description {
@@ -57,10 +56,11 @@ template $PerformancePageGpu: Box {
     };
   }
 
-  Box {
-    homogeneous: true;
+  Box big_box {
     orientation: vertical;
+    homogeneous: true;
     spacing: 10;
+    margin-top: 7;
 
     Box graph_top {
       orientation: vertical;
@@ -100,17 +100,17 @@ template $PerformancePageGpu: Box {
       }
     }
 
-    Box container_bottom {
+    Box {
       orientation: vertical;
       spacing: 10;
 
-      Box encode_decode_graph {
+      Box middle_graph_box {
         visible: bind template.encode_decode_available;
 
         orientation: vertical;
 
         Box {
-          Label {
+          Label middle_graph_label {
             styles [
               "caption",
             ]
@@ -128,7 +128,7 @@ template $PerformancePageGpu: Box {
             label: bind graph_max_duration.label;
           }
 
-          Label {
+          Label middle_graph_total {
             styles [
               "caption",
             ]
@@ -136,7 +136,7 @@ template $PerformancePageGpu: Box {
           }
         }
 
-        $GraphWidget usage_graph_encode_decode {
+        $GraphWidget middle_graph {
           vexpand: true;
           hexpand: true;
 
@@ -148,11 +148,11 @@ template $PerformancePageGpu: Box {
         }
       }
 
-      Box memory_graph {
+      Box bottom_graph_box {
         orientation: vertical;
 
         Box {
-          Label memory_graph_label {
+          Label bottom_graph_label {
             styles [
               "caption",
             ]
@@ -173,14 +173,14 @@ template $PerformancePageGpu: Box {
             label: bind graph_max_duration.label;
           }
 
-          Label total_memory {
+          Label bottom_graph_total {
             styles [
               "caption",
             ]
           }
         }
 
-        $GraphWidget usage_graph_memory {
+        $GraphWidget bottom_graph {
           vexpand: true;
           hexpand: true;
 
@@ -202,9 +202,72 @@ template $PerformancePageGpu: Box {
 
 menu context_menu_model {
   section {
-    item {
-      label: _("Show Encode/Decode Usage");
-      action: "graph.enc_dec_usage";
+    submenu {
+      label: _("Change Middle Graph To");
+
+      item {
+        label: _("_Encode/_Decode");
+        action: "graph.gpu_middle_enc_dec";
+      }
+
+      item {
+        label: _("_Memory Usage");
+        action: "graph.gpu_middle_memory";
+      }
+
+      item {
+        label: _("_Power Draw");
+        action: "graph.gpu_middle_power";
+      }
+
+      item {
+        label: _("_Clock Speeds");
+        action: "graph.gpu_middle_clocks";
+      }
+
+      item {
+        label: _("_Temperature");
+        action: "graph.gpu_middle_temperature";
+      }
+
+      item {
+        label: _("_None");
+        action: "graph.gpu_middle_none";
+      }
+    }
+
+    submenu {
+      label: _("Change Bottom Graph To");
+
+      item {
+        label: _("_Encode/_Decode");
+        action: "graph.gpu_bottom_enc_dec";
+      }
+
+      item {
+        label: _("_Memory Usage");
+        action: "graph.gpu_bottom_memory";
+      }
+
+      item {
+        label: _("_Power Draw");
+        action: "graph.gpu_bottom_power";
+      }
+
+      item {
+        label: _("_Clock Speeds");
+        action: "graph.gpu_bottom_clocks";
+      }
+
+      item {
+        label: _("_Temperature");
+        action: "graph.gpu_bottom_temperature";
+      }
+
+      item {
+        label: _("_None");
+        action: "graph.gpu_bottom_none";
+      }
     }
   }
 
@@ -213,6 +276,7 @@ menu context_menu_model {
       label: _("Graph _Summary View");
       action: "graph.summary";
     }
+
 
     submenu {
       label: _("_View");
