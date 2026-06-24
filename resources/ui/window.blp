@@ -72,13 +72,31 @@ template $MissionCenterWindow : Adw.ApplicationWindow {
         }
       }
 
-      ScrolledWindow {
-        hscrollbar-policy: never;
+      Stack sidebar_stack {
+        transition-type: crossfade;
 
-        ListBox sidebar {
-          styles [
-            "navigation-sidebar",
-          ]
+        StackPage {
+          name: "placeholders";
+          child: ScrolledWindow {
+            hscrollbar-policy: never;
+
+            $Placeholder {
+              profile: "sidebar";
+            }
+          };
+        }
+
+        StackPage {
+          name: "content";
+          child: ScrolledWindow {
+            hscrollbar-policy: never;
+
+            ListBox sidebar {
+              styles [
+                "navigation-sidebar",
+              ]
+            }
+          };
         }
       }
     };

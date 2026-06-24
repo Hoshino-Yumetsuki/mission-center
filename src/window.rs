@@ -33,6 +33,7 @@ use gtk::{gdk, gio, glib};
 use crate::application::INTERVAL_STEP;
 use crate::performance_page::widgets::AnimationFrame;
 use crate::widgets::ListCell;
+use crate::widgets::Placeholder;
 use crate::widgets::ThemeSelector;
 use crate::{app, magpie_client::Readings, settings};
 
@@ -280,6 +281,8 @@ mod imp {
         #[template_child]
         pub sidebar: TemplateChild<gtk::ListBox>,
         #[template_child]
+        pub sidebar_stack: TemplateChild<gtk::Stack>,
+        #[template_child]
         pub performance_page: TemplateChild<crate::performance_page::PerformancePage>,
         #[template_child]
         pub apps_page: TemplateChild<crate::apps_page::AppsPage>,
@@ -339,6 +342,7 @@ mod imp {
                 sidebar_edit_mode_reset: TemplateChild::default(),
                 toggle_sidebar_button: TemplateChild::default(),
                 sidebar: TemplateChild::default(),
+                sidebar_stack: TemplateChild::default(),
                 performance_page: TemplateChild::default(),
                 apps_page: TemplateChild::default(),
                 services_stack_page: TemplateChild::default(),
@@ -738,6 +742,7 @@ mod imp {
             };
 
             ListCell::ensure_type();
+            Placeholder::ensure_type();
 
             PerformancePage::ensure_type();
             AppsPage::ensure_type();
@@ -766,8 +771,6 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
-
-            self.split_view.add_css_class("is-loading");
 
             self.configure_actions();
             self.configure_theme_selection();
@@ -1113,20 +1116,19 @@ impl MissionCenterWindow {
     }
 
     pub fn set_initial_readings(&self, mut readings: Readings) {
+        let imp = self.imp();
+
         self.add_css_class("mission-center-window");
 
-        self.imp().split_view.remove_css_class("is-loading");
-        self.imp().performance_page.add_css_class("is-loading");
-        self.imp().apps_page.add_css_class("is-loading");
-        self.imp().services_page.add_css_class("is-loading");
-
-        let ok = self.imp().performance_page.set_initial_readings(&readings);
+        let ok = imp.performance_page.set_initial_readings(&readings);
         if !ok {
             g_critical!(
                 "MissionCenter",
                 "Failed to set initial readings for performance page"
             );
         }
+
+        imp.sidebar_stack.set_visible_child_name("content");
 
         // Give services its own readings so the apps and services idles can both
         // be queued before continue_reading() below, keeping them ahead of the
@@ -1158,29 +1160,23 @@ impl MissionCenterWindow {
             }
         });
 
-        self.imp()
-            .performance_page
+        imp.performance_page
             .add_css_class("mission-center-performance-page");
 
-        self.imp()
-            .apps_page
-            .add_css_class("mission-center-apps-page");
+        imp.apps_page.add_css_class("mission-center-apps-page");
 
-        self.imp()
-            .services_page
+        imp.services_page
             .add_css_class("mission-center-services-page");
 
-        self.imp().header_bar.set_visible(true);
-        self.imp().stack.set_visible(true);
+        imp.header_bar.set_visible(true);
+        imp.stack.set_visible(true);
 
-        self.imp().bottom_bar.set_visible(true);
-        self.bind_property("summary-mode", &self.imp().bottom_bar.get(), "visible")
+        imp.bottom_bar.set_visible(true);
+        self.bind_property("summary-mode", &imp.bottom_bar.get(), "visible")
             .flags(BindingFlags::INVERT_BOOLEAN)
             .build();
 
-        self.imp()
-            .split_view
-            .set_collapsed(self.imp().should_hide_sidebar());
+        imp.split_view.set_collapsed(imp.should_hide_sidebar());
 
         if let Ok(sys_info) = app!().sys_info() {
             sys_info.continue_reading();

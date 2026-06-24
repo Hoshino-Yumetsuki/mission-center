@@ -34,6 +34,7 @@ use crate::table_view::{
     update_apps, update_processes, ContentType, ProcessActionBar, RowModel, RowModelBuilder,
     SectionType, SettingsNamespace, TableView,
 };
+use crate::widgets::Placeholder;
 
 pub mod actions;
 
@@ -50,6 +51,8 @@ mod imp {
 
         #[template_child]
         pub collapse_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub content_stack: TemplateChild<gtk::Stack>,
         #[template_child]
         pub table_view: TemplateChild<TableView>,
         #[template_child]
@@ -75,6 +78,7 @@ mod imp {
                 h1: TemplateChild::default(),
                 h2: TemplateChild::default(),
                 collapse_label: TemplateChild::default(),
+                content_stack: TemplateChild::default(),
                 table_view: TemplateChild::default(),
                 process_action_bar: TemplateChild::default(),
 
@@ -128,6 +132,7 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             RowModel::ensure_type();
+            Placeholder::ensure_type();
 
             klass.bind_template();
         }
@@ -245,7 +250,27 @@ impl AppsPage {
         self.update_common(readings);
 
         if !imp.has_loaded.get() {
-            self.remove_css_class("is-loading");
+            glib::idle_add_local_once({
+                let this = self.downgrade();
+                move || {
+                    let Some(this) = this.upgrade() else {
+                        return;
+                    };
+                    let imp = this.imp();
+
+                    let filter_list_model = imp.table_view.imp().filter_list_model.borrow();
+                    if let Some(flm) = filter_list_model.as_ref() {
+                        flm.set_incremental(false);
+                    }
+
+                    let sort_list_model = imp.table_view.imp().sort_list_model.borrow();
+                    if let Some(slm) = sort_list_model.as_ref() {
+                        slm.set_incremental(false);
+                    }
+
+                    imp.content_stack.set_visible_child_name("content");
+                }
+            });
             imp.has_loaded.set(true);
         }
 

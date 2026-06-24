@@ -37,18 +37,46 @@ template $PerformancePage : Adw.BreakpointBin {
       margin-start: 5;
       margin-end: 5;
 
-      Adw.Bin info_bar {
-        margin-start: 5;
-        margin-end: 5;
+      Stack info_stack {
+        transition-type: crossfade;
+
+        StackPage {
+          name: "placeholders";
+          child: $Placeholder {
+            profile: "performance-page-info";
+          };
+        }
+
+        StackPage {
+          name: "content";
+          child: Adw.Bin info_bar {
+            margin-start: 5;
+            margin-end: 5;
+          };
+        }
       }
     };
 
-    content: Stack page_stack {
-      margin-top: 10;
-      margin-start: 10;
-      margin-end: 10;
-
+    content: Stack content_stack {
       transition-type: crossfade;
+
+      StackPage {
+        name: "placeholders";
+        child: $Placeholder {
+          profile: "performance-page-graph";
+        };
+      }
+
+      StackPage {
+        name: "content";
+        child: Stack page_stack {
+          margin-top: 10;
+          margin-start: 10;
+          margin-end: 10;
+
+          transition-type: crossfade;
+        };
+      }
     };
   }
 }

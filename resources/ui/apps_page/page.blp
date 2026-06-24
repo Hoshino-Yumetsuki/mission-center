@@ -32,70 +32,84 @@ template $AppsPage : Box {
 
     maximum-size: 3000;
 
-    child: Box {
-      orientation: vertical;
+    child: Stack content_stack {
+      transition-type: crossfade;
 
-      Box {
-        margin-bottom: 20;
-
-        Box {
-          orientation: vertical;
-
-          spacing: 10;
-
-          hexpand: true;
-
-          Label h1 {
-            styles [
-              "title-1",
-            ]
-
-            ellipsize: end;
-
-            halign: start;
-          }
-
-          Label h2 {
-            styles [
-              "faint-text",
-            ]
-
-            halign: start;
-          }
-        }
-
-        Box {
-          valign: end;
-          spacing: 5;
-
-          Button {
-            margin-end: 5;
-
-            action-name: "apps-page.collapse-all";
-            tooltip-text: _("Collapse all apps and processes");
-
-            child: Box {
-              spacing: 5;
-
-              halign: center;
-
-              Image {
-                icon-name: "list-collapse-symbolic";
-              }
-
-              Label collapse_label {
-                label: _("Collapse All");
-              }
-            };
-          }
-
-          $ProcessActionBar process_action_bar {
-
-          }
-        }
+      StackPage {
+        name: "placeholders";
+        child: $Placeholder {
+          profile: "apps-page";
+        };
       }
 
-      $TableView table_view {}
+      StackPage {
+        name: "content";
+        child: Box {
+          orientation: vertical;
+
+          Box {
+            margin-bottom: 20;
+
+            Box {
+              orientation: vertical;
+
+              spacing: 10;
+
+              hexpand: true;
+
+              Label h1 {
+                styles [
+                  "title-1",
+                ]
+
+                ellipsize: end;
+
+                halign: start;
+              }
+
+              Label h2 {
+                styles [
+                  "faint-text",
+                ]
+
+                halign: start;
+              }
+            }
+
+            Box {
+              valign: end;
+              spacing: 5;
+
+              Button {
+                margin-end: 5;
+
+                action-name: "apps-page.collapse-all";
+                tooltip-text: _("Collapse all apps and processes");
+
+                child: Box {
+                  spacing: 5;
+
+                  halign: center;
+
+                  Image {
+                    icon-name: "list-collapse-symbolic";
+                  }
+
+                  Label collapse_label {
+                    label: _("Collapse All");
+                  }
+                };
+              }
+
+              $ProcessActionBar process_action_bar {
+
+              }
+            }
+          }
+
+          $TableView table_view {}
+        };
+      }
     };
   }
 }

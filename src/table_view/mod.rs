@@ -145,6 +145,9 @@ mod imp {
 
         filter: RefCell<gtk::CustomFilter>,
 
+        pub filter_list_model: RefCell<Option<gtk::FilterListModel>>,
+        pub sort_list_model: RefCell<Option<gtk::SortListModel>>,
+
         search_configured: Cell<bool>,
         search_setup_tries: Cell<u8>,
     }
@@ -180,6 +183,9 @@ mod imp {
                 service_state_connections: RefCell::new([const { None }; 2]),
 
                 filter: RefCell::new(gtk::CustomFilter::new(|_| true)),
+
+                filter_list_model: RefCell::new(None),
+                sort_list_model: RefCell::new(None),
 
                 search_configured: Cell::new(false),
                 search_setup_tries: Cell::new(1),
@@ -543,7 +549,10 @@ mod imp {
 
             let tree_model = Self::create_tree_model(model);
             let filter_list_model = self.configure_filter(tree_model, service_toggle_group);
+            self.filter_list_model
+                .replace(Some(filter_list_model.clone()));
             let (sort_list_model, row_sorter) = self.setup_filter_model(filter_list_model);
+            self.sort_list_model.replace(Some(sort_list_model.clone()));
             let selection_model = self.setup_selection_model(sort_list_model);
             self.column_view.set_model(Some(&selection_model));
 

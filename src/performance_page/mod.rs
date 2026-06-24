@@ -44,6 +44,7 @@ use crate::performance_page::widgets::{
     AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
     SidebarDropHint,
 };
+use crate::widgets::Placeholder;
 use crate::{settings, DataType};
 
 use summary_graph::{
@@ -118,7 +119,11 @@ mod imp {
         #[template_child]
         pub page_content: TemplateChild<adw::OverlaySplitView>,
         #[template_child]
+        pub content_stack: TemplateChild<gtk::Stack>,
+        #[template_child]
         pub page_stack: TemplateChild<gtk::Stack>,
+        #[template_child]
+        pub info_stack: TemplateChild<gtk::Stack>,
         #[template_child]
         pub info_bar: TemplateChild<adw::Bin>,
 
@@ -140,8 +145,6 @@ mod imp {
 
         context_menu_view_actions: Cell<HashMap<String, gio::SimpleAction>>,
         current_view_action: Cell<gio::SimpleAction>,
-
-        pub has_loaded: Cell<bool>,
     }
 
     impl Default for PerformancePage {
@@ -149,7 +152,9 @@ mod imp {
             Self {
                 breakpoint: Default::default(),
                 page_content: Default::default(),
+                content_stack: Default::default(),
                 page_stack: Default::default(),
+                info_stack: Default::default(),
                 info_bar: Default::default(),
 
                 sidebar: RefCell::new(gtk::ListBox::new()),
@@ -165,8 +170,6 @@ mod imp {
 
                 context_menu_view_actions: Cell::new(HashMap::new()),
                 current_view_action: Cell::new(gio::SimpleAction::new("", None)),
-
-                has_loaded: Cell::new(false),
             }
         }
     }
@@ -2733,6 +2736,7 @@ mod imp {
             CpuPage::ensure_type();
             NetworkPage::ensure_type();
             SidebarDropHint::ensure_type();
+            Placeholder::ensure_type();
 
             klass.bind_template();
         }
@@ -2875,10 +2879,19 @@ impl PerformancePage {
         let mut ok = imp::PerformancePage::set_up_pages(self, readings);
         ok &= imp::PerformancePage::update_readings(self, readings);
 
-        if !self.imp().has_loaded.get() {
-            self.remove_css_class("is-loading");
-            self.imp().has_loaded.set(true);
-        }
+        // Data has arrived; swap out the placeholders in favor of the real content
+        glib::idle_add_local_once({
+            let this = self.downgrade();
+            move || {
+                let Some(this) = this.upgrade() else {
+                    return;
+                };
+                let imp = this.imp();
+
+                imp.content_stack.set_visible_child_name("content");
+                imp.info_stack.set_visible_child_name("content");
+            }
+        });
 
         ok
     }

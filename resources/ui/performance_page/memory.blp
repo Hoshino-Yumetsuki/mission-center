@@ -56,7 +56,7 @@ template $PerformancePageMemory: Box {
   Adw.ToastOverlay toast_overlay {
     child: Grid grid_graphs {
       margin-bottom: 10;
-      row-spacing: 10;
+      row-spacing: 0;
 
       Box box_system_memory {
         layout {
@@ -111,6 +111,8 @@ template $PerformancePageMemory: Box {
           row: '12';
           row-span: 8;
         }
+
+        margin-top: 10;
 
         orientation: vertical;
         Box {
