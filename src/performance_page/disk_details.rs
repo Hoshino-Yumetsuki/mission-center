@@ -21,9 +21,14 @@
 use glib::{ParamSpec, Properties, Value};
 use gtk::{gdk::prelude::*, glib, subclass::prelude::*};
 
+use std::cell::Cell;
+use std::cell::RefCell;
+use std::collections::HashMap;
+
+use crate::performance_page::widgets::PartitionUsageItem;
+
 mod imp {
     use super::*;
-    use std::cell::Cell;
 
     #[derive(Properties)]
     #[properties(wrapper_type = super::DiskDetails)]
@@ -63,6 +68,11 @@ mod imp {
         #[template_child]
         pub serial_number: TemplateChild<gtk::Label>,
 
+        #[template_child]
+        pub partitions_stack: TemplateChild<gtk::ListBox>,
+
+        pub partitions_map: RefCell<HashMap<String, PartitionUsageItem>>,
+
         #[property(get, set)]
         rotation_visible: Cell<bool>,
         #[property(get, set)]
@@ -89,6 +99,8 @@ mod imp {
                 disk_type: Default::default(),
                 wwn: Default::default(),
                 serial_number: Default::default(),
+                partitions_stack: Default::default(),
+                partitions_map: Default::default(),
                 rotation_visible: Cell::new(false),
                 wwn_visible: Cell::new(false),
                 serial_number_visible: Cell::new(false),
@@ -128,6 +140,17 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
+
+            self.partitions_stack.set_sort_func(|a, b| {
+                let Some(a) = a.downcast_ref::<PartitionUsageItem>() else {
+                    return gtk::Ordering::Equal;
+                };
+                let Some(b) = b.downcast_ref::<PartitionUsageItem>() else {
+                    return gtk::Ordering::Equal;
+                };
+
+                gtk::Ordering::from(b.partition_size().cmp(&a.partition_size()))
+            });
         }
     }
 
@@ -209,5 +232,9 @@ impl DiskDetails {
 
     pub fn wwn(&self) -> &gtk::Label {
         &self.imp().wwn
+    }
+
+    pub fn partitions_stack(&self) -> &gtk::ListBox {
+        &self.imp().partitions_stack
     }
 }

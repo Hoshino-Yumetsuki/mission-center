@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 
 __license__ = 'MIT'
-import json
-from urllib.parse import urlparse, ParseResult, parse_qs
-import os
+
+import aiohttp
+import argparse
+import asyncio
 import contextlib
 import copy
 import glob
-import subprocess
-import argparse
-import logging
 import hashlib
-import asyncio
+import json
+import logging
+import os
+import subprocess
+import tomlkit
 from typing import Any, Dict, List, NamedTuple, Optional, Tuple, TypedDict
-
-import aiohttp
-import toml
+from urllib.parse import urlparse, ParseResult, parse_qs
 
 CRATES_IO = 'https://static.crates.io/crates'
 CARGO_HOME = 'cargo'
@@ -42,14 +42,14 @@ def canonical_url(url: str) -> ParseResult:
     u = urlparse(url)
     # It seems cargo drops query and fragment
     u = ParseResult(u.scheme, u.netloc, u.path, '', '', '')
-    u = u._replace(path = u.path.rstrip('/'))
+    u = u._replace(path=u.path.rstrip('/'))
 
     if u.netloc == 'github.com':
-        u = u._replace(scheme = 'https')
-        u = u._replace(path = u.path.lower())
+        u = u._replace(scheme='https')
+        u = u._replace(path=u.path.lower())
 
     if u.path.endswith('.git'):
-        u = u._replace(path = u.path[:-len('.git')])
+        u = u._replace(path=u.path[:-len('.git')])
 
     return u
 
@@ -92,8 +92,8 @@ _TomlType = Dict[str, Any]
 
 
 def load_toml(tomlfile: str = 'Cargo.lock') -> _TomlType:
-    with open(tomlfile, 'r') as f:
-        toml_data = toml.load(f)
+    with open(tomlfile, "r", encoding="utf-8") as f:
+        toml_data = tomlkit.parse(f.read()).unwrap()
     return toml_data
 
 
@@ -174,9 +174,9 @@ async def get_cargo_toml_packages(root_toml: _TomlType, root_dir: str) -> _GitPa
     packages: _GitPackagesType = {}
 
     async def get_dep_packages(
-        entry: _TomlType,
-        toml_dir: str,
-        workspace: Optional[_TomlType] = None,
+            entry: _TomlType,
+            toml_dir: str,
+            workspace: Optional[_TomlType] = None,
     ):
         assert not os.path.isabs(toml_dir)
         # https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
@@ -234,9 +234,9 @@ _FlatpakSourceType = Dict[str, Any]
 
 
 async def get_git_repo_sources(
-    url: str,
-    commit: str,
-    tarball: bool = False,
+        url: str,
+        commit: str,
+        tarball: bool = False,
 ) -> List[_FlatpakSourceType]:
     name = git_repo_name(url, commit)
     if tarball:
@@ -264,8 +264,8 @@ _VendorEntryType = Dict[str, Dict[str, str]]
 
 
 async def get_git_package_sources(
-    package: _TomlType,
-    git_repos: _GitReposType,
+        package: _TomlType,
+        git_repos: _GitReposType,
 ) -> Tuple[List[_FlatpakSourceType], _VendorEntryType]:
     name = package['name']
     source = package['source']
@@ -313,14 +313,14 @@ async def get_git_package_sources(
         },
         {
             'type': 'inline',
-            'contents': toml.dumps(git_pkg.normalized),
-            'dest': f'{CARGO_CRATES}/{name}', #-{version}',
+            'contents': tomlkit.dumps(git_pkg.normalized),
+            'dest': f'{CARGO_CRATES}/{name}',  # -{version}',
             'dest-filename': 'Cargo.toml',
         },
         {
             'type': 'inline',
             'contents': json.dumps({'package': None, 'files': {}}),
-            'dest': f'{CARGO_CRATES}/{name}', #-{version}',
+            'dest': f'{CARGO_CRATES}/{name}',  # -{version}',
             'dest-filename': '.cargo-checksum.json',
         }
     ]
@@ -329,9 +329,9 @@ async def get_git_package_sources(
 
 
 async def get_package_sources(
-    package: _TomlType,
-    cargo_lock: _TomlType,
-    git_repos: _GitReposType,
+        package: _TomlType,
+        cargo_lock: _TomlType,
+        git_repos: _GitReposType,
 ) -> Optional[Tuple[List[_FlatpakSourceType], _VendorEntryType]]:
     metadata = cargo_lock.get('metadata')
     name = package['name']
@@ -372,8 +372,8 @@ async def get_package_sources(
 
 
 async def generate_sources(
-    cargo_lock: _TomlType,
-    git_tarballs: bool = False,
+        cargo_lock: _TomlType,
+        git_tarballs: bool = False,
 ) -> List[_FlatpakSourceType]:
     # {
     #     "git-repo-url": {
@@ -432,7 +432,7 @@ def main():
     logging.basicConfig(level=loglevel)
 
     generated_sources = asyncio.run(generate_sources(load_toml(args.cargo_lock),
-                                    git_tarballs=args.git_tarballs))
+                                                     git_tarballs=args.git_tarballs))
     with open(outfile, 'w') as out:
         json.dump(generated_sources, out, indent=2, sort_keys=False)
 

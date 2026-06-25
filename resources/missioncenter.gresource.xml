@@ -14,6 +14,7 @@
         <file preprocess="xml-stripblanks">list-disable-all-symbolic.svg</file>
         <file preprocess="xml-stripblanks">list-drag-handle-symbolic.svg</file>
         <file preprocess="xml-stripblanks">list-enable-all-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">mount-point.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-00-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-25-symbolic.svg</file>
         <file preprocess="xml-stripblanks">nm-signal-50-symbolic.svg</file>
@@ -51,6 +52,7 @@
         <file preprocess="xml-stripblanks">ui/performance_page/disk_details.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk_eject_failure_dialog.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk_eject_failure_row.ui</file>
+        <file preprocess="xml-stripblanks">ui/performance_page/disk_partition_usage_item.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk_smart_data_dialog.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk_smart_data_entry.ui</file>
         <file preprocess="xml-stripblanks">ui/performance_page/disk_smart_failure_dialog.ui</file>

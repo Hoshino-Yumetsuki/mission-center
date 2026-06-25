@@ -32,7 +32,7 @@ use crate::i18n::*;
 use crate::performance_page::disk_details::DiskDetails;
 use crate::performance_page::widgets::{
     AnimationFrame, DatasetGroup, EjectFailureDialog, FillingSettings, GraphWidget,
-    RoundingSettings, ScalingSettings, SmartDataDialog, SmartFailureDialog,
+    PartitionUsageItem, RoundingSettings, ScalingSettings, SmartDataDialog, SmartFailureDialog,
 };
 use crate::{app, settings, to_short_human_readable_time, DataType};
 
@@ -405,6 +405,30 @@ mod imp {
                     disk.tx_bytes_total as f32,
                     &DataType::DriveBytes,
                 ));
+
+            let stack = this.infobar_content.partitions_stack();
+
+            let mut existing_map = this.infobar_content.imp().partitions_map.borrow_mut();
+
+            for (existing_devname, existing_row) in existing_map.iter() {
+                if let Some(partition) = disk.partitions.get(existing_devname) {
+                    existing_row.update(partition);
+                } else {
+                    stack.remove(existing_row);
+                }
+            }
+
+            for (devname, partition) in &disk.partitions {
+                if !existing_map.contains_key(devname) {
+                    let new_item = PartitionUsageItem::from_part_info(partition);
+
+                    stack.insert(&new_item, existing_map.len() as i32);
+
+                    existing_map.insert(devname.clone(), new_item);
+                }
+            }
+
+            stack.invalidate_sort();
 
             if disk.ejectable {
                 this.description.set_margin_top(0);
