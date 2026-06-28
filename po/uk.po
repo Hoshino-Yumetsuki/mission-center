@@ -8,8 +8,9 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2025-07-20 22:03+0000\n"
-"Last-Translator: Ethermidate <disterion@ukr.net>\n"
+"PO-Revision-Date: 2026-06-29 05:01+0000\n"
+"Last-Translator: Hosted Weblate user 145873 "
+"<skrlatorr@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/uk/>\n"
 "Language: uk\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.13-dev\n"
+"X-Generator: Weblate 2026.7.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -40,16 +41,16 @@ msgstr "Розробники Mission Center"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor system resource usage"
-msgstr "Моніторинг використання системних ресурсів"
+msgstr "Відстеження використання системних ресурсів"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
-#, fuzzy
 msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
 msgstr ""
-"Відстежуйте використання процесора, пам'яті, диска, мережі та графічного "
-"процесора"
+"Відстежуйте використання процесора, оперативної пам'яті, накопичувачів, "
+"мережі та графічного процесора, отримуючи докладний розподіл цих показників "
+"для кожного застосунку й процесу"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid "Features:"
@@ -57,33 +58,31 @@ msgstr "Особливості:"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
 msgid "Monitor overall or per-thread CPU usage"
-msgstr ""
-"Відстежувати загальне використання процесора або використання по кожному "
-"потоку"
+msgstr "Відстеження загального використання процесора або окремих потоків"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
 msgstr ""
-"Переглянути кількість системних процесів, потоків і дескрипторів, час "
-"роботи, тактову частоту (базову та поточну), розмір кешу"
+"Перегляд кількості системних процесів, потоків і дескрипторів, час "
+"безперервної роботи, тактову частоту (базову й поточну) та обсяги кеш-пам'яті"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid "Monitor RAM and Swap usage"
-msgstr "Моніторинг використання оперативної пам'яті та файла підкачки"
+msgstr "Відстеження використання оперативної пам'яті та файла підкачування"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "See a breakdown how the memory is being used by the system"
-msgstr "Подивитися, як система використовує пам'ять"
+msgstr "Перегляд розподілу використання оперативної пам'яті системою"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "Monitor Disk utilization and transfer rates"
-msgstr "Моніторинг використання диска та швидкості передачі даних"
+msgstr "Відстеження використання накопичувачів і швидкості передавання даних"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor network utilization and transfer speeds"
-msgstr "Моніторинг завантаження мережі та швидкості передачі даних"
+msgstr "Відстеження використання мережі та швидкості передавання даних"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid ""
@@ -91,58 +90,58 @@ msgid ""
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
 "address"
 msgstr ""
-"Перегляньте інформацію про мережевий інтерфейс, таку як ім'я мережевої "
-"карти, тип з'єднання (Wi-Fi або Ethernet), швидкість і частоту бездротового "
-"зв'язку, апаратну адресу, IP-адресу"
+"Перегляд інформації про мережеві інтерфейси, як-от: назва мережевої карти, "
+"тип з'єднання (Wi-Fi або Ethernet), швидкість і частота бездротового "
+"зв'язку, апаратна та IP-адреса"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Відстежуйте загальне використання графічного процесора, відеокодерів і "
-"декодерів, використання пам'яті та енергоспоживання за допомогою популярного "
-"проекту NVTOP"
+"Відстеження загального використання графічного процесора, відеоенкодерів і -"
+"декодерів, пам'яті й енергоспоживання завдяки популярному проєкту NVTOP"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
-#, fuzzy
 msgid "Monitor system fans"
-msgstr "Моніторинг використання системних ресурсів"
+msgstr "Відстеження роботи системних вентиляторів"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "See a breakdown of resource usage by app and process"
-msgstr "Подивіться розподіл використання ресурсів за додатками та процесами"
+msgstr "Перегляд розподілу використання ресурсів за застосунками й процесами"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "Supports a minified summary view for simple monitoring"
-msgstr "Підтримує мініатюрні зведені дані для простого моніторингу"
+msgstr "Підтримка компактного режиму зведення для зручного відстеження"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
-#, fuzzy
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
 msgstr ""
-"Використовувати апаратне прискорення (ГП) для всіх графіків, для зменшення "
-"використання ЦП та загальних ресурсів"
+"Використання апаратного прискорення для візуалізації всіх графіків задля "
+"зменшення навантаження на процесор і систему загалом"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
 msgid "Uses GTK4 and Libadwaita"
-msgstr "Використовує GTK4 та Libadwaita"
+msgstr "Використання GTK4 та Libadwaita"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Written in Rust"
-msgstr "Написано на Rust"
+msgstr "Розроблено мовою програмування Rust"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
 msgid "Limitations (there is ongoing work to overcome all of these):"
-msgstr "Обмеження (ведеться постійна робота над їх подоланням):"
+msgstr "Обмеження (триває робота над їхнім усуненням):"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
+"Відстеження графічних процесорів Intel підтримується лише для архітектури "
+"Broadwell і новіших та не включає даних про відеопам'ять (VRAM), "
+"енергоспоживання чи температуру"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
 msgid ""
@@ -150,16 +149,19 @@ msgid ""
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
 "cinnamon/issues/12015)"
 msgstr ""
+"Під час використання Linux Mint/Cinnamon запущені застосунки можуть не "
+"показуватися в розділі «Застосунки» (проблема першоджерела: https://"
+"github.com/linuxmint/cinnamon/issues/12015)"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:51
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr ""
-"Вітаються коментарі, пропозиції, повідомлення про помилки та приєднання до "
-"розробки"
+"Коментарі, пропозиції, повідомлення про помилки та внески до проєкту завжди "
+"вітаються"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:46
 msgid "Which page is shown on application startup"
-msgstr "Яку сторінку відображати при запуску програми"
+msgstr "Яку сторінку показувати під час запуску застосунку"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:51
 msgid "Interface Style"
@@ -167,7 +169,7 @@ msgstr "Стиль інтерфейсу"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:52
 msgid "If light or dark interface style should be used"
-msgstr ""
+msgstr "Який стиль інтерфейсу використовувати: світлий чи темний"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:58
 msgid "DEPRECATED! NO LONGER IN USE!"
@@ -177,176 +179,169 @@ msgstr "ЗАСТАРІЛО! БІЛЬШЕ НЕ ВИКОРИСТОВУЄТЬСЯ!"
 msgid ""
 "How fast should the data be refreshed and the UI updated (in increments of "
 "50ms)"
-msgstr ""
-"Як швидко повинні оновлюватися дані та користувацький інтерфейс (розмір "
-"крока 50мс)"
+msgstr "Як часто мають оновлюватися дані й інтерфейс (із кроком у 50 мс)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:70
 msgid "How many points should be displayed on each chart?"
-msgstr "Скільки точок повинно бути відображено на кожному графіку?"
+msgstr "Скільки точок показувати на кожному графіку"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:75
 msgid "Whether or not to use bits or bytes (default) for memory"
-msgstr ""
+msgstr "Показувати пам'ять у бітах чи байтах (типово)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:80
 msgid "Whether or not to use base-10 or base-2 (default) for memory"
-msgstr ""
+msgstr "Показувати пам'ять у десятковій чи двійковій (типово) системі числення"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:85
 msgid "Whether or not to use bits or bytes (default) for drive speed + size"
-msgstr ""
+msgstr "Показувати швидкість та обсяг накопичувача в бітах чи байтах (типово)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:90
 msgid ""
 "Whether or not to use base-10 or base-2 (default) for drive speed + size"
 msgstr ""
+"Показувати швидкість та обсяг накопичувача в десятковій чи двійковій "
+"(типово) системі числення"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:95
 msgid "Whether or not to use bits (default) or Bytes for network speed"
-msgstr ""
+msgstr "Показувати швидкість мережі в бітах (типово) чи байтах"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:100
 msgid "Whether or not to use base-10 (default) or base-2 for network speed"
 msgstr ""
+"Показувати швидкість мережі в десятковій (типово) чи двійковій системі "
+"числення"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:105
 msgid ""
 "Whether to set graph max to interface max (false) or the max observed (true)"
 msgstr ""
+"Установлювати верхню межу графіка за максимумом інтерфейсу (false) чи "
+"зафіксованим максимумом (true)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
 #: resources/ui/preferences/page.blp:105
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
-"Статистика батьківських і дочірніх процесів відображається окремо або "
-"об'єднана зверху"
+"Показувати статистику батьківських і дочірніх процесів окремо чи об'єднувати "
+"з батьківським"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:115
 msgid "Column sorting is persisted across app restarts"
-msgstr "Сортування стовпців збережеться після перезапуску програми"
+msgstr "Сортування стовпців зберігається після перезапуску застосунку"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr "Сортування стовпців збережеться після перезапуску програми"
+msgstr "Порядок стовпців зберігається після перезапуску застосунку"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 msgid ""
 "Show CPU usage for Apps and Processes scaled to the number of available cores"
 msgstr ""
-"Показувати використання ЦП для програм та процессів в залежності від "
+"Показувати використання процесора для застосунків і процесів пропорційно до "
 "кількості доступних ядер"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:130
 msgid "Show a separator between each column in the Apps view"
-msgstr ""
+msgstr "Показувати розділювач між стовпцями у поданні «Застосунки»"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr ""
-"Ідентифікатор стовпчика, за яким сортується вигляд сторінки \"Программи\""
+msgstr "Назва стовпця, за яким відсортовано подання «Застосунки»"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The sorting direction of the Apps page view"
-msgstr "Напрямок сортування перегляду сторінки \"Програми\""
+msgstr "Напрям сортування подання «Застосунки»"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "Напрямок сортування перегляду сторінки \"Програми\""
+msgstr "Порядок стовпців у поданні «Застосунки»"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
-#, fuzzy
 msgid "The column name by which the Services page view is sorted"
-msgstr ""
-"Ідентифікатор стовпчика, за яким сортується вигляд сторінки \"Программи\""
+msgstr "Назва стовпця, за яким відсортовано подання «Служби»"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:155
-#, fuzzy
 msgid "The sorting direction of the Services page view"
-msgstr "Напрямок сортування перегляду сторінки \"Програми\""
+msgstr "Напрям сортування подання «Служби»"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:160
-#, fuzzy
 msgid "The order of columns in the Services page view"
-msgstr "Напрямок сортування перегляду сторінки \"Програми\""
+msgstr "Порядок стовпців у поданні «Служби»"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:166
 msgid "Which graph is shown on the CPU performance page"
-msgstr "Який графік відображається на сторінці продуктивності процесора"
+msgstr "Який графік показуватиметься на сторінці продуктивності процесора"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:171
 msgid "Show kernel times in the CPU graphs"
-msgstr "Показувати час роботи ядра на графіку ЦП"
+msgstr "Показувати час роботи ядра на графіках процесора"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:176
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
-"Яка сторінка відображається під час запуску програми на вкладці "
+"Яка сторінка показуватиметься під час запуску застосунку на вкладці "
 "продуктивності"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:182
 msgid "Should performance graphs be smooth or jagged"
-msgstr "Показувати графіки продуктивності згладженими або грубими"
+msgstr "Показувати графіки продуктивності згладженими або ламаними"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:187
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "Показувати графіки продуктивності згладженими або грубими"
+msgstr "Чи мають графіки бути рухомими"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:192
 #: resources/ui/preferences/page.blp:65
 msgid "Show CPU information by default"
-msgstr "Показувати інформацію процесора за замовчуванням"
+msgstr "Типово показувати інформацію процесора"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:197
 #: resources/ui/preferences/page.blp:71
-#, fuzzy
 msgid "Show memory information by default"
-msgstr "Не вдалося отримати додаткову інформацію про пам’ять"
+msgstr "Типово показувати інформацвю про пам'ять"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:202
 #: resources/ui/preferences/page.blp:77
 msgid "Show disk information by default"
-msgstr "Показувати інформацію диска за замовчуванням"
+msgstr "Типово показувати інформацію про накопичувачі"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:207
 #: resources/ui/preferences/page.blp:83
 msgid "Show network information by default"
-msgstr "Показувати інформацію мережі за замовчуванням"
+msgstr "Типово показувати інформацію про мережу"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:212
 #: resources/ui/preferences/page.blp:89
 msgid "Show GPU information by default"
-msgstr "Показувати інформацію графічного процесора за замовчуванням"
+msgstr "Типово показувати інформацію графічного процесора"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:217
 #: resources/ui/preferences/page.blp:95
 msgid "Show fan information by default"
-msgstr "Показувати інформацію вентилятора за замовчуванням"
+msgstr "Типово показувати інформацію вентиляторів"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:222
-#, fuzzy
 msgid "Show the mem composition widget"
-msgstr "Складові пам'яті"
+msgstr "Показувати віджет розподілу пам'яті"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:227
 msgid "Show the swap graph"
-msgstr ""
+msgstr "Показувати графік файла підкачування"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:232
 msgid "Show the gpu encode-decode graph"
-msgstr ""
+msgstr "Показувати графік кодування та декодування графічного процесора"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:237
 msgid "The ordering of entries in the application sidebar"
-msgstr ""
+msgstr "Порядок елементів на бічній панелі застосунку"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:242
 msgid "Graphs that should be hidden in the application sidebar"
-msgstr ""
+msgstr "Графіки, які слід приховати на бічній панелі застосунку"
 
 #: resources/ui/apps_page/details_dialog.blp:76
 #: resources/ui/process_column_view/column_view_frame.blp:48
@@ -425,9 +420,8 @@ msgstr "Спільна пам'ять"
 
 #: resources/ui/apps_page/details_dialog.blp:243
 #: resources/ui/process_column_view/process_details_dialog.blp:251
-#, fuzzy
 msgid "Drives"
-msgstr "Накопичувач"
+msgstr "Накопичувачі"
 
 #: resources/ui/apps_page/details_dialog.blp:268
 #: resources/ui/process_column_view/column_view_frame.blp:78
@@ -451,13 +445,12 @@ msgstr "ГП"
 #: resources/ui/process_column_view/process_details_dialog.blp:326
 #: src/process_tree/column_view_frame.rs:598
 #: src/process_tree/column_view_frame.rs:617
-#, fuzzy
 msgid "GPU Memory"
 msgstr "Пам'ять ГП"
 
 #: resources/ui/apps_page/page.blp:75
 msgid "Collapse all apps and processes"
-msgstr "Згорнути всі програми та процеси"
+msgstr "Згорнути всі застосунки й процеси"
 
 #: resources/ui/apps_page/page.blp:87 resources/ui/services_page/page.blp:94
 #: resources/ui/keyboard_shortcuts.blp:112
@@ -466,33 +459,32 @@ msgstr "Згорнути все"
 
 #: resources/ui/performance_page/disk_eject_failure_dialog.blp:25
 msgid "Failed To Eject"
-msgstr ""
+msgstr "Не вдалося витягти"
 
 #: resources/ui/performance_page/disk_eject_failure_row.blp:51
 msgid "Kill"
-msgstr ""
+msgstr "Убити"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:31
 msgid "In Use:"
-msgstr ""
+msgstr "Використовується:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:36
 msgid "Modified:"
-msgstr ""
+msgstr "Змінено:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:41
 msgid "Standby:"
-msgstr ""
+msgstr "Очікування:"
 
 #: resources/ui/performance_page/memory_info_tooltip.blp:46
 msgid "Free:"
-msgstr ""
+msgstr "Вільно:"
 
 #: resources/ui/performance_page/cpu.blp:63
 #: resources/ui/performance_page/gpu.blp:72
-#, fuzzy
 msgid "Utilization over "
-msgstr "Викрористання за {}{}"
+msgstr "Використання за "
 
 #: resources/ui/performance_page/cpu.blp:78
 #: resources/ui/performance_page/gpu.blp:86
@@ -502,15 +494,15 @@ msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:106
 msgid "Change G_raph To"
-msgstr "Змінити графік _на"
+msgstr "Змінити г_рафік на"
 
 #: resources/ui/performance_page/cpu.blp:109
 msgid "Overall U_tilization"
-msgstr "_Загальне використання"
+msgstr "Загальне викорис_тання"
 
 #: resources/ui/performance_page/cpu.blp:114
 msgid "Logical _Processors"
-msgstr "_Логічні процесори"
+msgstr "Логічні _процесори"
 
 #: resources/ui/performance_page/cpu.blp:120
 msgid "Show Kernel Times"
@@ -523,7 +515,7 @@ msgstr "Показати час роботи ядра"
 #: resources/ui/performance_page/memory.blp:207
 #: resources/ui/performance_page/network.blp:105
 msgid "Graph _Summary View"
-msgstr "Зве_дений графік"
+msgstr "Зве_денне подання графіка"
 
 #: resources/ui/performance_page/cpu.blp:132
 #: resources/ui/performance_page/disk.blp:187
@@ -532,7 +524,7 @@ msgstr "Зве_дений графік"
 #: resources/ui/performance_page/memory.blp:212
 #: resources/ui/performance_page/network.blp:110
 msgid "_View"
-msgstr "_Вид"
+msgstr "_Подання"
 
 #: resources/ui/performance_page/cpu.blp:135
 #: resources/ui/performance_page/disk.blp:190
@@ -586,7 +578,7 @@ msgstr "_ГП"
 #: resources/ui/performance_page/memory.blp:240
 #: resources/ui/performance_page/network.blp:138
 msgid "_Fan"
-msgstr ""
+msgstr "_Вентилятор"
 
 #: resources/ui/performance_page/cpu.blp:168
 #: resources/ui/performance_page/disk.blp:223
@@ -599,79 +591,69 @@ msgstr "_Копіювати"
 
 #: resources/ui/performance_page/disk.blp:66
 msgid "Show SMART Data"
-msgstr ""
+msgstr "Показати дані SMART"
 
 #: resources/ui/performance_page/disk.blp:77
 msgid "Eject Disk"
-msgstr ""
+msgstr "Витягти накопичувач"
 
 #: resources/ui/performance_page/disk.blp:99
-#, fuzzy
 msgid "Active time over "
-msgstr "Час активності"
+msgstr "Час діяльності за "
 
 #: resources/ui/performance_page/disk.blp:140
 #: resources/ui/performance_page/network.blp:61
-#, fuzzy
 msgid "Throughput over "
-msgstr "Пропускна здатність"
+msgstr "Пропускна здатність за "
 
 #: resources/ui/performance_page/fan.blp:61
-#, fuzzy
 msgid "Fan speed over "
-msgstr "Використання пам'яті"
+msgstr "Швидкість вентилятора за "
 
 #: resources/ui/performance_page/fan.blp:112
-#, fuzzy
 msgid "Temperature over "
-msgstr "Температура"
+msgstr "Температура за "
 
 #: resources/ui/performance_page/fan_details.blp:59
-#, fuzzy
 msgid "Fan Speed"
-msgstr "Швидкість"
+msgstr "Швидкість вентилятора"
 
 #: resources/ui/performance_page/fan_details.blp:98
 msgid "PWM Percentage"
-msgstr ""
+msgstr "Відсоток ШІМ"
 
 #: resources/ui/performance_page/fan_details.blp:125
-#, fuzzy
 msgid "Current Temperature"
-msgstr "Температура"
+msgstr "Поточна температура"
 
 #: resources/ui/performance_page/gpu.blp:119
-#, fuzzy
 msgid "Video encode/decode utilization over "
-msgstr "Використання функції кодування відео"
+msgstr "Використання кодування/декодування відео за "
 
 #: resources/ui/performance_page/gpu.blp:162
 #: resources/ui/performance_page/memory.blp:76
-#, fuzzy
 msgid "Memory usage over "
-msgstr "Використання пам'яті"
+msgstr "Використання пам'яті за "
 
 #: resources/ui/performance_page/gpu.blp:208
 msgid "Show Encode/Decode Usage"
-msgstr ""
+msgstr "Показувати використання кодування/декодування"
 
 #: resources/ui/performance_page/memory.blp:121
-#, fuzzy
 msgid "Swap usage over "
-msgstr "Використання пам'яті"
+msgstr "Використання файла підкачування за "
 
 #: resources/ui/performance_page/memory.blp:172
 msgid "Memory composition"
-msgstr "Структурний склад пам'яті"
+msgstr "Розподіл пам'яті"
 
 #: resources/ui/performance_page/memory.blp:196
-#, fuzzy
 msgid "Show Memory Composition"
-msgstr "Структурний склад пам'яті"
+msgstr "Показувати розподіл пам'яті"
 
 #: resources/ui/performance_page/memory.blp:200
 msgid "Show Swap Usage"
-msgstr ""
+msgstr "Показувати використання файла підкачування"
 
 #: resources/ui/performance_page/memory_details.blp:58
 msgid "In use"
@@ -683,7 +665,7 @@ msgstr "Доступно"
 
 #: resources/ui/performance_page/memory_details.blp:129
 msgid "Committed"
-msgstr "Зарезервовано"
+msgstr "Виділено"
 
 #: resources/ui/performance_page/memory_details.blp:159
 msgid "Cached"
@@ -691,11 +673,11 @@ msgstr "Кешовано"
 
 #: resources/ui/performance_page/memory_details.blp:190
 msgid "Swap used"
-msgstr "Використаний своп"
+msgstr "Підкачування використано"
 
 #: resources/ui/performance_page/memory_details.blp:221
 msgid "Swap available"
-msgstr "Доступний своп"
+msgstr "Підкачування доступно"
 
 #: resources/ui/performance_page/memory_details.blp:246
 msgid "Speed:"
@@ -703,7 +685,7 @@ msgstr "Швидкість:"
 
 #: resources/ui/performance_page/memory_details.blp:260
 msgid "Slots used:"
-msgstr "Слоти використані:"
+msgstr "Роз'ємів використано:"
 
 #: resources/ui/performance_page/memory_details.blp:274
 msgid "Form factor:"
@@ -720,23 +702,23 @@ msgstr "Нала_штування мережі"
 
 #: resources/ui/performance_page/network_details.blp:63
 msgid "Receive"
-msgstr "Отримано"
+msgstr "Отримання"
 
 #: resources/ui/performance_page/network_details.blp:101
 msgid "Send"
-msgstr "Надіслати"
+msgstr "Надсилання"
 
 #: resources/ui/performance_page/network_details.blp:130
 msgid "Total Received"
-msgstr ""
+msgstr "Усього отримано"
 
 #: resources/ui/performance_page/network_details.blp:159
 msgid "Total Sent"
-msgstr ""
+msgstr "Усього надіслано"
 
 #: resources/ui/performance_page/network_details.blp:184
 msgid "Interface name:"
-msgstr "Ім'я інтерфейсу:"
+msgstr "Назва інтерфейсу:"
 
 #: resources/ui/performance_page/network_details.blp:198
 msgid "Connection type:"
@@ -764,70 +746,65 @@ msgstr "Апаратна адреса:"
 
 #: resources/ui/performance_page/network_details.blp:401
 msgid "IPv4 address:"
-msgstr "IPv4 адреса:"
+msgstr "Адреса IPv4:"
 
 #: resources/ui/performance_page/network_details.blp:427
 msgid "IPv6 address:"
-msgstr "IPv6 адреса:"
+msgstr "Адреса IPv6:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:33
 msgid "Smart Data"
-msgstr ""
+msgstr "Дані SMART"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:48
 msgid "Last Updated"
-msgstr ""
+msgstr "Востаннє оновлено"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:72
-#, fuzzy
 msgid "Powered On"
-msgstr "Енергоспоживання"
+msgstr "Увімкнено"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:96
 msgid "Drive Health"
-msgstr ""
+msgstr "Справність накопичувача"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:120
 msgid "SMART Test Status"
-msgstr ""
+msgstr "Стан тесту SMART"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:149
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:174
 msgid "Attribute"
-msgstr ""
+msgstr "Властивість"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:156
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:181
 msgid "Value"
-msgstr ""
+msgstr "Значення"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:168
-#, fuzzy
 msgid "ID"
-msgstr "PID"
+msgstr "ID"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:187
-#, fuzzy
 msgid "Normalized"
-msgstr "Нормально"
+msgstr "Нормалізоване"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:193
-#, fuzzy
 msgid "Threshold"
-msgstr "Потоки"
+msgstr "Поріг"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:199
 msgid "Worst"
-msgstr ""
+msgstr "Найгірше"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:211
-#, fuzzy
 msgid "Updates"
-msgstr "Швидкість оновлення"
+msgstr "Оновлення"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:217
 msgid "Assessment"
-msgstr ""
+msgstr "Висновок"
 
 #: resources/ui/performance_page/gpu_details.blp:51
 #: resources/ui/performance_page/cpu_details.blp:46
@@ -840,36 +817,30 @@ msgstr "Тактова частота"
 
 #: resources/ui/performance_page/gpu_details.blp:132
 #: resources/ui/performance_page/cpu_details.blp:91
-#, fuzzy
 msgid "Power Draw"
 msgstr "Енергоспоживання"
 
 #: resources/ui/performance_page/gpu_details.blp:200
 #: src/performance_page/gpu.rs:552
-#, fuzzy
 msgid "Memory Usage"
 msgstr "Використання пам'яті"
 
 #: resources/ui/performance_page/gpu_details.blp:274
 #: src/performance_page/gpu.rs:629
-#, fuzzy
 msgid "Shared Memory Usage"
-msgstr "Використання пам'яті"
+msgstr "Використання спільної пам'яті"
 
 #: resources/ui/performance_page/gpu_details.blp:332
-#, fuzzy
 msgid "Memory Speed"
 msgstr "Швидкість пам'яті"
 
 #: resources/ui/performance_page/gpu_details.blp:407
-#, fuzzy
 msgid "Video encode"
-msgstr "Кодування/декодування відео"
+msgstr "Кодування відео"
 
 #: resources/ui/performance_page/gpu_details.blp:453
-#, fuzzy
 msgid "Video decode"
-msgstr "Кодування/декодування відео"
+msgstr "Декодування відео"
 
 #: resources/ui/performance_page/gpu_details.blp:483
 msgid "Temperature"
@@ -888,27 +859,28 @@ msgid "PCI Express speed:"
 msgstr "Швидкість PCI Express:"
 
 #: resources/ui/performance_page/gpu_details.blp:566
-#, fuzzy
 msgid "Max PCI Express speed:"
-msgstr "Швидкість PCI Express:"
+msgstr "Макс. швидкість PCI Express:"
 
 #: resources/ui/performance_page/gpu_details.blp:582
 msgid "PCI bus address:"
-msgstr "Адреса шини PCI:"
+msgstr "Адреса PCI-шини:"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:25
 msgid "Failed To Get SMART Data"
-msgstr ""
+msgstr "Не вдалося отримати дані SMART"
 
 #: resources/ui/performance_page/disk_smart_failure_dialog.blp:31
 msgid ""
 "There was a problem fetching SMART data. Try running from the command line "
 "to get more information."
 msgstr ""
+"Виникла проблема під час отримання даних SMART. Спробуйте запустити "
+"застосунок із командного рядка для отримання докладнішої інформації."
 
 #: resources/ui/performance_page/disk_details.blp:63
 msgid "Read speed"
-msgstr "Швидкість зчитування"
+msgstr "Швидкість читання"
 
 #: resources/ui/performance_page/disk_details.blp:101
 msgid "Write speed"
@@ -916,19 +888,19 @@ msgstr "Швидкість запису"
 
 #: resources/ui/performance_page/disk_details.blp:130
 msgid "Total Read"
-msgstr ""
+msgstr "Усього прочитано"
 
 #: resources/ui/performance_page/disk_details.blp:159
 msgid "Total Written"
-msgstr ""
+msgstr "Усього записано"
 
 #: resources/ui/performance_page/disk_details.blp:188
 msgid "Active time"
-msgstr "Час активності"
+msgstr "Час діяльності"
 
 #: resources/ui/performance_page/disk_details.blp:217
 msgid "Avg. response time"
-msgstr "Середній час відгуку"
+msgstr "Сер. час відгуку"
 
 #: resources/ui/performance_page/disk_details.blp:242
 msgid "Capacity:"
@@ -936,23 +908,23 @@ msgstr "Ємність:"
 
 #: resources/ui/performance_page/disk_details.blp:256
 msgid "Formatted:"
-msgstr "Відформатований:"
+msgstr "Відформатовано:"
 
 #: resources/ui/performance_page/disk_details.blp:270
 msgid "System disk:"
-msgstr "Системний диск:"
+msgstr "Системний накопичувач:"
 
 #: resources/ui/performance_page/disk_details.blp:300
 msgid "WWN:"
-msgstr ""
+msgstr "WWN:"
 
 #: resources/ui/performance_page/disk_details.blp:316
 msgid "Serial:"
-msgstr ""
+msgstr "Серійний номер:"
 
 #: resources/ui/performance_page/disk_details.blp:332
 msgid "Rotation Rate"
-msgstr ""
+msgstr "Швидкість обертання"
 
 #: resources/ui/performance_page/cpu_details.blp:68
 msgid "Speed"
@@ -972,7 +944,7 @@ msgstr "Дескриптори"
 
 #: resources/ui/performance_page/cpu_details.blp:184
 msgid "Up time"
-msgstr "Аптайм"
+msgstr "Час роботи"
 
 #: resources/ui/performance_page/cpu_details.blp:207
 msgid "Base Speed:"
@@ -1008,38 +980,35 @@ msgstr "Кеш 3-го рівня:"
 
 #: resources/ui/performance_page/cpu_details.blp:319
 msgid "Cpufreq driver:"
-msgstr "Драйвер Cpufreq:"
+msgstr "Драйвер CPUfreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:333
 msgid "Cpufreq governor:"
-msgstr "Регулятор Cpufreq:"
+msgstr "Режим CPUfreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:347
 msgid "Power preference:"
 msgstr "Профіль живлення:"
 
 #: resources/ui/preferences/page.blp:6
-#, fuzzy
 msgid "General"
-msgstr "Загальні параметри"
+msgstr "Загальні"
 
 #: resources/ui/preferences/page.blp:9
 msgid "Update Interval"
 msgstr "Інтервал оновлення"
 
 #: resources/ui/preferences/page.blp:10
-#, fuzzy
 msgid "In seconds"
-msgstr "{} секунда{}"
+msgstr "У секундах"
 
 #: resources/ui/preferences/page.blp:27
 msgid "Chart Data Points"
 msgstr "Кількість точок на графіках"
 
 #: resources/ui/preferences/page.blp:46 resources/ui/keyboard_shortcuts.blp:68
-#, fuzzy
 msgid "Performance Page"
-msgstr "Продуктивність"
+msgstr "Подання «Продуктивність»"
 
 #: resources/ui/preferences/page.blp:49
 msgid "Smooth Graphs"
@@ -1047,7 +1016,7 @@ msgstr "Згладжувати графіки"
 
 #: resources/ui/preferences/page.blp:50
 msgid "Draw graphs as smooth line instead of jagged line"
-msgstr "Будувати графіки використовуючи плавні лінії замість грубих ліній"
+msgstr "Будувати графіки використовуючи плавні лінії замість ламаних ліній"
 
 #: resources/ui/preferences/page.blp:54
 msgid "Sliding Graphs"
