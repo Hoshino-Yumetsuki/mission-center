@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2026-07-02 04:26+0000\n"
+"PO-Revision-Date: 2026-07-03 12:01+0000\n"
 "Last-Translator: NooB9496 <noob9496@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Polish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/pl/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.7.dev0\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -272,9 +272,8 @@ msgid "The sorting direction of the Services page view"
 msgstr "Kierunek sortowania widoku strony Usługi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:160
-#, fuzzy
 msgid "The order of columns in the Services page view"
-msgstr "Kolejność kolumn na stronie widoku aplikacji"
+msgstr "Kolejność kolumn na stronie widoku Usługi"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:166
 msgid "Which graph is shown on the CPU performance page"
@@ -919,7 +918,7 @@ msgstr "Dysk systemowy:"
 
 #: resources/ui/performance_page/disk_details.blp:300
 msgid "WWN:"
-msgstr ""
+msgstr "WWN:"
 
 #: resources/ui/performance_page/disk_details.blp:316
 msgid "Serial:"
@@ -983,11 +982,11 @@ msgstr "Pamięć podręczna L3:"
 
 #: resources/ui/performance_page/cpu_details.blp:319
 msgid "Cpufreq driver:"
-msgstr "Sterownik CPUFreq:"
+msgstr "Sterownik Cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:333
 msgid "Cpufreq governor:"
-msgstr "Zarządca CPUFreq:"
+msgstr "Zarządca Cpufreq:"
 
 #: resources/ui/performance_page/cpu_details.blp:347
 msgid "Power preference:"
@@ -1079,11 +1078,8 @@ msgid "Remember Sorting"
 msgstr "Pamiętaj o sortowaniu"
 
 #: resources/ui/preferences/page.blp:110
-#, fuzzy
 msgid "Persist sorting by column across app restarts"
-msgstr ""
-"Pamiętaj kolejność listy aplikacji i procesów podczas ponownego uruchamiania "
-"aplikacji"
+msgstr "Utrzymuj sortowanie według kolumny po ponownym uruchomieniu aplikacji"
 
 #: resources/ui/preferences/page.blp:114
 msgid "Remember Column Order"
@@ -1098,10 +1094,8 @@ msgid "Scale CPU Usage to Core Count"
 msgstr "Skaluj zużycie procesora do liczby rdzeni"
 
 #: resources/ui/preferences/page.blp:120
-#, fuzzy
 msgid "Show CPU usage scaled to the number of available cores"
-msgstr ""
-"Skaluje użycie procesora dla aplikacji i procesów do liczby dostępnych rdzeni"
+msgstr "Pokaż użycie procesora w przeliczeniu na liczbę dostępnych rdzeni"
 
 #: resources/ui/preferences/page.blp:124
 msgid "Show Column Separators"
@@ -1208,35 +1202,32 @@ msgid "Use Base 2 for Network Interfaces"
 msgstr "Używaj Base 2 do interfejsów sieciowych"
 
 #: resources/ui/services_page/page.blp:84
-#, fuzzy
 msgid "Collapse all expanded services"
-msgstr "Zwiń wszystkie aplikacje i procesy"
+msgstr "Zwiń wszystkie rozwinięte usługi"
 
 #: resources/ui/services_page/page.blp:123
-#, fuzzy
 msgid "Filter running processes"
-msgstr "Uruchomiony serwis: {}"
+msgstr "Filtruj uruchomione procesy"
 
 #: resources/ui/services_page/page.blp:143
-#, fuzzy
 msgid "Filter failed processes"
-msgstr "Procesory wirtualne:"
+msgstr "Filtruj nieudane procesy"
 
 #: resources/ui/services_page/page.blp:163
 msgid "Filter stopped processes"
-msgstr ""
+msgstr "Filtruj zatrzymane procesy"
 
 #: resources/ui/services_page/page.blp:183
 msgid "Filter disabled processes"
-msgstr ""
+msgstr "Filtruj wyłączone procesy"
 
 #: resources/ui/services_page/page.blp:204
 msgid "Remove all filters"
-msgstr ""
+msgstr "Usuń wszystkie filtry"
 
 #: resources/ui/services_page/page.blp:214
 msgid "Remove Filters"
-msgstr ""
+msgstr "Usuń filtry"
 
 #: resources/ui/widgets/theme_selector.blp:18
 #: resources/ui/widgets/theme_selector.blp:21
@@ -1262,24 +1253,21 @@ msgid "Global"
 msgstr "Globalne"
 
 #: resources/ui/keyboard_shortcuts.blp:21
-#, fuzzy
 msgid "Open Menu"
-msgstr "Menu główne"
+msgstr "Otwórz menu"
 
 #: resources/ui/keyboard_shortcuts.blp:26
 #: resources/ui/keyboard_shortcuts.blp:31
 msgid "Close Window"
-msgstr ""
+msgstr "Zamknij okno"
 
 #: resources/ui/keyboard_shortcuts.blp:36
-#, fuzzy
 msgid "Open Preferences"
-msgstr "_Preferencje"
+msgstr "Otwórz Preferencje"
 
 #: resources/ui/keyboard_shortcuts.blp:41
-#, fuzzy
 msgid "Show Keyboard Shortcuts"
-msgstr "Skróty klawiszowe"
+msgstr "Pokaż skróty klawiaturowe"
 
 #: resources/ui/keyboard_shortcuts.blp:46
 msgid "Show Performance Page"
@@ -1403,43 +1391,43 @@ msgstr "Szczegóły"
 
 #: resources/ui/process_column_view/process_action_bar.blp:108
 msgid "Send Signal"
-msgstr ""
+msgstr "Wyślij sygnał"
 
 #: resources/ui/process_column_view/process_action_bar.blp:111
 msgid "Suspend (STOP)"
-msgstr ""
+msgstr "Zawiesić (STOP)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:116
 msgid "Continue (CONT)"
-msgstr ""
+msgstr "Kontynuuj (CONT)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:121
 msgid "Hangup (HUP)"
-msgstr ""
+msgstr "Rozłączenie (HUP)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:126
 msgid "Interrupt (INT)"
-msgstr ""
+msgstr "Przerwanie (INT)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:131
 msgid "Terminate (TERM)"
-msgstr ""
+msgstr "Zakończyć (TERM)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:136
 msgid "Kill (KILL)"
-msgstr ""
+msgstr "Zabić (KILL)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:141
 msgid "User 1 (USR1)"
-msgstr ""
+msgstr "Użytkownik 1 (USR1)"
 
 #: resources/ui/process_column_view/process_action_bar.blp:146
 msgid "User 2 (USR2)"
-msgstr ""
+msgstr "Użytkownik 2 (USR2)"
 
 #: resources/ui/process_column_view/process_details_dialog.blp:84
 msgid "App ID"
-msgstr ""
+msgstr "Identyfikator aplikacji"
 
 #: resources/ui/process_column_view/service_action_bar.blp:35
 msgid "Start the selected service"
@@ -1526,59 +1514,53 @@ msgstr "Grupa"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:333
 msgid "File Location"
-msgstr ""
+msgstr "Lokalizacja pliku"
 
 #: resources/ui/process_column_view/service_details_dialog.blp:356
 msgid "Logs"
 msgstr "Logi"
 
 #: resources/ui/about_system_dialog.blp:36
-#, fuzzy
 msgid "System Info"
-msgstr "Dysk systemowy:"
+msgstr "Informacje o systemie"
 
 #: resources/ui/about_system_dialog.blp:65
-#, fuzzy
 msgid "Operating System Information"
-msgstr "Skopiuj informacje o urządzeniu"
+msgstr "Informacje o systemie operacyjnym"
 
 #: resources/ui/about_system_dialog.blp:108
 #: resources/ui/about_system_dialog.blp:226
 #: resources/ui/about_system_dialog.blp:288
-#, fuzzy
 msgid "Version"
-msgstr "Wersja Vulkan:"
+msgstr "Wersja"
 
 #: resources/ui/about_system_dialog.blp:136
 msgid "Package Manager"
-msgstr ""
+msgstr "Menedżer pakietów"
 
 #: resources/ui/about_system_dialog.blp:164
 msgid "Package Manager Version"
-msgstr ""
+msgstr "Wersja Menedżera pakietów"
 
 #: resources/ui/about_system_dialog.blp:183
-#, fuzzy
 msgid "Kernel Information"
-msgstr "Pokaż informacje o wentylatorach"
+msgstr "Informacje o jądrze"
 
 #: resources/ui/about_system_dialog.blp:198
 msgid "Kernel Release"
-msgstr ""
+msgstr "Wydanie jądra"
 
 #: resources/ui/about_system_dialog.blp:245
-#, fuzzy
 msgid "Desktop Environment Information"
-msgstr "Skopiuj informacje o urządzeniu"
+msgstr "Informacje o środowisku pulpitu"
 
 #: resources/ui/about_system_dialog.blp:316
 msgid "Windowing System"
-msgstr ""
+msgstr "System okienkowy"
 
 #: resources/ui/about_system_dialog.blp:344
-#, fuzzy
 msgid "Virtual Terminal"
-msgstr "Wirtualna maszyna:"
+msgstr "Terminal wirtualny"
 
 #: resources/ui/window.blp:49
 msgid "Enable All"
@@ -1957,12 +1939,12 @@ msgid "{}: {}"
 msgstr "{}: {}"
 
 #: src/services_page/mod.rs:95
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} Total Service"
 msgid_plural "{} Total Services"
-msgstr[0] "Uruchom serwis"
-msgstr[1] "Uruchom serwis"
-msgstr[2] "Uruchom serwis"
+msgstr[0] "{} Usługa"
+msgstr[1] "{} Usługi"
+msgstr[2] "{} Usług"
 
 #: src/services_page/mod.rs:107 src/process_tree/service_details_dialog.rs:239
 #: src/process_tree/service_details_dialog.rs:314
@@ -1980,35 +1962,32 @@ msgid "Stopped"
 msgstr "Zatrzymane"
 
 #: src/services_page/mod.rs:134
-#, fuzzy
 msgid "Disabled"
-msgstr "Wyłącz wszystkie"
+msgstr "Wyłączony"
 
 #: src/services_page/mod.rs:140
 msgid "No services match the current filters"
-msgstr ""
+msgstr "Brak usług zgodnych z obecnymi filtrami"
 
 #: src/services_page/mod.rs:142
 msgid "No filters applied"
-msgstr ""
+msgstr "Nie zastosowano żadnych filtrów"
 
 #: src/services_page/mod.rs:149
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} {} Service"
 msgid_plural "{} {} Services"
-msgstr[0] "Uruchomione serwisy: {}"
-msgstr[1] "Uruchomione serwisy: {}"
-msgstr[2] "Uruchomione serwisy: {}"
+msgstr[0] "{} {} Usługa"
+msgstr[1] "{} {} Usługi"
+msgstr[2] "{} {} Usług"
 
 #: src/services_page/mod.rs:177
-#, fuzzy
 msgid "User Services"
-msgstr "Serwisy"
+msgstr "Usługi użytkownika"
 
 #: src/services_page/mod.rs:182
-#, fuzzy
 msgid "System Services"
-msgstr "Zatrzymaj serwis"
+msgstr "Usługi systemowe"
 
 #: src/services_page/mod.rs:403
 msgid "Not Implemented"
@@ -2019,9 +1998,8 @@ msgid "Section Header"
 msgstr "Nagłówek sekcji"
 
 #: src/process_tree/row_model.rs:264
-#, fuzzy
 msgid "Service"
-msgstr "Serwisy"
+msgstr "Usługa"
 
 #: src/process_tree/row_model.rs:265
 msgid "App"
