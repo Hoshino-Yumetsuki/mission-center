@@ -12,6 +12,9 @@ export HOME=/root
 export TERM=xterm
 export PATH="$HOME/llvm-tooling/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:"
 
+SCRIPT_RUST_VESION=1.96.1
+SCRIPT_CLANG_VERSION=22.1.8
+
 apt-get update
 
 ln -sf /usr/share/zoneinfo/Etc/UTC /etc/localtime
@@ -19,7 +22,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
 dpkg-reconfigure --frontend noninteractive tzdata
 
 apt-get install -y curl
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile=minimal --default-toolchain=1.94.0 -y
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --profile=minimal --default-toolchain="$SCRIPT_RUST_VESION" -y
 
 apt install -y build-essential curl desktop-file-utils bison flex glslc gettext git libadwaita-1-dev libdbus-1-dev libdrm-dev libgbm-dev libgraphviz-dev libssl-dev libudev-dev libxml2-dev pkg-config python3-gi python3-pip zstd
 
@@ -237,7 +240,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gtk4.html
 # -------------------------------------------------------------
-GTK_VER=4.22.2
+GTK_VER=4.22.4
 GTK_VER_MM=$(echo $GTK_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/gtk/$GTK_VER_MM/gtk-$GTK_VER.tar.xz
@@ -276,7 +279,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/libadwaita.html
 # -------------------------------------------------------------------
-LIBADW_VER=1.9.0
+LIBADW_VER=1.9.1
 LIBADW_VER_MM=$(echo $LIBADW_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/libadwaita/$LIBADW_VER_MM/libadwaita-$LIBADW_VER.tar.xz
@@ -316,7 +319,7 @@ cd "$OUT_PATH"
 
 # LLVM tooling
 # -------------------------------------------------------------------
-LLVM_TOOLS_VERSION=21.1.1
+LLVM_TOOLS_VERSION="$SCRIPT_CLANG_VERSION"
 # -------------------------------------------------------------------
 cd $HOME
 curl -LO "https://missioncenter.io/build-tools/llvm-tooling-$(arch)-gnu-$LLVM_TOOLS_VERSION.tar.zst"

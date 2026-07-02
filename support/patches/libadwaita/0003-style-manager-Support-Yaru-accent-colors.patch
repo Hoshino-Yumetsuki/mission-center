@@ -61,7 +61,7 @@ index 9800375..071d759 100644
 +  return ADW_SETTINGS_IMPL_GSETTINGS (self)->interface_settings;
 +}
 diff --git a/src/adw-settings-impl-portal.c b/src/adw-settings-impl-portal.c
-index eaac7c9..51521e3 100644
+index 5add256..a7f4741 100644
 --- a/src/adw-settings-impl-portal.c
 +++ b/src/adw-settings-impl-portal.c
 @@ -361,3 +361,28 @@ adw_settings_impl_portal_new (gboolean enable_color_scheme,
@@ -552,10 +552,10 @@ index c17c27c..7d7224a 100644
 +  return self->yaru_accent;
 +}
 diff --git a/src/adw-style-manager.c b/src/adw-style-manager.c
-index 7ed0aa3..3adbbf9 100644
+index 5e9ed1b..5b04d8d 100644
 --- a/src/adw-style-manager.c
 +++ b/src/adw-style-manager.c
-@@ -93,6 +93,7 @@ enum {
+@@ -96,6 +96,7 @@ enum {
    PROP_ACCENT_COLOR_RGBA,
    PROP_DOCUMENT_FONT_NAME,
    PROP_MONOSPACE_FONT_NAME,
@@ -563,7 +563,7 @@ index 7ed0aa3..3adbbf9 100644
    LAST_PROP,
  };
  
-@@ -250,6 +251,42 @@ update_stylesheet (AdwStyleManager       *self,
+@@ -255,6 +256,42 @@ update_stylesheet (AdwStyleManager       *self,
                                                GTK_STYLE_PROVIDER (self->animations_provider),
                                                10000);
  
@@ -606,7 +606,7 @@ index 7ed0aa3..3adbbf9 100644
    if (flags & UPDATE_ACCENT_COLOR && self->accent_provider) {
      char *accent_css = generate_accent_css (self);
      gtk_css_provider_load_from_string (self->accent_provider, accent_css);
-@@ -464,6 +501,17 @@ notify_high_contrast_cb (AdwStyleManager *self)
+@@ -468,6 +505,17 @@ notify_high_contrast_cb (AdwStyleManager *self)
    g_object_notify_by_pspec (G_OBJECT (self), props[PROP_HIGH_CONTRAST]);
  }
  
@@ -624,7 +624,7 @@ index 7ed0aa3..3adbbf9 100644
  static void
  adw_style_manager_constructed (GObject *object)
  {
-@@ -495,8 +543,6 @@ adw_style_manager_constructed (GObject *object)
+@@ -501,8 +549,6 @@ adw_style_manager_constructed (GObject *object)
                      NULL);
  
        self->provider = gtk_css_provider_new ();
@@ -633,7 +633,7 @@ index 7ed0aa3..3adbbf9 100644
        gtk_style_context_add_provider_for_display (self->display,
                                                    GTK_STYLE_PROVIDER (self->provider),
                                                    GTK_STYLE_PROVIDER_PRIORITY_THEME);
-@@ -565,6 +611,11 @@ adw_style_manager_constructed (GObject *object)
+@@ -571,6 +617,11 @@ adw_style_manager_constructed (GObject *object)
                             G_CALLBACK (update_fonts),
                             self,
                             G_CONNECT_SWAPPED);
@@ -645,7 +645,7 @@ index 7ed0aa3..3adbbf9 100644
  
    update_dark (self);
    update_fonts (self);
-@@ -636,6 +687,10 @@ adw_style_manager_get_property (GObject    *object,
+@@ -642,6 +693,10 @@ adw_style_manager_get_property (GObject    *object,
      g_value_set_string (value, adw_style_manager_get_monospace_font_name (self));
      break;
  
@@ -656,7 +656,7 @@ index 7ed0aa3..3adbbf9 100644
    default:
      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
    }
-@@ -853,6 +908,19 @@ adw_style_manager_class_init (AdwStyleManagerClass *klass)
+@@ -859,6 +914,19 @@ adw_style_manager_class_init (AdwStyleManagerClass *klass)
                           DEFAULT_MONOSPACE_FONT,
                           G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
  
