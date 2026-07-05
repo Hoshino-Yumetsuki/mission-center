@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-10-01 14:52+0300\n"
-"PO-Revision-Date: 2025-12-09 11:00+0000\n"
-"Last-Translator: 默想刃Mokuso YB <mokusoyb@gmail.com>\n"
+"PO-Revision-Date: 2026-07-05 19:23+0000\n"
+"Last-Translator: Kisaragi Hiu <mail@kisaragi-hiu.com>\n"
 "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
 "projects/mission-center/mission-center/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.15-dev\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -33,9 +33,8 @@ msgstr ""
 "碟;記憶體;網路;使用率;使用率"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
-#, fuzzy
 msgid "Mission Center Developers"
-msgstr "Mission Center 開發者"
+msgstr "《任務中心》開發者"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
 msgid "Monitor system resource usage"
@@ -49,7 +48,6 @@ msgstr "監控您的 CPU、記憶體、磁碟、網路和 GPU 使用情況，並
 "的詳細統計資訊"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
-#, fuzzy
 msgid "Features:"
 msgstr "功能："
 
@@ -215,9 +213,8 @@ msgid "Column sorting is persisted across app restarts"
 msgstr "欄位排序狀態將在程式關閉後保持"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:120
-#, fuzzy
 msgid "Column order is persisted across app restarts"
-msgstr "欄位排序狀態將在程式關閉後保持"
+msgstr "程式關閉時記住欄位順序"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:125
 msgid ""
@@ -229,18 +226,16 @@ msgid "Show a separator between each column in the Apps view"
 msgstr "於應用程式頁面中的每列之間顯示分隔線"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
-#, fuzzy
 msgid "The column name by which the Apps page view is sorted"
-msgstr "應用程式頁面檢視進行排序的欄位 ID"
+msgstr "排序應用程式頁面檢視用的欄位名稱"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The sorting direction of the Apps page view"
 msgstr "應用程式頁面檢視的排序方向"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:145
-#, fuzzy
 msgid "The order of columns in the Apps page view"
-msgstr "應用程式頁面檢視的排序方向"
+msgstr "應用程式頁面檢視的欄位順序"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:150
 msgid "The column name by which the Services page view is sorted"
@@ -271,9 +266,8 @@ msgid "Should performance graphs be smooth or jagged"
 msgstr "性能圖表應該是平滑的還是鋸齒狀的"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:187
-#, fuzzy
 msgid "Should graphs be animated"
-msgstr "性能圖表應該是平滑的還是鋸齒狀的"
+msgstr "圖表是否要有動態效果"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:192
 #: resources/ui/preferences/page.blp:65
@@ -366,9 +360,8 @@ msgstr "無法取得"
 #: resources/ui/apps_page/details_dialog.blp:104
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:205
 #: resources/ui/process_column_view/process_details_dialog.blp:112
-#, fuzzy
 msgid "Type"
-msgstr "類型："
+msgstr "類型"
 
 #: resources/ui/apps_page/details_dialog.blp:132
 #: resources/ui/process_column_view/process_details_dialog.blp:140
