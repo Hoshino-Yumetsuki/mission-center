@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-01 14:52+0300\n"
+"POT-Creation-Date: 2026-06-25 09:06+0300\n"
 "PO-Revision-Date: 2026-05-10 03:16+0000\n"
 "Last-Translator: Viktor Engkvist <viktor.engkvist@rivig.net>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/mission-center/"
@@ -25,20 +25,22 @@ msgid "Mission Center"
 msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:9
+#, fuzzy
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
-"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization"
+"monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Service;Services;Service "
+"Manager;Service List;System Services;User Services;systemd;systemctl"
 msgstr "Aktivitetshanterare;Resursövervakare;Systemövervakare;Processor;Processer;Prestandaövervakare;CPU;GPU;Disc;Disk;Minne;Nätverk;Användning"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"
 msgstr "Mission Center-utvecklarna"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:16
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:17
 msgid "Monitor system resource usage"
 msgstr "Övervaka systemresursanvändning"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:18
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
 msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
@@ -46,15 +48,15 @@ msgstr ""
 "Övervaka användningen av CPU, minne, disk, nätverk och GPU, samt visa denna "
 "information per app och process"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:19
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
 msgid "Features:"
 msgstr "Funktioner:"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:21
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
 msgid "Monitor overall or per-thread CPU usage"
 msgstr "Övervaka total eller per-tråd CPU-användning"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:22
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
 msgid ""
 "See system process, thread, and handle count, uptime, clock speed (base and "
 "current), cache sizes"
@@ -62,23 +64,23 @@ msgstr ""
 "Se systemets process-, tråd- och referensantal, drifttid, klockfrekvens "
 "(basfrekvens och aktuell frekvens) samt cachestorlekar"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:23
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
 msgid "Monitor RAM and Swap usage"
 msgstr "Övervaka RAM- och växlingsutrymmesanvändning"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:24
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
 msgid "See a breakdown how the memory is being used by the system"
 msgstr "Se en uppdelning av hur minnet används i systemet"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:25
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
 msgid "Monitor Disk utilization and transfer rates"
 msgstr "Övervaka diskanvändning och överföringshastigheter"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:26
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
 msgid "Monitor network utilization and transfer speeds"
 msgstr "Övervaka nätverksanvändning och överföringshastigheter"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:27
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:28
 msgid ""
 "See network interface information such as network card name, connection type "
 "(Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP "
@@ -88,28 +90,28 @@ msgstr ""
 "anslutningstyp (Wi-Fi eller Ethernet), trådlösa hastigheter och frekvens, "
 "maskinvaruadress samt IP-adress"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:30
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:31
 msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Övervaka den totala GPU-användningen, användningen av videokodare och -"
-"avkodare, minnesanvändningen och strömförbrukningen, med hjälp av det "
+"Övervaka den totala GPU-användningen, användningen av videokodare och "
+"-avkodare, minnesanvändningen och strömförbrukningen, med hjälp av det "
 "populära NVTOP-projektet"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:33
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
 msgid "Monitor system fans"
 msgstr "Övervaka systemfläktar"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
 msgid "See a breakdown of resource usage by app and process"
 msgstr "Se en översikt över resursanvändningen per app och process"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:35
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
 msgid "Supports a minified summary view for simple monitoring"
 msgstr "Stöder en förminskad översiktsvy för enkel övervakning"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:36
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:37
 msgid ""
 "Use hardware accelerated rendering for all the graphs in an effort to reduce "
 "CPU and overall resource usage"
@@ -117,19 +119,19 @@ msgstr ""
 "Använd maskinvaruaccelererad rendering för alla grafer för att minska "
 "belastningen på CPU och övriga resurser"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:39
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
 msgid "Uses GTK4 and Libadwaita"
 msgstr "Använder GTK4 och Libadwaita"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:40
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:41
 msgid "Written in Rust"
 msgstr "Skriven i Rust"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:42
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:43
 msgid "Limitations (there is ongoing work to overcome all of these):"
 msgstr "Begränsningar (det pågår arbete för att lösa alla dessa):"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:44
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:45
 msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
@@ -137,7 +139,7 @@ msgstr ""
 "Övervakning av Intel-GPU:er stöds endast för Broadwell och senare, och "
 "saknar stöd för övervakning av VRAM, strömförbrukning eller temperatur"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:47
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:48
 msgid ""
 "When using Linux Mint/Cinnamon, launched applications may not show up in the "
 "\"Applications\" section (Upstream issue: https://github.com/linuxmint/"
@@ -146,7 +148,7 @@ msgstr ""
 "Om du använder Linux Mint/Cinnamon kan det hända att startade appar inte "
 "syns i avsnittet ”Appar” (https://github.com/linuxmint/cinnamon/issues/12015)"
 
-#: data/io.missioncenter.MissionCenter.metainfo.xml.in:51
+#: data/io.missioncenter.MissionCenter.metainfo.xml.in:52
 msgid "Comments, suggestions, bug reports and contributions welcome"
 msgstr "Kommentarer, förslag, felrapporter och bidrag är välkomna"
 
@@ -213,7 +215,7 @@ msgstr ""
 "det högsta observerade värdet (true)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:110
-#: resources/ui/preferences/page.blp:105
+#: resources/ui/preferences/apps_services_page.blp:31
 msgid "Parent and child process stats are shown individually or merged upwards"
 msgstr ""
 "Statistik för föräldra- och barnprocesser visas separat eller sammanställd"
@@ -238,211 +240,152 @@ msgid "Show a separator between each column in the Apps view"
 msgstr "Visa en avgränsare mellan varje kolumn på appsidan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
+msgid "Gray out values that equal zero in the Apps view"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The column name by which the Apps page view is sorted"
 msgstr "Kolumnnamnet som appsidan sorteras efter"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:140
+#: data/io.missioncenter.MissionCenter.gschema.xml:145
 msgid "The sorting direction of the Apps page view"
 msgstr "Sorteringsriktningen på appsidan"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:145
+#: data/io.missioncenter.MissionCenter.gschema.xml:150
 msgid "The order of columns in the Apps page view"
 msgstr "Kolumnordningen på appsidan"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:150
+#: data/io.missioncenter.MissionCenter.gschema.xml:155
 msgid "The column name by which the Services page view is sorted"
 msgstr "Kolumnnamnet som tjänstesidan sorteras efter"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:155
+#: data/io.missioncenter.MissionCenter.gschema.xml:160
 msgid "The sorting direction of the Services page view"
 msgstr "Sorteringsriktningen på tjänstesidan"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:160
+#: data/io.missioncenter.MissionCenter.gschema.xml:165
 msgid "The order of columns in the Services page view"
 msgstr "Kolumnordningen på tjänstesidan"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:166
+#: data/io.missioncenter.MissionCenter.gschema.xml:171
 msgid "Which graph is shown on the CPU performance page"
 msgstr "Vilken graf som visas på sidan för CPU-prestanda"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:171
+#: data/io.missioncenter.MissionCenter.gschema.xml:177
+#, fuzzy
+msgid "Which graph is shown on the bottom graph of the CPU performance page"
+msgstr "Vilken graf som visas på sidan för CPU-prestanda"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:182
 msgid "Show kernel times in the CPU graphs"
 msgstr "Visa kärntider i CPU-graferna"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:176
+#: data/io.missioncenter.MissionCenter.gschema.xml:187
 msgid "Which page is shown on application startup, in the performance tab"
 msgstr ""
 "Vilken sida som ska visas när programmet startas, på fliken för prestanda"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:182
+#: data/io.missioncenter.MissionCenter.gschema.xml:193
 msgid "Should performance graphs be smooth or jagged"
 msgstr "Ska prestandagrafer vara släta eller ojämna"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:187
+#: data/io.missioncenter.MissionCenter.gschema.xml:198
 msgid "Should graphs be animated"
 msgstr "Ska grafer animeras"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:192
-#: resources/ui/preferences/page.blp:65
+#: data/io.missioncenter.MissionCenter.gschema.xml:203
 msgid "Show CPU information by default"
 msgstr "Visa CPU-information som standard"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:197
-#: resources/ui/preferences/page.blp:71
+#: data/io.missioncenter.MissionCenter.gschema.xml:208
 msgid "Show memory information by default"
 msgstr "Visa minnesinformation som standard"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:202
-#: resources/ui/preferences/page.blp:77
+#: data/io.missioncenter.MissionCenter.gschema.xml:213
+#: resources/ui/preferences/performance_page.blp:70
 msgid "Show disk information by default"
 msgstr "Visa diskinformation som standard"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:207
-#: resources/ui/preferences/page.blp:83
+#: data/io.missioncenter.MissionCenter.gschema.xml:218
+#: resources/ui/preferences/performance_page.blp:75
 msgid "Show network information by default"
 msgstr "Visa nätverksinformation som standard"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:212
-#: resources/ui/preferences/page.blp:89
+#: data/io.missioncenter.MissionCenter.gschema.xml:223
+#, fuzzy
+msgid "Show wired network devices by default"
+msgstr "Visa nätverksinformation som standard"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:228
+#, fuzzy
+msgid "Show wireless network devices by default"
+msgstr "Visa nätverksinformation som standard"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:233
+#, fuzzy
+msgid "Show VPN network devices by default"
+msgstr "Visa nätverksinformation som standard"
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:238
+msgid "Show virtual network devices (Docker, Multipass, Bridge) by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:243
+msgid "Show other network devices (Bluetooth, InfiniBand, WWAN) by default"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:248
+#: resources/ui/preferences/performance_page.blp:103
 msgid "Show GPU information by default"
 msgstr "Visa GPU-information som standard"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:217
-#: resources/ui/preferences/page.blp:95
+#: data/io.missioncenter.MissionCenter.gschema.xml:253
+#: data/io.missioncenter.MissionCenter.gschema.xml:258
+#: resources/ui/preferences/performance_page.blp:108
 msgid "Show fan information by default"
 msgstr "Visa fläktinformation som standard"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:222
+#: data/io.missioncenter.MissionCenter.gschema.xml:263
 msgid "Show the mem composition widget"
 msgstr "Visa widgeten för minnessammansättning"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:227
+#: data/io.missioncenter.MissionCenter.gschema.xml:268
 msgid "Show the swap graph"
 msgstr "Visa växlingsfilsgrafen"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:232
-msgid "Show the gpu encode-decode graph"
-msgstr "Visa grafen för GPU-kodning och avkodning"
+#: data/io.missioncenter.MissionCenter.gschema.xml:274
+msgid "Middle Graph's Content and visibility"
+msgstr ""
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:237
+#: data/io.missioncenter.MissionCenter.gschema.xml:280
+msgid "Bottom Graph's Content and visibility"
+msgstr ""
+
+#: data/io.missioncenter.MissionCenter.gschema.xml:286
 msgid "The ordering of entries in the application sidebar"
 msgstr "Sortering av objekt i programmets sidofält"
 
-#: data/io.missioncenter.MissionCenter.gschema.xml:242
+#: data/io.missioncenter.MissionCenter.gschema.xml:292
 msgid "Graphs that should be hidden in the application sidebar"
 msgstr "Grafer som ska döljas i programmets sidofält"
 
-#: resources/ui/apps_page/details_dialog.blp:76
-#: resources/ui/process_column_view/column_view_frame.blp:48
-#: resources/ui/process_column_view/process_details_dialog.blp:76
-msgid "PID"
-msgstr "PID"
+#: data/io.missioncenter.MissionCenter.gschema.xml:297
+msgid ""
+"Per-device visibility overrides (semicolon-separated name:show or name:hide "
+"entries)"
+msgstr ""
 
-#: resources/ui/apps_page/details_dialog.blp:87
-#: resources/ui/apps_page/details_dialog.blp:115
-#: resources/ui/process_column_view/process_details_dialog.blp:95
-#: resources/ui/process_column_view/process_details_dialog.blp:123
-#: resources/ui/process_column_view/service_details_dialog.blp:250
-#: resources/ui/process_column_view/service_details_dialog.blp:282
-#: resources/ui/process_column_view/service_details_dialog.blp:314
-#: src/performance_page/widgets/smart_data_dialog.rs:201
-#: src/performance_page/widgets/smart_data_dialog.rs:209
-#: src/performance_page/widgets/smart_data_dialog.rs:217
-#: src/performance_page/widgets/smart_data_dialog.rs:225
-#: src/performance_page/widgets/smart_data_dialog.rs:236
-#: src/performance_page/widgets/smart_data_dialog.rs:244
-#: src/performance_page/widgets/smart_data_dialog.rs:252
-#: src/performance_page/widgets/smart_data_dialog.rs:260
-#: src/performance_page/widgets/smart_data_dialog.rs:268
-#: src/performance_page/widgets/smart_data_dialog.rs:276
-#: src/performance_page/widgets/smart_data_dialog.rs:285
-#: src/performance_page/widgets/smart_data_dialog.rs:293
-#: src/performance_page/widgets/smart_data_dialog.rs:301
-#: src/performance_page/widgets/smart_data_dialog.rs:309
-#: src/performance_page/widgets/smart_data_dialog.rs:317
-#: src/performance_page/widgets/smart_sata_dialog_row.rs:102
-#: src/performance_page/cpu.rs:371 src/performance_page/cpu.rs:380
-#: src/performance_page/cpu.rs:389 src/performance_page/cpu.rs:398
-#: src/performance_page/network.rs:457 src/performance_page/network.rs:465
-#: src/process_tree/service_details_dialog.rs:254
-#: src/process_tree/service_details_dialog.rs:262
-#: src/process_tree/service_details_dialog.rs:270
-msgid "N/A"
-msgstr "N/A"
+#: data/io.missioncenter.MissionCenter.gschema.xml:302
+msgid "If it's your first time running Mission Center"
+msgstr ""
 
-#: resources/ui/apps_page/details_dialog.blp:104
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:205
-#: resources/ui/process_column_view/process_details_dialog.blp:112
-msgid "Type"
-msgstr "Typ"
-
-#: resources/ui/apps_page/details_dialog.blp:132
-#: resources/ui/process_column_view/process_details_dialog.blp:140
-msgid "Command Line"
-msgstr "Kommandorad"
-
-#: resources/ui/apps_page/details_dialog.blp:154
-#: resources/ui/process_column_view/process_details_dialog.blp:162
-msgid "Resource Usage"
-msgstr "Resursanvändning"
-
-#: resources/ui/apps_page/details_dialog.blp:168
-#: resources/ui/performance_page/cpu.blp:45
-#: resources/ui/process_column_view/column_view_frame.blp:54
-#: resources/ui/process_column_view/process_details_dialog.blp:176
-#: src/performance_page/mod.rs:980 src/process_tree/column_view_frame.rs:539
-msgid "CPU"
-msgstr "CPU"
-
-#: resources/ui/apps_page/details_dialog.blp:193
-#: resources/ui/performance_page/memory.blp:41
-#: resources/ui/process_column_view/column_view_frame.blp:60
-#: resources/ui/process_column_view/process_details_dialog.blp:201
-#: src/performance_page/mod.rs:1044 src/process_tree/column_view_frame.rs:560
-msgid "Memory"
-msgstr "Minne"
-
-#: resources/ui/apps_page/details_dialog.blp:218
-#: resources/ui/process_column_view/process_details_dialog.blp:226
-msgid "Shared Memory"
-msgstr "Delat minne"
-
-#: resources/ui/apps_page/details_dialog.blp:243
-#: resources/ui/process_column_view/process_details_dialog.blp:251
-msgid "Drives"
-msgstr "Diskar"
-
-#: resources/ui/apps_page/details_dialog.blp:268
-#: resources/ui/process_column_view/column_view_frame.blp:78
-#: resources/ui/process_column_view/process_details_dialog.blp:276
-#: src/process_tree/column_view_frame.rs:579
-#: src/process_tree/column_view_frame.rs:588
-msgid "Network"
-msgstr "Nätverk"
-
-#: resources/ui/apps_page/details_dialog.blp:293
-#: resources/ui/process_column_view/column_view_frame.blp:84
-#: resources/ui/process_column_view/process_details_dialog.blp:301
-#: src/performance_page/gpu.rs:358 src/performance_page/mod.rs:1397
-#: src/performance_page/mod.rs:2159 src/process_tree/column_view_frame.rs:594
-#: src/process_tree/column_view_frame.rs:611
-msgid "GPU"
-msgstr "GPU"
-
-#: resources/ui/apps_page/details_dialog.blp:318
-#: resources/ui/process_column_view/column_view_frame.blp:90
-#: resources/ui/process_column_view/process_details_dialog.blp:326
-#: src/process_tree/column_view_frame.rs:598
-#: src/process_tree/column_view_frame.rs:617
-msgid "GPU Memory"
-msgstr "GPU-minne"
-
-#: resources/ui/apps_page/page.blp:75
+#: resources/ui/apps_page/page.blp:87
 msgid "Collapse all apps and processes"
 msgstr "Fäll ihop alla appar och processer"
 
-#: resources/ui/apps_page/page.blp:87 resources/ui/services_page/page.blp:94
-#: resources/ui/keyboard_shortcuts.blp:112
+#: resources/ui/apps_page/page.blp:99 resources/ui/services_page/page.blp:106
+#: resources/ui/keyboard_shortcuts.blp:84
+#: resources/ui/keyboard_shortcuts.blp:113
 msgid "Collapse All"
 msgstr "Fäll ihop alla"
 
@@ -470,111 +413,167 @@ msgstr "Vänteläge:"
 msgid "Free:"
 msgstr "Fri:"
 
-#: resources/ui/performance_page/cpu.blp:63
-#: resources/ui/performance_page/gpu.blp:72
+#: resources/ui/performance_page/cpu.blp:56
+#: resources/ui/table_view/table_view.blp:53
+#: resources/ui/table_view/process_details_dialog.blp:177
+#: src/performance_page/mod.rs:1123 src/table_view/mod.rs:860
+msgid "CPU"
+msgstr "CPU"
+
+#: resources/ui/performance_page/cpu.blp:75
+#: resources/ui/performance_page/gpu.blp:73
 msgid "Utilization over "
 msgstr "Användning under "
 
-#: resources/ui/performance_page/cpu.blp:78
-#: resources/ui/performance_page/gpu.blp:86
-#: resources/ui/performance_page/gpu.blp:135
+#: resources/ui/performance_page/cpu.blp:90
+#: resources/ui/performance_page/gpu.blp:87
+#: resources/ui/performance_page/gpu.blp:135 src/performance_page/gpu.rs:1112
 msgid "100%"
 msgstr "100 %"
 
-#: resources/ui/performance_page/cpu.blp:106
-msgid "Change G_raph To"
+#: resources/ui/performance_page/cpu.blp:167
+#, fuzzy
+msgid "Change _Top Graph To"
 msgstr "Ändra g_raf till"
 
-#: resources/ui/performance_page/cpu.blp:109
+#: resources/ui/performance_page/cpu.blp:170
 msgid "Overall U_tilization"
 msgstr "Övergripande a_nvändning"
 
-#: resources/ui/performance_page/cpu.blp:114
+#: resources/ui/performance_page/cpu.blp:175
 msgid "Logical _Processors"
 msgstr "Logiska _processorer"
 
-#: resources/ui/performance_page/cpu.blp:120
+#: resources/ui/performance_page/cpu.blp:180
+#, fuzzy
+msgid "_All Threads"
+msgstr "Trådar"
+
+#: resources/ui/performance_page/cpu.blp:185
+msgid "All Threads _Stacked"
+msgstr ""
+
+#: resources/ui/performance_page/cpu.blp:191
+#, fuzzy
+msgid "Change B_ottom Graph To"
+msgstr "Ändra g_raf till"
+
+#: resources/ui/performance_page/cpu.blp:194
+#: resources/ui/performance_page/gpu.blp:219
+#: resources/ui/performance_page/gpu.blp:253
+#, fuzzy
+msgid "_Power Draw"
+msgstr "Strömförbrukning"
+
+#: resources/ui/performance_page/cpu.blp:199
+#: resources/ui/performance_page/gpu.blp:229
+#: resources/ui/performance_page/gpu.blp:263
+#, fuzzy
+msgid "_Temperature"
+msgstr "Temperatur"
+
+#: resources/ui/performance_page/cpu.blp:204
+#, fuzzy
+msgid "_Clock Speed"
+msgstr "Klockfrekvens"
+
+#: resources/ui/performance_page/cpu.blp:209
+#: resources/ui/performance_page/gpu.blp:234
+#: resources/ui/performance_page/gpu.blp:268
+msgid "_None"
+msgstr ""
+
+#: resources/ui/performance_page/cpu.blp:215
 msgid "Show Kernel Times"
 msgstr "Visa kärntider"
 
-#: resources/ui/performance_page/cpu.blp:127
-#: resources/ui/performance_page/disk.blp:182
-#: resources/ui/performance_page/fan.blp:158
-#: resources/ui/performance_page/gpu.blp:215
-#: resources/ui/performance_page/memory.blp:207
-#: resources/ui/performance_page/network.blp:105
+#: resources/ui/performance_page/cpu.blp:222
+#: resources/ui/performance_page/disk.blp:180
+#: resources/ui/performance_page/fan.blp:151
+#: resources/ui/performance_page/gpu.blp:276
+#: resources/ui/performance_page/memory.blp:206
+#: resources/ui/performance_page/network.blp:104
 msgid "Graph _Summary View"
 msgstr "Graf i _sammanfattningsvy"
 
-#: resources/ui/performance_page/cpu.blp:132
-#: resources/ui/performance_page/disk.blp:187
-#: resources/ui/performance_page/fan.blp:163
-#: resources/ui/performance_page/gpu.blp:220
-#: resources/ui/performance_page/memory.blp:212
-#: resources/ui/performance_page/network.blp:110
+#: resources/ui/performance_page/cpu.blp:227
+#: resources/ui/performance_page/disk.blp:185
+#: resources/ui/performance_page/fan.blp:156
+#: resources/ui/performance_page/gpu.blp:282
+#: resources/ui/performance_page/memory.blp:211
+#: resources/ui/performance_page/network.blp:109
 msgid "_View"
 msgstr "_Vy"
 
-#: resources/ui/performance_page/cpu.blp:135
-#: resources/ui/performance_page/disk.blp:190
-#: resources/ui/performance_page/fan.blp:166
-#: resources/ui/performance_page/gpu.blp:223
-#: resources/ui/performance_page/memory.blp:215
-#: resources/ui/performance_page/network.blp:113
+#: resources/ui/performance_page/cpu.blp:230
+#: resources/ui/performance_page/disk.blp:188
+#: resources/ui/performance_page/fan.blp:159
+#: resources/ui/performance_page/gpu.blp:285
+#: resources/ui/performance_page/memory.blp:214
+#: resources/ui/performance_page/network.blp:112
 msgid "CP_U"
 msgstr "CP_U"
 
-#: resources/ui/performance_page/cpu.blp:140
-#: resources/ui/performance_page/disk.blp:195
-#: resources/ui/performance_page/fan.blp:171
-#: resources/ui/performance_page/gpu.blp:228
-#: resources/ui/performance_page/memory.blp:220
-#: resources/ui/performance_page/network.blp:118
+#: resources/ui/performance_page/cpu.blp:235
+#: resources/ui/performance_page/disk.blp:193
+#: resources/ui/performance_page/fan.blp:164
+#: resources/ui/performance_page/gpu.blp:290
+#: resources/ui/performance_page/memory.blp:219
+#: resources/ui/performance_page/network.blp:117
 msgid "_Memory"
 msgstr "_Minne"
 
-#: resources/ui/performance_page/cpu.blp:145
-#: resources/ui/performance_page/disk.blp:200
-#: resources/ui/performance_page/fan.blp:176
-#: resources/ui/performance_page/gpu.blp:233
-#: resources/ui/performance_page/memory.blp:225
-#: resources/ui/performance_page/network.blp:123
+#: resources/ui/performance_page/cpu.blp:240
+#: resources/ui/performance_page/disk.blp:198
+#: resources/ui/performance_page/fan.blp:169
+#: resources/ui/performance_page/gpu.blp:295
+#: resources/ui/performance_page/memory.blp:224
+#: resources/ui/performance_page/network.blp:122
 msgid "_Drive"
 msgstr "_Disk"
 
-#: resources/ui/performance_page/cpu.blp:150
-#: resources/ui/performance_page/disk.blp:205
-#: resources/ui/performance_page/fan.blp:181
-#: resources/ui/performance_page/gpu.blp:238
-#: resources/ui/performance_page/memory.blp:230
-#: resources/ui/performance_page/network.blp:128
+#: resources/ui/performance_page/cpu.blp:245
+#: resources/ui/performance_page/disk.blp:203
+#: resources/ui/performance_page/fan.blp:174
+#: resources/ui/performance_page/gpu.blp:300
+#: resources/ui/performance_page/memory.blp:229
+#: resources/ui/performance_page/network.blp:127
 msgid "_Network"
 msgstr "_Nätverk"
 
-#: resources/ui/performance_page/cpu.blp:155
-#: resources/ui/performance_page/disk.blp:210
-#: resources/ui/performance_page/fan.blp:186
-#: resources/ui/performance_page/gpu.blp:243
-#: resources/ui/performance_page/memory.blp:235
-#: resources/ui/performance_page/network.blp:133
+#: resources/ui/performance_page/cpu.blp:250
+#: resources/ui/performance_page/disk.blp:208
+#: resources/ui/performance_page/fan.blp:179
+#: resources/ui/performance_page/gpu.blp:305
+#: resources/ui/performance_page/memory.blp:234
+#: resources/ui/performance_page/network.blp:132
 msgid "_GPU"
 msgstr "_GPU"
 
-#: resources/ui/performance_page/cpu.blp:160
-#: resources/ui/performance_page/disk.blp:215
-#: resources/ui/performance_page/fan.blp:191
-#: resources/ui/performance_page/gpu.blp:248
-#: resources/ui/performance_page/memory.blp:240
-#: resources/ui/performance_page/network.blp:138
+#: resources/ui/performance_page/cpu.blp:255
+#: resources/ui/performance_page/disk.blp:213
+#: resources/ui/performance_page/fan.blp:184
+#: resources/ui/performance_page/gpu.blp:310
+#: resources/ui/performance_page/memory.blp:239
+#: resources/ui/performance_page/network.blp:137
 msgid "_Fan"
 msgstr "_Fläkt"
 
-#: resources/ui/performance_page/cpu.blp:168
-#: resources/ui/performance_page/disk.blp:223
-#: resources/ui/performance_page/fan.blp:199
-#: resources/ui/performance_page/gpu.blp:256
-#: resources/ui/performance_page/memory.blp:248
-#: resources/ui/performance_page/network.blp:151
+#: resources/ui/performance_page/cpu.blp:260
+#: resources/ui/performance_page/disk.blp:218
+#: resources/ui/performance_page/fan.blp:189
+#: resources/ui/performance_page/gpu.blp:315
+#: resources/ui/performance_page/memory.blp:244
+#: resources/ui/performance_page/network.blp:142
+msgid "_Battery"
+msgstr ""
+
+#: resources/ui/performance_page/cpu.blp:268
+#: resources/ui/performance_page/disk.blp:226
+#: resources/ui/performance_page/fan.blp:197
+#: resources/ui/performance_page/gpu.blp:323
+#: resources/ui/performance_page/memory.blp:252
+#: resources/ui/performance_page/network.blp:155
 msgid "_Copy"
 msgstr "_Kopia"
 
@@ -586,20 +585,21 @@ msgstr "Visa S.M.A.R.T.-data"
 msgid "Eject Disk"
 msgstr "Mata ut disk"
 
-#: resources/ui/performance_page/disk.blp:99
+#: resources/ui/performance_page/disk.blp:100
 msgid "Active time over "
 msgstr "Aktiv tid under "
 
 #: resources/ui/performance_page/disk.blp:140
-#: resources/ui/performance_page/network.blp:61
+#: resources/ui/performance_page/network.blp:62
 msgid "Throughput over "
 msgstr "Dataöverföring under "
 
-#: resources/ui/performance_page/fan.blp:61
+#: resources/ui/performance_page/fan.blp:62
 msgid "Fan speed over "
 msgstr "Fläkthastighet under "
 
-#: resources/ui/performance_page/fan.blp:112
+#: resources/ui/performance_page/fan.blp:109 src/performance_page/cpu.rs:1040
+#: src/performance_page/gpu.rs:1128
 msgid "Temperature over "
 msgstr "Temperatur under "
 
@@ -607,40 +607,71 @@ msgstr "Temperatur under "
 msgid "Fan Speed"
 msgstr "Fläkthastighet"
 
-#: resources/ui/performance_page/fan_details.blp:98
+#: resources/ui/performance_page/fan_details.blp:99
 msgid "PWM Percentage"
 msgstr "PWM-procent"
 
-#: resources/ui/performance_page/fan_details.blp:125
+#: resources/ui/performance_page/fan_details.blp:127
 msgid "Current Temperature"
 msgstr "Aktuell temperatur"
 
-#: resources/ui/performance_page/gpu.blp:119
+#: resources/ui/performance_page/gpu.blp:119 src/performance_page/gpu.rs:1111
 msgid "Video encode/decode utilization over "
 msgstr "Användning av videokodning/avkodning under "
 
-#: resources/ui/performance_page/gpu.blp:162
-#: resources/ui/performance_page/memory.blp:76
+#: resources/ui/performance_page/gpu.blp:161
+#: resources/ui/performance_page/memory.blp:77 src/performance_page/gpu.rs:1118
 msgid "Memory usage over "
 msgstr "Minnesanvändning under "
 
-#: resources/ui/performance_page/gpu.blp:208
-msgid "Show Encode/Decode Usage"
+#: resources/ui/performance_page/gpu.blp:206
+#, fuzzy
+msgid "Change Middle Graph To"
+msgstr "Ändra g_raf till"
+
+#: resources/ui/performance_page/gpu.blp:209
+#: resources/ui/performance_page/gpu.blp:243
+#, fuzzy
+msgid "_Encode/_Decode"
 msgstr "Visa kodnings-/avkodningsanvändning"
 
-#: resources/ui/performance_page/memory.blp:121
+#: resources/ui/performance_page/gpu.blp:214
+#: resources/ui/performance_page/gpu.blp:248
+#, fuzzy
+msgid "_Memory Usage"
+msgstr "Minnesanvändning"
+
+#: resources/ui/performance_page/gpu.blp:224
+#: resources/ui/performance_page/gpu.blp:258
+#, fuzzy
+msgid "_Clock Speeds"
+msgstr "Klockfrekvens"
+
+#: resources/ui/performance_page/gpu.blp:240
+#, fuzzy
+msgid "Change Bottom Graph To"
+msgstr "Ändra g_raf till"
+
+#: resources/ui/performance_page/memory.blp:41
+#: resources/ui/table_view/table_view.blp:59
+#: resources/ui/table_view/process_details_dialog.blp:202
+#: src/performance_page/mod.rs:1193 src/table_view/mod.rs:881
+msgid "Memory"
+msgstr "Minne"
+
+#: resources/ui/performance_page/memory.blp:123
 msgid "Swap usage over "
 msgstr "Växlingsfilsanvändning under "
 
-#: resources/ui/performance_page/memory.blp:172
+#: resources/ui/performance_page/memory.blp:171
 msgid "Memory composition"
 msgstr "Minnesfördelning"
 
-#: resources/ui/performance_page/memory.blp:196
+#: resources/ui/performance_page/memory.blp:195
 msgid "Show Memory Composition"
 msgstr "Visa minnesfördelning"
 
-#: resources/ui/performance_page/memory.blp:200
+#: resources/ui/performance_page/memory.blp:199
 msgid "Show Swap Usage"
 msgstr "Visa växlingsfilsanvändning"
 
@@ -648,44 +679,52 @@ msgstr "Visa växlingsfilsanvändning"
 msgid "In use"
 msgstr "Används"
 
-#: resources/ui/performance_page/memory_details.blp:87
+#: resources/ui/performance_page/memory_details.blp:88
 msgid "Available"
 msgstr "Tillgängligt"
 
-#: resources/ui/performance_page/memory_details.blp:129
+#: resources/ui/performance_page/memory_details.blp:131
 msgid "Committed"
 msgstr "Allokerat"
 
-#: resources/ui/performance_page/memory_details.blp:159
+#: resources/ui/performance_page/memory_details.blp:162
 msgid "Cached"
 msgstr "Cache"
 
-#: resources/ui/performance_page/memory_details.blp:190
+#: resources/ui/performance_page/memory_details.blp:194
 msgid "Swap used"
 msgstr "Använt växlingsutrymme"
 
-#: resources/ui/performance_page/memory_details.blp:221
+#: resources/ui/performance_page/memory_details.blp:226
 msgid "Swap available"
 msgstr "Tillgängligt växlingsutrymme"
 
-#: resources/ui/performance_page/memory_details.blp:246
+#: resources/ui/performance_page/memory_details.blp:258
+msgid "Compressed"
+msgstr ""
+
+#: resources/ui/performance_page/memory_details.blp:290
+msgid "Savings"
+msgstr ""
+
+#: resources/ui/performance_page/memory_details.blp:317
 msgid "Speed:"
 msgstr "Hastighet:"
 
-#: resources/ui/performance_page/memory_details.blp:260
+#: resources/ui/performance_page/memory_details.blp:334
 msgid "Slots used:"
 msgstr "Platser använda:"
 
-#: resources/ui/performance_page/memory_details.blp:274
+#: resources/ui/performance_page/memory_details.blp:351
 msgid "Form factor:"
 msgstr "Formfaktor:"
 
-#: resources/ui/performance_page/memory_details.blp:288
-#: resources/ui/performance_page/disk_details.blp:284
+#: resources/ui/performance_page/memory_details.blp:368
+#: resources/ui/performance_page/disk_details.blp:300
 msgid "Type:"
 msgstr "Typ:"
 
-#: resources/ui/performance_page/network.blp:144
+#: resources/ui/performance_page/network.blp:148
 msgid "Network Se_ttings"
 msgstr "Nätverksin_ställningar"
 
@@ -693,51 +732,56 @@ msgstr "Nätverksin_ställningar"
 msgid "Receive"
 msgstr "Ta emot"
 
-#: resources/ui/performance_page/network_details.blp:101
+#: resources/ui/performance_page/network_details.blp:102
 msgid "Send"
 msgstr "Skicka"
 
-#: resources/ui/performance_page/network_details.blp:130
+#: resources/ui/performance_page/network_details.blp:132
 msgid "Total Received"
 msgstr "Totalt mottaget"
 
-#: resources/ui/performance_page/network_details.blp:159
+#: resources/ui/performance_page/network_details.blp:162
 msgid "Total Sent"
 msgstr "Totalt skickat"
 
-#: resources/ui/performance_page/network_details.blp:184
+#: resources/ui/performance_page/network_details.blp:190
 msgid "Interface name:"
 msgstr "Gränssnittsnamn:"
 
-#: resources/ui/performance_page/network_details.blp:198
+#: resources/ui/performance_page/network_details.blp:207
 msgid "Connection type:"
 msgstr "Anslutningstyp:"
 
-#: resources/ui/performance_page/network_details.blp:213
+#: resources/ui/performance_page/network_details.blp:222
+#, fuzzy
+msgid "Connection status:"
+msgstr "Anslutningstyp:"
+
+#: resources/ui/performance_page/network_details.blp:240
 msgid "SSID:"
 msgstr "SSID:"
 
-#: resources/ui/performance_page/network_details.blp:228
+#: resources/ui/performance_page/network_details.blp:259
 msgid "Signal strength:"
 msgstr "Signalstyrka:"
 
-#: resources/ui/performance_page/network_details.blp:243
+#: resources/ui/performance_page/network_details.blp:278
 msgid "Maximum Bitrate:"
 msgstr "Högsta bithastighet:"
 
-#: resources/ui/performance_page/network_details.blp:258
+#: resources/ui/performance_page/network_details.blp:297
 msgid "Frequency:"
 msgstr "Frekvens:"
 
-#: resources/ui/performance_page/network_details.blp:272
+#: resources/ui/performance_page/network_details.blp:314
 msgid "Hardware address:"
 msgstr "MAC-adress:"
 
-#: resources/ui/performance_page/network_details.blp:401
+#: resources/ui/performance_page/network_details.blp:458
 msgid "IPv4 address:"
 msgstr "IPv4-adress:"
 
-#: resources/ui/performance_page/network_details.blp:427
+#: resources/ui/performance_page/network_details.blp:487
 msgid "IPv6 address:"
 msgstr "IPv6-adress:"
 
@@ -745,53 +789,62 @@ msgstr "IPv6-adress:"
 msgid "Smart Data"
 msgstr "S.M.A.R.T.-data"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:48
-msgid "Last Updated"
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:57
+#, fuzzy
+msgid "Last Updated:"
 msgstr "Senast uppdaterad"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:72
-msgid "Powered On"
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:69
+#, fuzzy
+msgid "Powered On:"
 msgstr "Drifttid"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:96
-msgid "Drive Health"
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:81
+#, fuzzy
+msgid "Drive Health:"
 msgstr "Diskhälsa"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:120
-msgid "SMART Test Status"
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:93
+#, fuzzy
+msgid "SMART Test Status:"
 msgstr "S.M.A.R.T.-teststatus"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:149
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:174
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:108
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:133
 msgid "Attribute"
 msgstr "Attribut"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:156
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:181
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:115
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:140
 msgid "Value"
 msgstr "Värde"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:168
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:127
 msgid "ID"
 msgstr "ID"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:187
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:146
 msgid "Normalized"
 msgstr "Normaliserad"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:193
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:152
 msgid "Threshold"
 msgstr "Tröskelvärde"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:199
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:158
 msgid "Worst"
 msgstr "Sämsta"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:211
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:164
+#: resources/ui/table_view/process_details_dialog.blp:113
+msgid "Type"
+msgstr "Typ"
+
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:170
 msgid "Updates"
 msgstr "Uppdateringar"
 
-#: resources/ui/performance_page/disk_smart_data_dialog.blp:217
+#: resources/ui/performance_page/disk_smart_data_dialog.blp:176
 msgid "Assessment"
 msgstr "Bedömning"
 
@@ -800,58 +853,59 @@ msgstr "Bedömning"
 msgid "Utilization"
 msgstr "Användning"
 
-#: resources/ui/performance_page/gpu_details.blp:80
+#: resources/ui/performance_page/gpu_details.blp:92
 msgid "Clock Speed"
 msgstr "Klockfrekvens"
 
-#: resources/ui/performance_page/gpu_details.blp:132
-#: resources/ui/performance_page/cpu_details.blp:91
+#: resources/ui/performance_page/gpu_details.blp:146
+#: resources/ui/performance_page/cpu_details.blp:106
 msgid "Power Draw"
 msgstr "Strömförbrukning"
 
-#: resources/ui/performance_page/gpu_details.blp:200
-#: src/performance_page/gpu.rs:552
+#: resources/ui/performance_page/gpu_details.blp:211
+#: src/performance_page/gpu.rs:806
 msgid "Memory Usage"
 msgstr "Minnesanvändning"
 
-#: resources/ui/performance_page/gpu_details.blp:274
-#: src/performance_page/gpu.rs:629
+#: resources/ui/performance_page/gpu_details.blp:282
+#: src/performance_page/gpu.rs:860
 msgid "Shared Memory Usage"
 msgstr "Användning av delat minne"
 
-#: resources/ui/performance_page/gpu_details.blp:332
+#: resources/ui/performance_page/gpu_details.blp:353
 msgid "Memory Speed"
 msgstr "Minneshastighet"
 
-#: resources/ui/performance_page/gpu_details.blp:407
+#: resources/ui/performance_page/gpu_details.blp:425
 msgid "Video encode"
 msgstr "Videokodning"
 
-#: resources/ui/performance_page/gpu_details.blp:453
+#: resources/ui/performance_page/gpu_details.blp:472
 msgid "Video decode"
 msgstr "Videoavkodning"
 
-#: resources/ui/performance_page/gpu_details.blp:483
+#: resources/ui/performance_page/gpu_details.blp:503
+#: resources/ui/performance_page/cpu_details.blp:227
 msgid "Temperature"
 msgstr "Temperatur"
 
-#: resources/ui/performance_page/gpu_details.blp:514
+#: resources/ui/performance_page/gpu_details.blp:542
 msgid "OpenGL version:"
 msgstr "OpenGL-version:"
 
-#: resources/ui/performance_page/gpu_details.blp:530
+#: resources/ui/performance_page/gpu_details.blp:559
 msgid "Vulkan version:"
 msgstr "Vulkan-version:"
 
-#: resources/ui/performance_page/gpu_details.blp:548
+#: resources/ui/performance_page/gpu_details.blp:578
 msgid "PCI Express speed:"
 msgstr "PCI Express-hastighet:"
 
-#: resources/ui/performance_page/gpu_details.blp:566
+#: resources/ui/performance_page/gpu_details.blp:597
 msgid "Max PCI Express speed:"
 msgstr "Maximal PCI Express-hastighet:"
 
-#: resources/ui/performance_page/gpu_details.blp:582
+#: resources/ui/performance_page/gpu_details.blp:614
 msgid "PCI bus address:"
 msgstr "PCI-bussadress:"
 
@@ -867,7 +921,7 @@ msgstr ""
 "Det gick inte att hämta S.M.A.R.T.-data. Kör programmet via terminalen för "
 "att se eventuell felinformation."
 
-#: resources/ui/performance_page/disk_details.blp:63
+#: resources/ui/performance_page/disk_details.blp:62
 msgid "Read speed"
 msgstr "Läshastighet"
 
@@ -875,151 +929,211 @@ msgstr "Läshastighet"
 msgid "Write speed"
 msgstr "Skrivhastighet"
 
-#: resources/ui/performance_page/disk_details.blp:130
+#: resources/ui/performance_page/disk_details.blp:131
 msgid "Total Read"
 msgstr "Totalt läst"
 
-#: resources/ui/performance_page/disk_details.blp:159
+#: resources/ui/performance_page/disk_details.blp:161
 msgid "Total Written"
 msgstr "Totalt skrivet"
 
-#: resources/ui/performance_page/disk_details.blp:188
+#: resources/ui/performance_page/disk_details.blp:191
 msgid "Active time"
 msgstr "Aktiv tid"
 
-#: resources/ui/performance_page/disk_details.blp:217
+#: resources/ui/performance_page/disk_details.blp:221
 msgid "Avg. response time"
 msgstr "Genomsnittlig responstid"
 
-#: resources/ui/performance_page/disk_details.blp:242
+#: resources/ui/performance_page/disk_details.blp:249
 msgid "Capacity:"
 msgstr "Kapacitet:"
 
-#: resources/ui/performance_page/disk_details.blp:256
+#: resources/ui/performance_page/disk_details.blp:266
 msgid "Formatted:"
 msgstr "Formaterad:"
 
-#: resources/ui/performance_page/disk_details.blp:270
+#: resources/ui/performance_page/disk_details.blp:283
 msgid "System disk:"
 msgstr "Systemdisk:"
 
-#: resources/ui/performance_page/disk_details.blp:300
+#: resources/ui/performance_page/disk_details.blp:319
 msgid "WWN:"
 msgstr "WWN:"
 
-#: resources/ui/performance_page/disk_details.blp:316
+#: resources/ui/performance_page/disk_details.blp:338
 msgid "Serial:"
 msgstr "Serienummer:"
 
-#: resources/ui/performance_page/disk_details.blp:332
+#: resources/ui/performance_page/disk_details.blp:357
 msgid "Rotation Rate"
 msgstr "Rotationshastighet"
 
-#: resources/ui/performance_page/cpu_details.blp:68
+#: resources/ui/performance_page/disk_details.blp:478
+msgid "Partitions"
+msgstr ""
+
+#: resources/ui/performance_page/cpu_details.blp:72
 msgid "Speed"
 msgstr "Hastighet"
 
-#: resources/ui/performance_page/cpu_details.blp:117 src/apps_page/mod.rs:84
+#: resources/ui/performance_page/cpu_details.blp:133 src/apps_page/mod.rs:91
 msgid "Processes"
 msgstr "Processer"
 
-#: resources/ui/performance_page/cpu_details.blp:139
+#: resources/ui/performance_page/cpu_details.blp:156
 msgid "Threads"
 msgstr "Trådar"
 
-#: resources/ui/performance_page/cpu_details.blp:161
+#: resources/ui/performance_page/cpu_details.blp:179
 msgid "Handles"
 msgstr "Referenser"
 
-#: resources/ui/performance_page/cpu_details.blp:184
+#: resources/ui/performance_page/cpu_details.blp:203
 msgid "Up time"
 msgstr "Drifttid"
 
-#: resources/ui/performance_page/cpu_details.blp:207
+#: resources/ui/performance_page/cpu_details.blp:251
 msgid "Base Speed:"
 msgstr "Bashastighet:"
 
-#: resources/ui/performance_page/cpu_details.blp:221
+#: resources/ui/performance_page/cpu_details.blp:266
 msgid "Sockets:"
 msgstr "Socketar:"
 
-#: resources/ui/performance_page/cpu_details.blp:235
+#: resources/ui/performance_page/cpu_details.blp:281
 msgid "Virtual processors:"
 msgstr "Virtuella processorer:"
 
-#: resources/ui/performance_page/cpu_details.blp:249
+#: resources/ui/performance_page/cpu_details.blp:296
 msgid "Virtualization:"
 msgstr "Virtualisering:"
 
-#: resources/ui/performance_page/cpu_details.blp:263
+#: resources/ui/performance_page/cpu_details.blp:311
 msgid "Virtual machine:"
 msgstr "Virtuell maskin:"
 
-#: resources/ui/performance_page/cpu_details.blp:277
+#: resources/ui/performance_page/cpu_details.blp:326
 msgid "L1 cache:"
 msgstr "L1-cache:"
 
-#: resources/ui/performance_page/cpu_details.blp:291
+#: resources/ui/performance_page/cpu_details.blp:341
 msgid "L2 cache:"
 msgstr "L2-cache:"
 
-#: resources/ui/performance_page/cpu_details.blp:305
+#: resources/ui/performance_page/cpu_details.blp:356
 msgid "L3 cache:"
 msgstr "L3-cache:"
 
-#: resources/ui/performance_page/cpu_details.blp:319
+#: resources/ui/performance_page/cpu_details.blp:371
 msgid "Cpufreq driver:"
 msgstr "Cpufreq-drivrutin:"
 
-#: resources/ui/performance_page/cpu_details.blp:333
+#: resources/ui/performance_page/cpu_details.blp:386
 msgid "Cpufreq governor:"
 msgstr "Cpufreq-guvernör:"
 
-#: resources/ui/performance_page/cpu_details.blp:347
+#: resources/ui/performance_page/cpu_details.blp:401
 msgid "Power preference:"
 msgstr "Ströminställning:"
 
-#: resources/ui/preferences/page.blp:6
+#: resources/ui/preferences/apps_services_page.blp:25
+#, fuzzy
+msgid "Apps & Services"
+msgstr "Tjänster"
+
+#: resources/ui/preferences/apps_services_page.blp:30
+msgid "Merge Process Stats"
+msgstr "Sammanfoga processtatistik"
+
+#: resources/ui/preferences/apps_services_page.blp:35
+msgid "Remember Sorting"
+msgstr "Kom ihåg sortering"
+
+#: resources/ui/preferences/apps_services_page.blp:36
+msgid "Persist sorting by column across app restarts"
+msgstr "Kom ihåg kolumnsorteringen vid programomstart"
+
+#: resources/ui/preferences/apps_services_page.blp:40
+msgid "Remember Column Order"
+msgstr "Kom ihåg kolumnordning"
+
+#: resources/ui/preferences/apps_services_page.blp:41
+msgid "Persist the order of the columns, across app restarts"
+msgstr "Bevarar kolumnernas ordning även när programmet startas om"
+
+#: resources/ui/preferences/apps_services_page.blp:45
+msgid "Scale CPU Usage to Core Count"
+msgstr "Skala CPU-användning efter antal kärnor"
+
+#: resources/ui/preferences/apps_services_page.blp:46
+msgid "Show CPU usage scaled to the number of available cores"
+msgstr "Visa CPU-användning skalad till antalet tillgängliga kärnor"
+
+#: resources/ui/preferences/apps_services_page.blp:50
+msgid "Show Column Separators"
+msgstr "Visa kolumnavgränsare"
+
+#: resources/ui/preferences/apps_services_page.blp:51
+msgid "Show a separator between each column"
+msgstr "Visa en avgränsare mellan varje kolumn"
+
+#: resources/ui/preferences/apps_services_page.blp:55
+msgid "Grey Out Zeroes"
+msgstr ""
+
+#: resources/ui/preferences/apps_services_page.blp:56
+msgid "Gray out values that equal zero"
+msgstr ""
+
+#: resources/ui/preferences/general_page.blp:25
 msgid "General"
 msgstr "Allmänt"
 
-#: resources/ui/preferences/page.blp:9
+#: resources/ui/preferences/general_page.blp:30
 msgid "Update Interval"
 msgstr "Uppdateringsintervall"
 
-#: resources/ui/preferences/page.blp:10
+#: resources/ui/preferences/general_page.blp:31
 msgid "In seconds"
 msgstr "I sekunder"
 
-#: resources/ui/preferences/page.blp:27
-msgid "Chart Data Points"
-msgstr "Diagramdatapunkter"
-
-#: resources/ui/preferences/page.blp:46 resources/ui/keyboard_shortcuts.blp:68
+#: resources/ui/preferences/performance_page.blp:25
+#: resources/ui/keyboard_shortcuts.blp:57
 msgid "Performance Page"
 msgstr "Prestanda"
 
-#: resources/ui/preferences/page.blp:49
+#: resources/ui/preferences/performance_page.blp:29
+#, fuzzy
+msgid "Graph Settings"
+msgstr "Nätverksin_ställningar"
+
+#: resources/ui/preferences/performance_page.blp:32
+#, fuzzy
+msgid "Data Points"
+msgstr "Diagramdatapunkter"
+
+#: resources/ui/preferences/performance_page.blp:50
 msgid "Smooth Graphs"
 msgstr "Jämna grafer"
 
-#: resources/ui/preferences/page.blp:50
+#: resources/ui/preferences/performance_page.blp:51
 msgid "Draw graphs as smooth line instead of jagged line"
 msgstr "Rita grafer med mjuka linjer i stället för taggiga"
 
-#: resources/ui/preferences/page.blp:54
+#: resources/ui/preferences/performance_page.blp:55
 msgid "Sliding Graphs"
 msgstr "Glidande grafer"
 
-#: resources/ui/preferences/page.blp:55
+#: resources/ui/preferences/performance_page.blp:56
 msgid "Animate graphs (may negatively impact performance)"
 msgstr "Animera grafer (kan påverka prestandan negativt)"
 
-#: resources/ui/preferences/page.blp:59
+#: resources/ui/preferences/performance_page.blp:60
 msgid "Scale Network Graphs Dynamically"
 msgstr "Dynamisk skalning av nätverksgrafer"
 
-#: resources/ui/preferences/page.blp:60
+#: resources/ui/preferences/performance_page.blp:61
 msgid ""
 "Set network graph to scale dynamically with actual usage or with channel max "
 "speed"
@@ -1027,192 +1141,190 @@ msgstr ""
 "Ställ in nätverksgrafen att skalas dynamiskt efter faktisk användning eller "
 "kanalens maxhastighet"
 
-#: resources/ui/preferences/page.blp:64
-msgid "Show CPU Information"
-msgstr "Visa CPU-information"
+#: resources/ui/preferences/performance_page.blp:66 resources/ui/window.blp:64
+msgid "Devices"
+msgstr "Enheter"
 
-#: resources/ui/preferences/page.blp:70
-msgid "Show Memory Information"
-msgstr "Visa minnesinformation"
-
-#: resources/ui/preferences/page.blp:76
+#: resources/ui/preferences/performance_page.blp:69
 msgid "Show Disk Information"
 msgstr "Visa diskinformation"
 
-#: resources/ui/preferences/page.blp:82
+#: resources/ui/preferences/performance_page.blp:74
 msgid "Show Network Information"
 msgstr "Visa nätverksinformation"
 
-#: resources/ui/preferences/page.blp:88
+#: resources/ui/preferences/performance_page.blp:79
+msgid "Wired"
+msgstr ""
+
+#: resources/ui/preferences/performance_page.blp:83
+msgid "Wireless"
+msgstr ""
+
+#: resources/ui/preferences/performance_page.blp:87
+msgid "VPN"
+msgstr ""
+
+#: resources/ui/preferences/performance_page.blp:91
+#, fuzzy
+msgid "Virtual"
+msgstr "Virtualisering:"
+
+#: resources/ui/preferences/performance_page.blp:92
+msgid "Docker, Multipass, Bridge"
+msgstr ""
+
+#: resources/ui/preferences/performance_page.blp:96
+msgid "Other"
+msgstr "Annat"
+
+#: resources/ui/preferences/performance_page.blp:97
+msgid "Bluetooth, InfiniBand, WWAN"
+msgstr ""
+
+#: resources/ui/preferences/performance_page.blp:102
 msgid "Show GPU Information"
 msgstr "Visa GPU-information"
 
-#: resources/ui/preferences/page.blp:94
+#: resources/ui/preferences/performance_page.blp:107
 msgid "Show Fan Information"
 msgstr "Visa fläktinformation"
 
-#: resources/ui/preferences/page.blp:101
+#: resources/ui/preferences/performance_page.blp:112
 #, fuzzy
-msgid "App &amp; Service Pages"
-msgstr "Tjänster"
+msgid "Show Battery Information"
+msgstr "Visa minnesinformation"
 
-#: resources/ui/preferences/page.blp:104
-msgid "Merge Process Stats"
-msgstr "Sammanfoga processtatistik"
+#: resources/ui/preferences/performance_page.blp:113
+#, fuzzy
+msgid "Show battery information by default"
+msgstr "Visa minnesinformation som standard"
 
-#: resources/ui/preferences/page.blp:109
-msgid "Remember Sorting"
-msgstr "Kom ihåg sortering"
+#: resources/ui/preferences/units_page.blp:25
+msgid "Units"
+msgstr ""
 
-#: resources/ui/preferences/page.blp:110
-msgid "Persist sorting by column across app restarts"
-msgstr "Kom ihåg kolumnsorteringen vid programomstart"
-
-#: resources/ui/preferences/page.blp:114
-msgid "Remember Column Order"
-msgstr "Kom ihåg kolumnordning"
-
-#: resources/ui/preferences/page.blp:115
-msgid "Persist the order of the columns, across app restarts"
-msgstr "Bevarar kolumnernas ordning även när programmet startas om"
-
-#: resources/ui/preferences/page.blp:119
-msgid "Scale CPU Usage to Core Count"
-msgstr "Skala CPU-användning efter antal kärnor"
-
-#: resources/ui/preferences/page.blp:120
-msgid "Show CPU usage scaled to the number of available cores"
-msgstr "Visa CPU-användning skalad till antalet tillgängliga kärnor"
-
-#: resources/ui/preferences/page.blp:124
-msgid "Show Column Separators"
-msgstr "Visa kolumnavgränsare"
-
-#: resources/ui/preferences/page.blp:125
-msgid "Show a separator between each column"
-msgstr "Visa en avgränsare mellan varje kolumn"
-
-#: resources/ui/preferences/page.blp:130
-msgid "Global Units"
-msgstr "Globala enheter"
-
-#: resources/ui/preferences/page.blp:133
+#: resources/ui/preferences/units_page.blp:30
 msgid "Memory Usage Unit"
 msgstr "Enhet för minnesanvändning"
 
-#: resources/ui/preferences/page.blp:140
+#: resources/ui/preferences/units_page.blp:37
 msgid "Use Bytes as a Unit of Measurement for Memory"
 msgstr "Använd byte som måttenhet för minne"
 
-#: resources/ui/preferences/page.blp:141 resources/ui/preferences/page.blp:179
-#: resources/ui/preferences/page.blp:217
+#: resources/ui/preferences/units_page.blp:38
+#: resources/ui/preferences/units_page.blp:76
+#: resources/ui/preferences/units_page.blp:114
 msgid "Bytes"
 msgstr "Byte"
 
-#: resources/ui/preferences/page.blp:145
+#: resources/ui/preferences/units_page.blp:42
 msgid "Use Bits as a Unit of Measurement for Memory"
 msgstr "Använd bitar som måttenhet för minne"
 
-#: resources/ui/preferences/page.blp:146 resources/ui/preferences/page.blp:184
-#: resources/ui/preferences/page.blp:222
+#: resources/ui/preferences/units_page.blp:43
+#: resources/ui/preferences/units_page.blp:81
+#: resources/ui/preferences/units_page.blp:119
 msgid "Bits"
 msgstr "Bitar"
 
-#: resources/ui/preferences/page.blp:152
+#: resources/ui/preferences/units_page.blp:49
 msgid "Memory Usage Base"
 msgstr "Bas för minnesanvändning"
 
-#: resources/ui/preferences/page.blp:159
+#: resources/ui/preferences/units_page.blp:56
 msgid "Use Base 10 for Memory"
 msgstr "Använd bas 10 för minne"
 
-#: resources/ui/preferences/page.blp:160 resources/ui/preferences/page.blp:198
-#: resources/ui/preferences/page.blp:236
+#: resources/ui/preferences/units_page.blp:57
+#: resources/ui/preferences/units_page.blp:95
+#: resources/ui/preferences/units_page.blp:133
 msgid "Base 10"
 msgstr "Bas 10"
 
-#: resources/ui/preferences/page.blp:164
+#: resources/ui/preferences/units_page.blp:61
 msgid "Use Base 2 for Memory"
 msgstr "Använd bas 2 för minne"
 
-#: resources/ui/preferences/page.blp:165 resources/ui/preferences/page.blp:203
-#: resources/ui/preferences/page.blp:241
+#: resources/ui/preferences/units_page.blp:62
+#: resources/ui/preferences/units_page.blp:100
+#: resources/ui/preferences/units_page.blp:138
 msgid "Base 2"
 msgstr "Bas 2"
 
-#: resources/ui/preferences/page.blp:171
+#: resources/ui/preferences/units_page.blp:68
 msgid "Drive Usage Unit"
 msgstr "Enhet för diskanvändning"
 
-#: resources/ui/preferences/page.blp:178
+#: resources/ui/preferences/units_page.blp:75
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
 msgstr "Använd byte som måttenhet för diskar"
 
-#: resources/ui/preferences/page.blp:183
+#: resources/ui/preferences/units_page.blp:80
 msgid "Use Bits as a Unit of Measurement for Disk Drives"
 msgstr "Använd bitar som måttenhet för diskar"
 
-#: resources/ui/preferences/page.blp:190
+#: resources/ui/preferences/units_page.blp:87
 msgid "Drive Usage Base"
 msgstr "Bas för diskanvändning"
 
-#: resources/ui/preferences/page.blp:197
+#: resources/ui/preferences/units_page.blp:94
 msgid "Use Base 10 for Disk Drives"
 msgstr "Använd bas 10 för diskar"
 
-#: resources/ui/preferences/page.blp:202
+#: resources/ui/preferences/units_page.blp:99
 msgid "Use Base 2 for Disk Drives"
 msgstr "Använd bas 2 för diskar"
 
-#: resources/ui/preferences/page.blp:209
+#: resources/ui/preferences/units_page.blp:106
 msgid "Network Usage Unit"
 msgstr "Enhet för nätverksanvändning"
 
-#: resources/ui/preferences/page.blp:216
+#: resources/ui/preferences/units_page.blp:113
 msgid "Use Bytes as a Unit of Measurement for Network Interfaces"
 msgstr "Använd byte som måttenhet för nätverksgränssnitt"
 
-#: resources/ui/preferences/page.blp:221
+#: resources/ui/preferences/units_page.blp:118
 msgid "Use Bits as a Unit of Measurement for Network Interfaces"
 msgstr "Använd bitar som måttenhet för nätverksgränssnitt"
 
-#: resources/ui/preferences/page.blp:228
+#: resources/ui/preferences/units_page.blp:125
 msgid "Network Usage Base"
 msgstr "Bas för nätverksanvändning"
 
-#: resources/ui/preferences/page.blp:235
+#: resources/ui/preferences/units_page.blp:132
 msgid "Use Base 10 for Network Interfaces"
 msgstr "Använd bas 10 för nätverksgränssnitt"
 
-#: resources/ui/preferences/page.blp:240
+#: resources/ui/preferences/units_page.blp:137
 msgid "Use Base 2 for Network Interfaces"
 msgstr "Använd bas 2 för nätverksgränssnitt"
 
-#: resources/ui/services_page/page.blp:84
+#: resources/ui/services_page/page.blp:96
 msgid "Collapse all expanded services"
 msgstr "Fäll ihop alla expanderade tjänster"
 
-#: resources/ui/services_page/page.blp:123
+#: resources/ui/services_page/page.blp:135
 msgid "Filter running processes"
 msgstr "Filtrera aktiva processer"
 
-#: resources/ui/services_page/page.blp:143
+#: resources/ui/services_page/page.blp:155
 msgid "Filter failed processes"
 msgstr "Filtrera misslyckade processer"
 
-#: resources/ui/services_page/page.blp:163
+#: resources/ui/services_page/page.blp:175
 msgid "Filter stopped processes"
 msgstr "Filtrera stoppade processer"
 
-#: resources/ui/services_page/page.blp:183
+#: resources/ui/services_page/page.blp:195
 msgid "Filter disabled processes"
 msgstr "Filtrera inaktiverade processer"
 
-#: resources/ui/services_page/page.blp:204
+#: resources/ui/services_page/page.blp:216
 msgid "Remove all filters"
 msgstr "Ta bort alla filter"
 
-#: resources/ui/services_page/page.blp:214
+#: resources/ui/services_page/page.blp:226
 msgid "Remove Filters"
 msgstr "Ta bort filter"
 
@@ -1235,275 +1347,341 @@ msgstr "Mörkt"
 msgid "Keyboard Shortcuts"
 msgstr "Tangentbordsgenvägar"
 
-#: resources/ui/keyboard_shortcuts.blp:10
+#: resources/ui/keyboard_shortcuts.blp:8
 msgid "Global"
 msgstr "Globalt"
 
-#: resources/ui/keyboard_shortcuts.blp:21
+#: resources/ui/keyboard_shortcuts.blp:11
 msgid "Open Menu"
 msgstr "Öppna meny"
 
-#: resources/ui/keyboard_shortcuts.blp:26
-#: resources/ui/keyboard_shortcuts.blp:31
+#: resources/ui/keyboard_shortcuts.blp:16
+#: resources/ui/keyboard_shortcuts.blp:21
 msgid "Close Window"
 msgstr "Stäng fönster"
 
-#: resources/ui/keyboard_shortcuts.blp:36
+#: resources/ui/keyboard_shortcuts.blp:26
 msgid "Open Preferences"
 msgstr "Öppna inställningar"
 
-#: resources/ui/keyboard_shortcuts.blp:41
+#: resources/ui/keyboard_shortcuts.blp:31
 msgid "Show Keyboard Shortcuts"
 msgstr "Visa tangentbordsgenvägar"
 
-#: resources/ui/keyboard_shortcuts.blp:46
+#: resources/ui/keyboard_shortcuts.blp:36
 msgid "Show Performance Page"
 msgstr "Visa prestandasidan"
 
-#: resources/ui/keyboard_shortcuts.blp:51
+#: resources/ui/keyboard_shortcuts.blp:41
 msgid "Show Apps Page"
 msgstr "Visa appsidan"
 
-#: resources/ui/keyboard_shortcuts.blp:56
+#: resources/ui/keyboard_shortcuts.blp:46
 msgid "Show Services Page"
 msgstr "Visa tjänstesidan"
 
-#: resources/ui/keyboard_shortcuts.blp:61 resources/ui/window.blp:95
+#: resources/ui/keyboard_shortcuts.blp:51 resources/ui/window.blp:111
 msgid "Toggle Sidebar"
 msgstr "Växla sidofält"
 
-#: resources/ui/keyboard_shortcuts.blp:79
+#: resources/ui/keyboard_shortcuts.blp:60
 msgid "Copy Device Information"
 msgstr "Kopiera enhetsinformation"
 
-#: resources/ui/keyboard_shortcuts.blp:84
+#: resources/ui/keyboard_shortcuts.blp:65
 msgid "Toggle Summary Mode"
 msgstr "Växla sammanfattningsläge"
 
-#: resources/ui/keyboard_shortcuts.blp:89
+#: resources/ui/keyboard_shortcuts.blp:70
 msgid "Select a Device"
 msgstr "Välj en enhet"
 
-#: resources/ui/keyboard_shortcuts.blp:96
+#: resources/ui/keyboard_shortcuts.blp:76
 msgid "Apps Page"
 msgstr "Appsida"
 
-#: resources/ui/keyboard_shortcuts.blp:107
-#: resources/ui/keyboard_shortcuts.blp:145 resources/ui/window.blp:143
+#: resources/ui/keyboard_shortcuts.blp:79
+#: resources/ui/keyboard_shortcuts.blp:108 resources/ui/window.blp:159
 msgid "Search"
 msgstr "Sök"
 
-#: resources/ui/keyboard_shortcuts.blp:117
+#: resources/ui/keyboard_shortcuts.blp:89
 msgid "Stop App or Process"
 msgstr "Stoppa app eller process"
 
-#: resources/ui/keyboard_shortcuts.blp:122
+#: resources/ui/keyboard_shortcuts.blp:94
 msgid "Force Stop App or Process"
 msgstr "Tvångsavsluta app eller process"
 
-#: resources/ui/keyboard_shortcuts.blp:127
-#: resources/ui/keyboard_shortcuts.blp:165
+#: resources/ui/keyboard_shortcuts.blp:99
+#: resources/ui/keyboard_shortcuts.blp:133
 msgid "Show Details Dialog"
 msgstr "Visa detaljdialog"
 
-#: resources/ui/keyboard_shortcuts.blp:134
+#: resources/ui/keyboard_shortcuts.blp:105
 msgid "Services Page"
 msgstr "Tjänstesida"
 
-#: resources/ui/keyboard_shortcuts.blp:150
+#: resources/ui/keyboard_shortcuts.blp:118
 msgid "Start Service"
 msgstr "Starta tjänst"
 
-#: resources/ui/keyboard_shortcuts.blp:155
+#: resources/ui/keyboard_shortcuts.blp:123
 msgid "Stop Service"
 msgstr "Stoppa tjänst"
 
-#: resources/ui/keyboard_shortcuts.blp:160
+#: resources/ui/keyboard_shortcuts.blp:128
 msgid "Restart Service"
 msgstr "Starta om tjänst"
 
 #. The `Name` column should be default aligned
 #. The column that contains the context menu button should be default aligned
-#: resources/ui/process_column_view/column_view_frame.blp:41
-#: resources/ui/process_column_view/service_details_dialog.blp:134
+#: resources/ui/table_view/table_view.blp:40
+#: resources/ui/table_view/service_details_dialog.blp:136
 #: resources/ui/about_system_dialog.blp:80
-#: resources/ui/about_system_dialog.blp:260 src/process_tree/columns/mod.rs:208
+#: resources/ui/about_system_dialog.blp:260 src/table_view/columns/mod.rs:211
 msgid "Name"
 msgstr "Namn"
 
-#: resources/ui/process_column_view/column_view_frame.blp:66
-msgid ""
-"Shared\n"
-"Memory"
-msgstr ""
-"Delat\n"
-"minne"
+#: resources/ui/table_view/table_view.blp:47
+#: resources/ui/table_view/process_details_dialog.blp:77
+msgid "PID"
+msgstr "PID"
 
-#: resources/ui/process_column_view/column_view_frame.blp:72
-#: src/performance_page/mod.rs:1131 src/process_tree/column_view_frame.rs:565
-#: src/process_tree/column_view_frame.rs:573
+#: resources/ui/table_view/table_view.blp:65
+#: resources/ui/table_view/process_details_dialog.blp:227
+#: src/table_view/mod.rs:903 src/table_view/mod.rs:908
+#, fuzzy
+msgid "Swap"
+msgstr "Använt växlingsutrymme"
+
+#: resources/ui/table_view/table_view.blp:71 src/performance_page/mod.rs:1264
+#: src/table_view/mod.rs:886 src/table_view/mod.rs:894
 msgid "Drive"
 msgstr "Disk"
 
-#: resources/ui/process_column_view/process_action_bar.blp:34
-msgid "Stop the selected app"
-msgstr "Stoppa den valda appen"
+#: resources/ui/table_view/table_view.blp:77
+#: resources/ui/table_view/process_details_dialog.blp:277
+#: src/table_view/mod.rs:914 src/table_view/mod.rs:923
+msgid "Network"
+msgstr "Nätverk"
 
-#: resources/ui/process_column_view/process_action_bar.blp:46
-#: resources/ui/process_column_view/process_action_bar.blp:98
-#: resources/ui/process_column_view/service_action_bar.blp:66
-#: resources/ui/process_column_view/service_action_bar.blp:123
+#: resources/ui/table_view/table_view.blp:83
+#: resources/ui/table_view/process_details_dialog.blp:302
+#: src/performance_page/gpu.rs:632 src/performance_page/mod.rs:1518
+#: src/performance_page/mod.rs:2467 src/table_view/mod.rs:929
+#: src/table_view/mod.rs:946
+msgid "GPU"
+msgstr "GPU"
+
+#: resources/ui/table_view/table_view.blp:89
+#: resources/ui/table_view/process_details_dialog.blp:327
+#: src/table_view/mod.rs:933 src/table_view/mod.rs:952
+msgid "GPU Memory"
+msgstr "GPU-minne"
+
+#: resources/ui/table_view/table_view.blp:118
+#: resources/ui/table_view/table_view.blp:188
+#: resources/ui/table_view/process_action_bar.blp:45
+#: resources/ui/table_view/service_action_bar.blp:69
 msgid "Stop"
 msgstr "Stoppa"
 
-#: resources/ui/process_column_view/process_action_bar.blp:53
-msgid "Force stop the selected app"
-msgstr "Tvångsavsluta den valda appen"
-
-#: resources/ui/process_column_view/process_action_bar.blp:65
-#: resources/ui/process_column_view/process_action_bar.blp:103
+#: resources/ui/table_view/table_view.blp:123
+#: resources/ui/table_view/process_action_bar.blp:64
 msgid "Force Stop"
 msgstr "Tvångsavsluta"
 
-#: resources/ui/process_column_view/process_action_bar.blp:73
-msgid "Show details of the selected app"
-msgstr "Visa detaljer för den valda appen"
-
-#: resources/ui/process_column_view/process_action_bar.blp:85
-#: resources/ui/process_column_view/process_action_bar.blp:154
-#: resources/ui/process_column_view/service_action_bar.blp:105
-#: resources/ui/process_column_view/service_action_bar.blp:135
-msgid "Details"
-msgstr "Detaljer"
-
-#: resources/ui/process_column_view/process_action_bar.blp:108
+#: resources/ui/table_view/table_view.blp:128
 msgid "Send Signal"
 msgstr "Skicka signal"
 
-#: resources/ui/process_column_view/process_action_bar.blp:111
+#: resources/ui/table_view/table_view.blp:131
 msgid "Suspend (STOP)"
 msgstr "Pausa (STOP)"
 
-#: resources/ui/process_column_view/process_action_bar.blp:116
+#: resources/ui/table_view/table_view.blp:136
 msgid "Continue (CONT)"
 msgstr "Fortsätt (CONT)"
 
-#: resources/ui/process_column_view/process_action_bar.blp:121
+#: resources/ui/table_view/table_view.blp:141
 msgid "Hangup (HUP)"
 msgstr "Lägg på (HUP)"
 
-#: resources/ui/process_column_view/process_action_bar.blp:126
+#: resources/ui/table_view/table_view.blp:146
 msgid "Interrupt (INT)"
 msgstr "Avbryt (INT)"
 
-#: resources/ui/process_column_view/process_action_bar.blp:131
+#: resources/ui/table_view/table_view.blp:151
 msgid "Terminate (TERM)"
 msgstr "Avsluta (TERM)"
 
-#: resources/ui/process_column_view/process_action_bar.blp:136
+#: resources/ui/table_view/table_view.blp:156
 msgid "Kill (KILL)"
 msgstr "Döda (KILL)"
 
-#: resources/ui/process_column_view/process_action_bar.blp:141
+#: resources/ui/table_view/table_view.blp:161
 msgid "User 1 (USR1)"
 msgstr "Användare 1 (USR1)"
 
-#: resources/ui/process_column_view/process_action_bar.blp:146
+#: resources/ui/table_view/table_view.blp:166
 msgid "User 2 (USR2)"
 msgstr "Användare 2 (USR2)"
 
-#: resources/ui/process_column_view/process_details_dialog.blp:84
-msgid "App ID"
-msgstr "App-ID"
+#: resources/ui/table_view/table_view.blp:174
+#: resources/ui/table_view/table_view.blp:200
+#: resources/ui/table_view/process_action_bar.blp:84
+#: resources/ui/table_view/service_action_bar.blp:110
+msgid "Details"
+msgstr "Detaljer"
 
-#: resources/ui/process_column_view/service_action_bar.blp:35
-msgid "Start the selected service"
-msgstr "Starta den markerade tjänsten"
-
-#: resources/ui/process_column_view/service_action_bar.blp:47
-#: resources/ui/process_column_view/service_action_bar.blp:118
+#: resources/ui/table_view/table_view.blp:183
+#: resources/ui/table_view/service_action_bar.blp:48
 msgid "Start"
 msgstr "Starta"
 
-#: resources/ui/process_column_view/service_action_bar.blp:54
-msgid "Stop the selected service"
-msgstr "Stoppa den markerade tjänsten"
-
-#: resources/ui/process_column_view/service_action_bar.blp:74
-msgid "Restart the selected service"
-msgstr "Starta om den markerade tjänsten"
-
-#: resources/ui/process_column_view/service_action_bar.blp:86
-#: resources/ui/process_column_view/service_action_bar.blp:128
+#: resources/ui/table_view/table_view.blp:193
+#: resources/ui/table_view/service_action_bar.blp:91
 msgid "Restart"
 msgstr "Starta om"
 
-#: resources/ui/process_column_view/service_action_bar.blp:93
+#: resources/ui/table_view/process_action_bar.blp:33
+msgid "Stop the selected app"
+msgstr "Stoppa den valda appen"
+
+#: resources/ui/table_view/process_action_bar.blp:52
+msgid "Force stop the selected app"
+msgstr "Tvångsavsluta den valda appen"
+
+#: resources/ui/table_view/process_action_bar.blp:72
+msgid "Show details of the selected app"
+msgstr "Visa detaljer för den valda appen"
+
+#: resources/ui/table_view/process_details_dialog.blp:85
+msgid "App ID"
+msgstr "App-ID"
+
+#: resources/ui/table_view/process_details_dialog.blp:96
+#: resources/ui/table_view/process_details_dialog.blp:124
+#: resources/ui/table_view/service_details_dialog.blp:252
+#: resources/ui/table_view/service_details_dialog.blp:284
+#: resources/ui/table_view/service_details_dialog.blp:316
+#: src/performance_page/widgets/smart_data_dialog.rs:201
+#: src/performance_page/widgets/smart_data_dialog.rs:209
+#: src/performance_page/widgets/smart_data_dialog.rs:217
+#: src/performance_page/widgets/smart_data_dialog.rs:225
+#: src/performance_page/widgets/smart_data_dialog.rs:236
+#: src/performance_page/widgets/smart_data_dialog.rs:244
+#: src/performance_page/widgets/smart_data_dialog.rs:252
+#: src/performance_page/widgets/smart_data_dialog.rs:260
+#: src/performance_page/widgets/smart_data_dialog.rs:268
+#: src/performance_page/widgets/smart_data_dialog.rs:276
+#: src/performance_page/widgets/smart_data_dialog.rs:285
+#: src/performance_page/widgets/smart_data_dialog.rs:293
+#: src/performance_page/widgets/smart_data_dialog.rs:301
+#: src/performance_page/widgets/smart_data_dialog.rs:309
+#: src/performance_page/widgets/smart_data_dialog.rs:317
+#: src/performance_page/widgets/smart_sata_dialog_row.rs:102
+#: src/performance_page/cpu.rs:583 src/performance_page/cpu.rs:592
+#: src/performance_page/cpu.rs:601 src/performance_page/cpu.rs:610
+#: src/performance_page/memory.rs:559 src/performance_page/network.rs:439
+#: src/performance_page/network.rs:447
+#: src/table_view/service_details_dialog.rs:270
+#: src/table_view/service_details_dialog.rs:278
+#: src/table_view/service_details_dialog.rs:286
+msgid "N/A"
+msgstr "N/A"
+
+#: resources/ui/table_view/process_details_dialog.blp:141
+msgid "Command Line"
+msgstr "Kommandorad"
+
+#: resources/ui/table_view/process_details_dialog.blp:163
+msgid "Resource Usage"
+msgstr "Resursanvändning"
+
+#: resources/ui/table_view/process_details_dialog.blp:252
+msgid "Drives"
+msgstr "Diskar"
+
+#: resources/ui/table_view/service_action_bar.blp:34
+msgid "Start the selected service"
+msgstr "Starta den markerade tjänsten"
+
+#: resources/ui/table_view/service_action_bar.blp:55
+msgid "Stop the selected service"
+msgstr "Stoppa den markerade tjänsten"
+
+#: resources/ui/table_view/service_action_bar.blp:77
+msgid "Restart the selected service"
+msgstr "Starta om den markerade tjänsten"
+
+#: resources/ui/table_view/service_action_bar.blp:98
 msgid "Show details of the selected service"
 msgstr "Visa detaljer för den markerade tjänsten"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:33
+#: resources/ui/table_view/service_details_dialog.blp:35
 msgid "Service Details"
 msgstr "Tjänstedetaljer"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:57
+#: resources/ui/table_view/service_details_dialog.blp:59
 msgid "State"
 msgstr "Status"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:58
+#: resources/ui/table_view/service_details_dialog.blp:60
 msgid "The current state of the service"
 msgstr "Tjänstens aktuella status"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:75
+#: resources/ui/table_view/service_details_dialog.blp:77
 msgid "Start service"
 msgstr "Starta tjänst"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:90
+#: resources/ui/table_view/service_details_dialog.blp:92
 msgid "Stop service"
 msgstr "Stoppa tjänst"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:106
+#: resources/ui/table_view/service_details_dialog.blp:108
 msgid "Restart service"
 msgstr "Starta om tjänst"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:164
+#: resources/ui/table_view/service_details_dialog.blp:166
 msgid "Description"
 msgstr "Beskrivning"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:194
+#: resources/ui/table_view/service_details_dialog.blp:196
 msgid "Status"
 msgstr "Status"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:213
+#: resources/ui/table_view/service_details_dialog.blp:215
 msgid "Enabled"
 msgstr "Aktiverad"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:220
-#: src/process_tree/row_model.rs:266
+#: resources/ui/table_view/service_details_dialog.blp:222
+#: src/table_view/row_model.rs:282
 msgid "Process"
 msgstr "Process"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:221
+#: resources/ui/table_view/service_details_dialog.blp:223
 msgid "Process and user information"
 msgstr "Process- och användarinformation"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:237
+#: resources/ui/table_view/service_details_dialog.blp:239
 msgid "Process ID"
 msgstr "Process-ID"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:269
+#: resources/ui/table_view/service_details_dialog.blp:271
 msgid "User"
 msgstr "Användare"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:301
+#: resources/ui/table_view/service_details_dialog.blp:303
 msgid "Group"
 msgstr "Grupp"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:333
+#: resources/ui/table_view/service_details_dialog.blp:335
 msgid "File Location"
 msgstr "Filplats"
 
-#: resources/ui/process_column_view/service_details_dialog.blp:356
+#: resources/ui/table_view/service_details_dialog.blp:358
 msgid "Logs"
 msgstr "Loggar"
 
@@ -1561,71 +1739,87 @@ msgstr "Inaktivera alla"
 msgid "Reset to Default"
 msgstr "Återställ till standard"
 
-#: resources/ui/window.blp:64
-msgid "Devices"
-msgstr "Enheter"
-
 #: resources/ui/window.blp:70
 msgid "Edit Sidebar"
 msgstr "Redigera sidofältet"
 
-#: resources/ui/window.blp:118
+#: resources/ui/window.blp:134
 msgid "Type a name or PID to search"
 msgstr "Skriv ett namn eller PID för att söka"
 
-#: resources/ui/window.blp:133
+#: resources/ui/window.blp:149
 msgid "Toggle Device Information"
 msgstr "Växla enhetsinformation"
 
-#: resources/ui/window.blp:148
+#: resources/ui/window.blp:164
 msgid "Main Menu"
 msgstr "Huvudmeny"
 
-#: resources/ui/window.blp:178
-msgid "Loading..."
-msgstr "Laddar..."
-
-#: resources/ui/window.blp:192
+#: resources/ui/window.blp:181
 msgid "Performance"
 msgstr "Prestanda"
 
-#: resources/ui/window.blp:204 src/apps_page/mod.rs:79
+#: resources/ui/window.blp:193 src/apps_page/mod.rs:86
 msgid "Apps"
 msgstr "Appar"
 
-#: resources/ui/window.blp:212
+#: resources/ui/window.blp:201
 msgid "Services"
 msgstr "Tjänster"
 
-#: resources/ui/window.blp:237
+#: resources/ui/window.blp:225
 msgid "_Preferences"
 msgstr "_Inställningar"
 
-#: resources/ui/window.blp:242
+#: resources/ui/window.blp:230
 msgid "_Keyboard Shortcuts"
 msgstr "_Tangentbordsgenvägar"
 
-#: resources/ui/window.blp:249
-msgid "_About System"
-msgstr "_Om systemet"
+#: resources/ui/window.blp:237
+#, fuzzy
+msgid "_System Information"
+msgstr "Operativsystem"
 
-#: resources/ui/window.blp:256
+#: resources/ui/window.blp:244
+msgid "Open _Wiki"
+msgstr ""
+
+#: resources/ui/window.blp:250
+#, fuzzy
+msgid "Show _First Run Dialog"
+msgstr "Visa detaljdialog"
+
+#: resources/ui/window.blp:257
 msgid "_About Mission Center"
 msgstr "_Om Mission Center"
 
-#: src/apps_page/mod.rs:259
+#: src/apps_page/mod.rs:303
 #, rust-format
 msgid "{} Running App"
 msgid_plural "{} Running Apps"
 msgstr[0] "{} aktiv app"
 msgstr[1] "{} aktiva appar"
 
-#: src/apps_page/mod.rs:269
+#: src/apps_page/mod.rs:313
 #, rust-format
 msgid "{} Running Process"
 msgid_plural "{} Running Processes"
 msgstr[0] "{} aktiv tjänst"
 msgstr[1] "{} aktiva tjänster"
+
+#: src/performance_page/widgets/eject_failure_dialog.rs:157
+#: src/performance_page/widgets/smart_failure_dialog.rs:67
+msgid "Close"
+msgstr ""
+
+#: src/performance_page/widgets/eject_failure_dialog.rs:158
+msgid "Retry"
+msgstr ""
+
+#: src/performance_page/widgets/eject_failure_dialog.rs:159
+#, fuzzy
+msgid "Kill All"
+msgstr "Avsluta"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
 #, rust-format
@@ -1633,16 +1827,17 @@ msgid "{} ago"
 msgstr "{} sedan"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:98
-#: src/performance_page/cpu.rs:321 src/performance_page/cpu.rs:332
-#: src/performance_page/cpu.rs:356 src/performance_page/cpu.rs:364
-#: src/performance_page/disk.rs:211 src/performance_page/disk.rs:228
-#: src/performance_page/disk.rs:255 src/performance_page/disk.rs:375
-#: src/performance_page/gpu.rs:247 src/performance_page/gpu.rs:303
-#: src/performance_page/memory.rs:533 src/performance_page/memory.rs:764
-#: src/performance_page/mod.rs:1392 src/performance_page/mod.rs:1402
-#: src/performance_page/network.rs:262 src/performance_page/network.rs:365
-#: src/performance_page/network.rs:393 src/performance_page/network.rs:482
-#: src/performance_page/network.rs:518
+#: src/performance_page/cpu.rs:495 src/performance_page/cpu.rs:524
+#: src/performance_page/cpu.rs:568 src/performance_page/cpu.rs:576
+#: src/performance_page/disk.rs:189 src/performance_page/disk.rs:207
+#: src/performance_page/disk.rs:234 src/performance_page/disk.rs:357
+#: src/performance_page/gpu.rs:555 src/performance_page/gpu.rs:577
+#: src/performance_page/memory.rs:557 src/performance_page/memory.rs:830
+#: src/performance_page/mod.rs:1513 src/performance_page/mod.rs:1523
+#: src/performance_page/network.rs:270 src/performance_page/network.rs:347
+#: src/performance_page/network.rs:375 src/performance_page/network.rs:456
+#: src/performance_page/network.rs:486 src/performance_page/network.rs:522
+#: src/table_view/service_details_dialog.rs:294
 msgid "Unknown"
 msgstr "Okänd"
 
@@ -1714,7 +1909,7 @@ msgstr "Varningstemperatur"
 #: src/performance_page/widgets/smart_data_dialog.rs:266
 #: src/performance_page/widgets/smart_data_dialog.rs:274
 #: src/performance_page/widgets/smart_sata_dialog_row.rs:106
-#: src/performance_page/fan.rs:296
+#: src/performance_page/fan.rs:264
 #, rust-format
 msgid "{} °C"
 msgstr "{} °C"
@@ -1743,7 +1938,7 @@ msgstr "Antal poster i felloggen"
 msgid "Power Cycles"
 msgstr "Strömcykler"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:249
+#: src/performance_page/widgets/mem_composition_widget.rs:251
 #, rust-format
 msgid ""
 "In use ({})\n"
@@ -1754,7 +1949,7 @@ msgstr ""
 "\n"
 "Minne som används av operativsystemet och aktiva applikationer"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:279
+#: src/performance_page/widgets/mem_composition_widget.rs:281
 #, rust-format
 msgid ""
 "Modified ({})\n"
@@ -1767,7 +1962,7 @@ msgstr ""
 "Minne vars innehåll måste skrivas till disk innan det kan användas av en "
 "annan process"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:303
+#: src/performance_page/widgets/mem_composition_widget.rs:305
 #, rust-format
 msgid ""
 "Standby ({})\n"
@@ -1778,7 +1973,7 @@ msgstr ""
 "\n"
 "Minne som innehåller cachelagrad data och kod som inte aktivt används"
 
-#: src/performance_page/widgets/mem_composition_widget.rs:316
+#: src/performance_page/widgets/mem_composition_widget.rs:318
 #, rust-format
 msgid ""
 "Free ({})\n"
@@ -1796,269 +1991,351 @@ msgstr ""
 msgid "{} sectors"
 msgstr "{} sektorer"
 
-#: src/performance_page/cpu.rs:344 src/performance_page/fan.rs:337
-#: src/performance_page/gpu.rs:318
+#: src/performance_page/cpu.rs:532
+msgid ""
+"Real CPU frequency data is unavailable (common in VMs, containers, or cloud "
+"instances). Displaying BogoMIPS value as a fallback. BogoMIPS is a delay "
+"loop calibration metric, not a true frequency measurement."
+msgstr ""
+
+#: src/performance_page/cpu.rs:556 src/performance_page/fan.rs:297
+#: src/performance_page/gpu.rs:592
 msgid "Unsupported"
 msgstr "Stöds inte"
 
-#: src/performance_page/cpu.rs:351 src/performance_page/disk.rs:232
+#: src/performance_page/cpu.rs:563 src/performance_page/disk.rs:211
 msgid "Yes"
 msgstr "Ja"
 
-#: src/performance_page/cpu.rs:353 src/performance_page/disk.rs:234
+#: src/performance_page/cpu.rs:565 src/performance_page/disk.rs:213
 msgid "No"
 msgstr "Nej"
 
-#: src/performance_page/disk.rs:201
+#: src/performance_page/cpu.rs:1034 src/performance_page/gpu.rs:1122
+#, fuzzy
+msgid "Power draw over "
+msgstr "Strömförbrukning"
+
+#: src/performance_page/cpu.rs:1037 src/performance_page/gpu.rs:1125
+#, fuzzy
+msgid "Clock speed over "
+msgstr "Fläkthastighet under "
+
+#: src/performance_page/disk.rs:179
 #, rust-format
 msgid "Disk {} ({})"
 msgstr "Disk {} ({})"
 
-#: src/performance_page/disk.rs:205 src/performance_page/disk.rs:359
+#: src/performance_page/disk.rs:183 src/performance_page/disk.rs:340
 #, rust-format
 msgid "Drive ({})"
 msgstr "Disk ({})"
 
-#: src/performance_page/disk.rs:243 src/performance_page/mod.rs:1122
+#: src/performance_page/disk.rs:222 src/performance_page/mod.rs:1255
 msgid "HDD"
 msgstr "HDD"
 
-#: src/performance_page/disk.rs:244 src/performance_page/mod.rs:1123
+#: src/performance_page/disk.rs:223 src/performance_page/mod.rs:1256
 msgid "SSD"
 msgstr "SSD"
 
-#: src/performance_page/disk.rs:245 src/performance_page/mod.rs:1124
+#: src/performance_page/disk.rs:224 src/performance_page/mod.rs:1257
 msgid "NVMe"
 msgstr "NVMe"
 
-#: src/performance_page/disk.rs:246 src/performance_page/mod.rs:1125
+#: src/performance_page/disk.rs:225 src/performance_page/mod.rs:1258
 msgid "eMMC"
 msgstr "eMMC"
 
-#: src/performance_page/disk.rs:247 src/performance_page/mod.rs:1126
+#: src/performance_page/disk.rs:226 src/performance_page/mod.rs:1259
 msgid "SD"
 msgstr "SD"
 
-#: src/performance_page/disk.rs:248 src/performance_page/mod.rs:1127
+#: src/performance_page/disk.rs:227 src/performance_page/mod.rs:1260
 msgid "iSCSI"
 msgstr "iSCSI"
 
-#: src/performance_page/disk.rs:249 src/performance_page/mod.rs:1128
+#: src/performance_page/disk.rs:228 src/performance_page/mod.rs:1261
 msgid "Optical"
 msgstr "Optisk"
 
-#: src/performance_page/disk.rs:250 src/performance_page/mod.rs:1129
+#: src/performance_page/disk.rs:229 src/performance_page/mod.rs:1262
 msgid "Floppy"
 msgstr "Diskett"
 
-#: src/performance_page/disk.rs:251 src/performance_page/mod.rs:1130
+#: src/performance_page/disk.rs:230 src/performance_page/mod.rs:1263
 msgid "Thumb Drive"
 msgstr "USB-minne"
 
-#: src/performance_page/disk.rs:355
+#: src/performance_page/disk.rs:336
 #, rust-format
 msgid "Drive {} ({})"
 msgstr "Disk {} ({})"
 
-#: src/performance_page/disk.rs:385 src/performance_page/fan.rs:280
-#: src/performance_page/fan.rs:315
+#: src/performance_page/disk.rs:367 src/performance_page/fan.rs:248
+#: src/performance_page/fan.rs:279
 #, rust-format
 msgid "{} RPM"
 msgstr "{} RPM"
 
-#: src/performance_page/fan.rs:274 src/performance_page/mod.rs:1505
-#: src/performance_page/mod.rs:2236
+#: src/performance_page/fan.rs:242 src/performance_page/mod.rs:1626
+#: src/performance_page/mod.rs:2540
 #, rust-format
 msgid "Fan {}"
 msgstr "Fläkt {}"
 
-#: src/performance_page/fan.rs:276 src/performance_page/mod.rs:1507
-#: src/performance_page/mod.rs:2238
+#: src/performance_page/fan.rs:244 src/performance_page/mod.rs:1628
+#: src/performance_page/mod.rs:2542
 msgid "Fan"
 msgstr "Fläkt"
 
-#: src/performance_page/fan.rs:285
+#: src/performance_page/fan.rs:253
 #, rust-format
 msgid "{}%"
 msgstr "{} %"
 
-#: src/performance_page/gpu.rs:285
+#: src/performance_page/gpu.rs:562
 msgid "Video encode/decode"
 msgstr "Videokodning/avkodning"
 
-#: src/performance_page/gpu.rs:356 src/performance_page/mod.rs:1395
-#: src/performance_page/mod.rs:2157
+#: src/performance_page/gpu.rs:630 src/performance_page/mod.rs:1516
+#: src/performance_page/mod.rs:2465
 #, rust-format
 msgid "GPU {}"
 msgstr "GPU {}"
 
-#: src/performance_page/gpu.rs:570
+#: src/performance_page/gpu.rs:826
 msgid "Total Memory"
 msgstr "Totalt minne"
 
-#: src/performance_page/gpu.rs:599
-msgid "Dedicated and shared memory usage over "
-msgstr "Användning av dedikerat och delat minne under "
-
-#: src/performance_page/gpu.rs:645
+#: src/performance_page/gpu.rs:876
 msgid "Total Shared Memory"
 msgstr "Totalt delat minne"
 
-#: src/performance_page/memory.rs:376
+#: src/performance_page/gpu.rs:1116
+msgid "Dedicated and shared memory usage over "
+msgstr "Användning av dedikerat och delat minne under "
+
+#: src/performance_page/memory.rs:358
 #, rust-format
 msgid "{} of {}"
 msgstr "{} av {}"
 
-#: src/performance_page/memory.rs:398
+#: src/performance_page/memory.rs:380
 msgid "Getting additional memory information failed"
 msgstr "Det gick inte att hämta ytterligare minnesinformation"
 
-#: src/performance_page/mod.rs:1136
+#: src/performance_page/mod.rs:1269
 #, rust-format
 msgid "{} {} ({})"
 msgstr "{} {} ({})"
 
-#: src/performance_page/mod.rs:2097 src/performance_page/mod.rs:2098
+#: src/performance_page/mod.rs:1724 src/performance_page/mod.rs:2626
+#, rust-format
+msgid "Battery {}"
+msgstr ""
+
+#: src/performance_page/mod.rs:1726 src/performance_page/mod.rs:2628
+msgid "Battery"
+msgstr ""
+
+#: src/performance_page/mod.rs:2391
+#, fuzzy, rust-format
+msgid "{}"
+msgstr "{} %"
+
+#: src/performance_page/mod.rs:2408 src/performance_page/mod.rs:2409
 #, rust-format
 msgid "{}: {}"
 msgstr "{}: {}"
 
-#: src/services_page/mod.rs:95
+#: src/performance_page/network.rs:457 src/services_page/mod.rs:120
+#: src/table_view/service_details_dialog.rs:257
+#: src/table_view/service_details_dialog.rs:331
+msgid "Failed"
+msgstr "Misslyckades"
+
+#: src/performance_page/network.rs:458
+msgid "Disconnected"
+msgstr ""
+
+#: src/performance_page/network.rs:459
+msgid "Disconnecting"
+msgstr ""
+
+#: src/performance_page/network.rs:460
+#, fuzzy
+msgid "Connected"
+msgstr "Anslutningstyp:"
+
+#: src/performance_page/network.rs:461
+#, fuzzy
+msgid "Connecting"
+msgstr "Anslutningstyp:"
+
+#: src/performance_page/network.rs:462
+msgid "Configuring"
+msgstr ""
+
+#: src/performance_page/network.rs:463
+msgid "Waiting for auth"
+msgstr ""
+
+#: src/performance_page/network.rs:464
+#, fuzzy
+msgid "Unavailable"
+msgstr "Tillgängligt"
+
+#: src/performance_page/network.rs:465
+#, fuzzy
+msgid "Loading"
+msgstr "Laddar..."
+
+#: src/services_page/mod.rs:99
 #, rust-format
 msgid "{} Total Service"
 msgid_plural "{} Total Services"
 msgstr[0] "{} tjänst totalt"
 msgstr[1] "{} tjänster totalt"
 
-#: src/services_page/mod.rs:107 src/process_tree/service_details_dialog.rs:239
-#: src/process_tree/service_details_dialog.rs:314
+#: src/services_page/mod.rs:111 src/table_view/service_details_dialog.rs:255
+#: src/table_view/service_details_dialog.rs:329
 msgid "Running"
 msgstr "Körs"
 
-#: src/services_page/mod.rs:116 src/process_tree/service_details_dialog.rs:241
-#: src/process_tree/service_details_dialog.rs:316
-msgid "Failed"
-msgstr "Misslyckades"
-
-#: src/services_page/mod.rs:125 src/process_tree/service_details_dialog.rs:243
-#: src/process_tree/service_details_dialog.rs:318
+#: src/services_page/mod.rs:129 src/table_view/service_details_dialog.rs:259
+#: src/table_view/service_details_dialog.rs:333
 msgid "Stopped"
 msgstr "Stoppad"
 
-#: src/services_page/mod.rs:134
+#: src/services_page/mod.rs:138
 msgid "Disabled"
 msgstr "Inaktiverad"
 
-#: src/services_page/mod.rs:140
+#: src/services_page/mod.rs:144
 msgid "No services match the current filters"
 msgstr "Inga tjänster matchar de aktiva filtren"
 
-#: src/services_page/mod.rs:142
+#: src/services_page/mod.rs:146
 msgid "No filters applied"
 msgstr "Inga filter aktiva"
 
-#: src/services_page/mod.rs:149
+#: src/services_page/mod.rs:153
 #, rust-format
 msgid "{} {} Service"
 msgid_plural "{} {} Services"
 msgstr[0] "{} {} tjänst"
 msgstr[1] "{} {} tjänster"
 
-#: src/services_page/mod.rs:177
+#: src/services_page/mod.rs:182
 msgid "User Services"
 msgstr "Användartjänster"
 
-#: src/services_page/mod.rs:182
+#: src/services_page/mod.rs:187
 msgid "System Services"
 msgstr "Systemtjänster"
 
-#: src/services_page/mod.rs:403
-msgid "Not Implemented"
-msgstr ""
-
-#: src/process_tree/row_model.rs:263
+#: src/table_view/row_model.rs:279
 msgid "Section Header"
 msgstr "Avsnittsrubrik"
 
-#: src/process_tree/row_model.rs:264
+#: src/table_view/row_model.rs:280
 msgid "Service"
 msgstr "Tjänst"
 
-#: src/process_tree/row_model.rs:265
+#: src/table_view/row_model.rs:281
 msgid "App"
 msgstr "App"
 
-#: src/process_tree/service_details_dialog.rs:203
+#: src/table_view/service_details_dialog.rs:209
 msgid "Copy logs to clipboard"
 msgstr "Kopiera loggar till urklipp"
 
-#: src/application.rs:409
+#: src/application.rs:521
 msgid "translator-credits"
 msgstr "Viktor Engkvist <viktor@rivig.net>"
 
-#: src/main.rs:103
+#: src/main.rs:106
 #, rust-format
 msgid "{} year"
 msgid_plural "{} years"
 msgstr[0] "{} år"
 msgstr[1] "{} år"
 
-#: src/main.rs:107
+#: src/main.rs:110
 #, rust-format
 msgid "{} month"
 msgid_plural "{} months"
 msgstr[0] "{} månad"
 msgstr[1] "{} månader"
 
-#: src/main.rs:111
+#: src/main.rs:114
 #, rust-format
 msgid "{} day"
 msgid_plural "{} days"
 msgstr[0] "{} dag"
 msgstr[1] "{} dagar"
 
-#: src/main.rs:115
+#: src/main.rs:118
 #, rust-format
 msgid "{} hour"
 msgid_plural "{} hours"
 msgstr[0] "{} timme"
 msgstr[1] "{} timmar"
 
-#: src/main.rs:119 src/main.rs:184
+#: src/main.rs:122 src/main.rs:207
 #, rust-format
 msgid "{} minute"
 msgid_plural "{} minutes"
 msgstr[0] "{} minut"
 msgstr[1] "{} minuter"
 
-#: src/main.rs:123 src/main.rs:182
+#: src/main.rs:126 src/main.rs:205
 #, rust-format
 msgid "{} second"
 msgid_plural "{} seconds"
 msgstr[0] "{} sekund"
 msgstr[1] "{} sekunder"
 
-#. Translators: Used for duration greater than one year. First %s is number of years, second %s is months, third %s is days
-#: src/main.rs:159
+#: src/main.rs:163
 #, rust-format
 msgid "{}, {} and {}"
 msgstr "{}, {} och {}"
 
-#. Translators: Used for durations less than one year but greater than one month. First %s is number of months, second %s is days
-#. Translators: Used for durations less than one month but greater than one day. First %s is number of days, second %s is hours
-#. Translators: Used for durations less than one day but greater than one hour. First %s is number of hours, second %s is minutes
-#: src/main.rs:162 src/main.rs:165 src/main.rs:168
+#: src/main.rs:166 src/main.rs:174 src/main.rs:181 src/main.rs:188
 #, rust-format
 msgid "{} and {}"
 msgstr "{} och {}"
 
-#: src/main.rs:174
+#: src/main.rs:197
 msgid "Less than a minute"
 msgstr "Mindre än en minut"
 
-#: src/main.rs:404
+#: src/main.rs:451
 msgid "_Quit"
 msgstr "_Avsluta"
+
+#~ msgid "Show the gpu encode-decode graph"
+#~ msgstr "Visa grafen för GPU-kodning och avkodning"
+
+#~ msgid "Shared Memory"
+#~ msgstr "Delat minne"
+
+#~ msgid "Show CPU Information"
+#~ msgstr "Visa CPU-information"
+
+#~ msgid "Global Units"
+#~ msgstr "Globala enheter"
+
+#~ msgid ""
+#~ "Shared\n"
+#~ "Memory"
+#~ msgstr ""
+#~ "Delat\n"
+#~ "minne"
+
+#~ msgid "_About System"
+#~ msgstr "_Om systemet"
 
 #, fuzzy
 #~ msgid "App Page"
@@ -2107,9 +2384,6 @@ msgstr "_Avsluta"
 
 #~ msgid "Wi-Fi"
 #~ msgstr "Wi-Fi"
-
-#~ msgid "Other"
-#~ msgstr "Annat"
 
 #~ msgid "Flatpak first"
 #~ msgstr "Flatpak först"
