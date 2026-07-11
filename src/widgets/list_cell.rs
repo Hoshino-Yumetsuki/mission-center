@@ -22,8 +22,9 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use adw::{self, subclass::prelude::*};
-use glib::{gobject_ffi, ParamSpec, Properties, Value, Variant};
+use glib::{g_critical, g_warning, ParamSpec, Properties, Value, Variant};
 use gtk::glib;
+use gtk::graphene;
 use gtk::prelude::*;
 
 #[allow(unreachable_code)]
@@ -39,6 +40,8 @@ mod imp {
         action_name: RefCell<Rc<str>>,
         #[property(set)]
         is_tree_view: Cell<bool>,
+
+        gestures_installed: Cell<bool>,
     }
 
     impl Default for ListCell {
@@ -48,6 +51,7 @@ mod imp {
                 item_id: RefCell::new(empty_str.clone()),
                 action_name: RefCell::new(empty_str),
                 is_tree_view: Cell::new(false),
+                gestures_installed: Cell::new(false),
             }
         }
     }
@@ -91,6 +95,10 @@ mod imp {
         fn realize(&self) {
             self.parent_realize();
 
+            if self.gestures_installed.get() {
+                return;
+            }
+
             let this = self.obj();
             if let Some(mut row_widget) = this.parent().and_then(|p| p.parent()) {
                 if self.is_tree_view.get() {
@@ -100,24 +108,55 @@ mod imp {
                 }
 
                 let gesture_handler = {
-                    let weak_row_widget = unsafe {
-                        let weak_ref =
-                            Box::into_raw(Box::<gobject_ffi::GWeakRef>::new(core::mem::zeroed()));
-                        gobject_ffi::g_weak_ref_init(weak_ref, row_widget.as_ptr() as *mut _);
-
-                        weak_ref as u64
-                    };
                     let this = this.downgrade();
-                    move |x, y| {
+                    move |widget: &gtk::Widget, x: f64, y: f64| {
                         let Some(this) = this.upgrade() else {
                             return;
                         };
                         let this = this.imp();
 
+                        let Some(root) = widget.root() else {
+                            return;
+                        };
+
+                        // The anchor rect is passed in root coordinates; the action handler
+                        // translates it into the menu parent's coordinate space.
+                        let (anchor_x, anchor_y, anchor_w, anchor_h) = if x > 0. && y > 0. {
+                            match widget.compute_point(&root, &graphene::Point::new(x as _, y as _))
+                            {
+                                Some(p) => (p.x() as f64, p.y() as f64, 1., 1.),
+                                None => {
+                                    g_critical!(
+                                        "MissionCenter::ListCell",
+                                        "Failed to compute_point, context menu will not be anchored to mouse position"
+                                    );
+                                    (x, y, 1., 1.)
+                                }
+                            }
+                        } else {
+                            match widget.compute_bounds(&root) {
+                                Some(bounds) => (
+                                    bounds.x() as f64,
+                                    bounds.y() as f64,
+                                    bounds.width() as f64,
+                                    bounds.height() as f64,
+                                ),
+                                None => {
+                                    g_warning!(
+                                        "MissionCenter::ListCell",
+                                        "Failed to get bounds for row widget, popup will display in an arbitrary location"
+                                    );
+                                    (0., 0., 0., 0.)
+                                }
+                            }
+                        };
+
                         let item_name = this.item_id.borrow().as_ref().to_owned();
                         let _ = this.obj().activate_action(
                             this.action_name.borrow().as_ref(),
-                            Some(&Variant::from((item_name, weak_row_widget, x, y))),
+                            Some(&Variant::from((
+                                item_name, anchor_x, anchor_y, anchor_w, anchor_h,
+                            ))),
                         );
                     }
                 };
@@ -126,20 +165,26 @@ mod imp {
                 gesture_click.set_button(3);
                 gesture_click.connect_released({
                     let gesture_handler = gesture_handler.clone();
-                    move |_, _, x, y| {
-                        gesture_handler(x, y);
+                    move |gesture, _, x, y| {
+                        if let Some(widget) = gesture.widget() {
+                            gesture_handler(&widget, x, y);
+                        }
                     }
                 });
 
                 let gesture_touch = gtk::GestureLongPress::new();
                 gesture_touch.set_button(1);
                 gesture_touch.set_touch_only(true);
-                gesture_touch.connect_pressed(move |_, x, y| {
-                    gesture_handler(x, y);
+                gesture_touch.connect_pressed(move |gesture, x, y| {
+                    if let Some(widget) = gesture.widget() {
+                        gesture_handler(&widget, x, y);
+                    }
                 });
 
                 row_widget.add_controller(gesture_click);
                 row_widget.add_controller(gesture_touch);
+
+                self.gestures_installed.set(true);
             }
         }
     }

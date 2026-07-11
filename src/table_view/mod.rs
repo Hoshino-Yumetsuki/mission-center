@@ -24,8 +24,7 @@ use std::fmt::Write;
 
 use adw::prelude::*;
 use arrayvec::ArrayString;
-use gtk::glib::translate::from_glib_full;
-use gtk::glib::{g_critical, g_debug, gobject_ffi, Object, ParamSpec, Properties, Value};
+use gtk::glib::{g_critical, g_debug, ParamSpec, Properties, Value};
 use gtk::glib::{g_warning, VariantTy, WeakRef};
 use gtk::ListScrollFlags;
 use gtk::{gdk, gio, glib, subclass::prelude::*};
@@ -287,18 +286,17 @@ mod imp {
                         return;
                     };
 
-                    let Some((id, anchor_widget, x, y)) =
-                        entry.and_then(|s| s.get::<(String, u64, f64, f64)>())
+                    let Some((id, x, y, w, h)) =
+                        entry.and_then(|s| s.get::<(String, f64, f64, f64, f64)>())
                     else {
                         g_critical!(
                             "MissionCenter::TableView",
-                            "Failed to get service name and button from show-context-menu action"
+                            "Failed to get item id and anchor rect from show-context-menu action"
                         );
                         return;
                     };
 
                     if select_item(&model, &id) {
-                        let anchor_widget = upgrade_weak_ptr(anchor_widget as _);
                         let context_menu = &imp.context_menu;
 
                         match imp.selected_item.borrow().content_type() {
@@ -313,7 +311,7 @@ mod imp {
                             }
                         }
 
-                        let anchor = calculate_anchor_point(&this, &anchor_widget, x, y);
+                        let anchor = calculate_anchor_point(&this, x, y, w, h);
                         context_menu.set_pointing_to(Some(&anchor));
                         context_menu.popup();
                     }
@@ -1079,54 +1077,47 @@ impl TableView {
     }
 }
 
-fn upgrade_weak_ptr(ptr: usize) -> Option<gtk::Widget> {
-    let obj = unsafe { gobject_ffi::g_weak_ref_get(ptr as *mut _) };
-    if obj.is_null() {
-        return None;
-    }
-    let obj: Object = unsafe { from_glib_full(obj) };
-    obj.downcast::<gtk::Widget>().ok()
-}
-
+// The anchor rect arrives in root coordinates (see `ListCell`); translate both of its corners
+// into the menu parent's coordinate space so any transform between the two is honored.
 fn calculate_anchor_point(
     menu_parent: &impl IsA<gtk::Widget>,
-    anchor_widget: &Option<gtk::Widget>,
     x: f64,
     y: f64,
+    w: f64,
+    h: f64,
 ) -> gdk::Rectangle {
-    let Some(anchor_widget) = anchor_widget else {
+    let Some(root) = menu_parent.as_ref().root() else {
         g_warning!(
             "MissionCenter::TableView",
-            "Failed to get anchor widget, popup will display in an arbitrary location"
+            "Failed to get root widget, popup will display in an arbitrary location"
         );
         return gdk::Rectangle::new(0, 0, 0, 0);
     };
 
-    if x > 0. && y > 0. {
-        match anchor_widget.compute_point(menu_parent, &gtk::graphene::Point::new(x as _, y as _)) {
-            Some(p) => gdk::Rectangle::new(p.x().round() as i32, p.y().round() as i32, 1, 1),
-            None => {
-                g_critical!(
-                    "MissionCenter::TableView",
-                    "Failed to compute_point, context menu will not be anchored to mouse position"
-                );
-                gdk::Rectangle::new(x.round() as i32, y.round() as i32, 1, 1)
-            }
-        }
-    } else {
-        if let Some(bounds) = anchor_widget.compute_bounds(menu_parent) {
-            gdk::Rectangle::new(
-                bounds.x() as i32,
-                bounds.y() as i32,
-                bounds.width() as i32,
-                bounds.height() as i32,
-            )
-        } else {
-            g_warning!(
+    let p1 = root.compute_point(menu_parent, &gtk::graphene::Point::new(x as _, y as _));
+    let p2 = root.compute_point(
+        menu_parent,
+        &gtk::graphene::Point::new((x + w) as _, (y + h) as _),
+    );
+
+    match (p1, p2) {
+        (Some(p1), Some(p2)) => gdk::Rectangle::new(
+            p1.x().round() as i32,
+            p1.y().round() as i32,
+            (p2.x() - p1.x()).round() as i32,
+            (p2.y() - p1.y()).round() as i32,
+        ),
+        _ => {
+            g_critical!(
                 "MissionCenter::TableView",
-                "Failed to get bounds for menu button, popup will display in an arbitrary location"
+                "Failed to compute_point, context menu will not be anchored to mouse position"
             );
-            gdk::Rectangle::new(0, 0, 0, 0)
+            gdk::Rectangle::new(
+                x.round() as i32,
+                y.round() as i32,
+                w.round() as i32,
+                h.round() as i32,
+            )
         }
     }
 }
