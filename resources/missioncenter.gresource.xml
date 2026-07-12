@@ -10,6 +10,7 @@
         <file preprocess="xml-stripblanks">external-link-symbolic.svg</file>
         <file preprocess="xml-stripblanks">general-properties-symbolic.svg</file>
         <file preprocess="xml-stripblanks">info-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">info-outline-symbolic.svg</file>
         <file preprocess="xml-stripblanks">list-collapse-symbolic.svg</file>
         <file preprocess="xml-stripblanks">list-disable-all-symbolic.svg</file>
         <file preprocess="xml-stripblanks">list-drag-handle-symbolic.svg</file>

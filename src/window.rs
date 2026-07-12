@@ -209,6 +209,12 @@ fn special_shortcuts(
         result
     }
 
+    fn about_system(_window: &MissionCenterWindow) -> bool {
+        app!().activate_action("system-about", None);
+
+        false
+    }
+
     static SHORTCUTS: OnceLock<
         HashMap<gdk::ModifierType, HashMap<gdk::Key, fn(&MissionCenterWindow) -> bool>>,
     > = OnceLock::new();
@@ -230,6 +236,8 @@ fn special_shortcuts(
         let mut ctrl_shortcuts = HashMap::<gdk::Key, fn(&MissionCenterWindow) -> bool>::new();
         ctrl_shortcuts.insert(gdk::Key::F, toggle_search);
         ctrl_shortcuts.insert(gdk::Key::f, toggle_search);
+        ctrl_shortcuts.insert(gdk::Key::A, about_system);
+        ctrl_shortcuts.insert(gdk::Key::a, about_system);
         ctrl_shortcuts.insert(gdk::Key::M, graph_summary);
         ctrl_shortcuts.insert(gdk::Key::m, graph_summary);
         ctrl_shortcuts.insert(gdk::Key::C, graph_copy);
@@ -932,11 +940,9 @@ mod imp {
                     this.apps_page.collapse();
                     this.services_page.collapse();
 
-                    if !this.performance_page_active.get() {
-                        return;
+                    if this.performance_page_active.get() {
+                        this.split_view.set_collapsed(this.should_hide_sidebar());
                     }
-
-                    this.split_view.set_collapsed(this.should_hide_sidebar());
                 }
             });
             self.breakpoint.connect_unapply({
