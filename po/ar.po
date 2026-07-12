@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-25 09:06+0300\n"
-"PO-Revision-Date: 2025-10-02 13:02+0000\n"
+"PO-Revision-Date: 2026-07-12 16:44+0000\n"
 "Last-Translator: jonnysemon <jonnysemon@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/ar/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
-"X-Generator: Weblate 5.14-dev\n"
+"X-Generator: Weblate 2026.7.1.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -26,14 +26,15 @@ msgid "Mission Center"
 msgstr "مدير المهام"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:9
-#, fuzzy
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Service;Services;Service "
 "Manager;Service List;System Services;User Services;systemd;systemctl"
 msgstr ""
 "مدير المهام؛ مراقب الموارد؛ مراقب النظام؛ المعالج؛ العمليات؛ مراقب الأداء؛ "
-"المعالج؛ معالج الرسوميات؛ القرص؛ قرص؛ ذاكرة؛ شبكة؛ استخدام؛ استهلاك"
+"وحدة المعالجة المركزية (CPU)؛ معالج الرسوميات (GPU)؛ القرص؛ الذاكرة؛ الشبكة؛ "
+"الاستخدام؛ الخدمة؛ الخدمات؛ مدير الخدمات؛ قائمة الخدمات؛ خدمات النظام؛ خدمات "
+"المستخدم؛ systemd؛ systemctl"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"
@@ -243,7 +244,7 @@ msgstr "أظهر فاصل بين كل عمود في عرض التطبيقات"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 msgid "Gray out values that equal zero in the Apps view"
-msgstr ""
+msgstr "اجعل القيم التي تساوي صفرًا في عرض التطبيقات"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The column name by which the Apps page view is sorted"
@@ -274,9 +275,8 @@ msgid "Which graph is shown on the CPU performance page"
 msgstr "أي رسم بياني يتم عرضه في صفحة أداء المعالج"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:177
-#, fuzzy
 msgid "Which graph is shown on the bottom graph of the CPU performance page"
-msgstr "أي رسم بياني يتم عرضه في صفحة أداء المعالج"
+msgstr "ما هو الرسم البياني الذي يظهر في الجزء السفلي من صفحة أداء المعالج"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:182
 msgid "Show kernel times in the CPU graphs"
@@ -296,55 +296,52 @@ msgstr "هل يجب أن تكون الرسوم البيانية متحركة"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:203
 msgid "Show CPU information by default"
-msgstr "أظهر معلومات المعالج افتراضيًا"
+msgstr "أظهر معلومات المعالج مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:208
 msgid "Show memory information by default"
-msgstr "أظهر معلومات الذاكرة افتراضيًا"
+msgstr "أظهر معلومات الذاكرة مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:213
 #: resources/ui/preferences/performance_page.blp:70
 msgid "Show disk information by default"
-msgstr "أظهر معلومات القرص افتراضيًا"
+msgstr "أظهر معلومات القرص مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:218
 #: resources/ui/preferences/performance_page.blp:75
 msgid "Show network information by default"
-msgstr "أظهر معلومات الشبكة افتراضيًا"
+msgstr "أظهر معلومات الشبكة مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
-#, fuzzy
 msgid "Show wired network devices by default"
-msgstr "أظهر معلومات الشبكة افتراضيًا"
+msgstr "أظهر أجهزة الشبكة السلكية مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:228
-#, fuzzy
 msgid "Show wireless network devices by default"
-msgstr "أظهر معلومات الشبكة افتراضيًا"
+msgstr "أظهر أجهزة الشبكة اللاسلكية مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:233
-#, fuzzy
 msgid "Show VPN network devices by default"
-msgstr "أظهر معلومات الشبكة افتراضيًا"
+msgstr "أظهر أجهزة الشبكة VPN مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:238
 msgid "Show virtual network devices (Docker, Multipass, Bridge) by default"
-msgstr ""
+msgstr "أظهر أجهزة الشبكة الافتراضية (Docker، Multipass، Bridge) مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:243
 msgid "Show other network devices (Bluetooth, InfiniBand, WWAN) by default"
-msgstr ""
+msgstr "أظهر أجهزة الشبكة الأخرى (بلوتوث، InfiniBand، WWAN) مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:248
 #: resources/ui/preferences/performance_page.blp:103
 msgid "Show GPU information by default"
-msgstr "أظهر معلومات معالج الرسوميات افتراضيًا"
+msgstr "أظهر معلومات معالج الرسوميات مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:253
 #: data/io.missioncenter.MissionCenter.gschema.xml:258
 #: resources/ui/preferences/performance_page.blp:108
 msgid "Show fan information by default"
-msgstr "أظهر معلومات المروحة افتراضيًا"
+msgstr "أظهر معلومات المروحة مبدئيًا"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:263
 msgid "Show the mem composition widget"
@@ -356,11 +353,11 @@ msgstr "أظهر رسم اﻹبدال البياني"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:274
 msgid "Middle Graph's Content and visibility"
-msgstr ""
+msgstr "محتوى الرسم البياني الأوسط وظهوره"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:280
 msgid "Bottom Graph's Content and visibility"
-msgstr ""
+msgstr "محتوى الرسم البياني السفلي وظهوره"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:286
 msgid "The ordering of entries in the application sidebar"
@@ -375,10 +372,12 @@ msgid ""
 "Per-device visibility overrides (semicolon-separated name:show or name:hide "
 "entries)"
 msgstr ""
+"إعدادات تجاوز الرؤية لكل جهاز (إدخالات من نوع «name:show» أو «name:hide» "
+"مفصولة بفاصلة منقوطة)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:302
 msgid "If it's your first time running Mission Center"
-msgstr ""
+msgstr "إذا كانت هذه هي المرة الأولى التي تُشغّل فيها «Mission Center»"
 
 #: resources/ui/apps_page/page.blp:87
 msgid "Collapse all apps and processes"
@@ -433,9 +432,8 @@ msgid "100%"
 msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:167
-#, fuzzy
 msgid "Change _Top Graph To"
-msgstr "غيّر الرس_م البياني إلى"
+msgstr "غيّر _الرسم البياني العلوي إلى"
 
 #: resources/ui/performance_page/cpu.blp:170
 msgid "Overall U_tilization"
@@ -1197,9 +1195,8 @@ msgid "Show Battery Information"
 msgstr "أظهر معلومات الذاكرة"
 
 #: resources/ui/preferences/performance_page.blp:113
-#, fuzzy
 msgid "Show battery information by default"
-msgstr "أظهر معلومات الذاكرة افتراضيًا"
+msgstr "أظهر معلومات البطارية مبدئيًا"
 
 #: resources/ui/preferences/units_page.blp:25
 msgid "Units"
