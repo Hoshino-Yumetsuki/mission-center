@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::sync::OnceLock;
 use std::time::Duration;
@@ -334,6 +334,8 @@ mod imp {
         pub cached_refresh_ticks: Cell<u64>,
         pub global_scroll_ticks: Cell<u32>,
 
+        pub stored_readings: RefCell<Option<Readings>>,
+        pub is_refreshing_paused: Cell<bool>,
         pub(super) services_refresh_counter: Cell<u8>,
     }
 
@@ -376,6 +378,8 @@ mod imp {
                 cached_refresh_ticks: Cell::new(1),
                 global_scroll_ticks: Cell::new(1),
 
+                stored_readings: RefCell::new(None),
+                is_refreshing_paused: Cell::new(false),
                 services_refresh_counter: Cell::new(0),
             }
         }
@@ -865,6 +869,10 @@ mod imp {
                     };
                     let imp = this.imp();
 
+                    if key == gdk::Key::Control_L || key == gdk::Key::Control_R {
+                        this.pause_refreshing();
+                    }
+
                     let special_shortcuts = special_shortcuts();
                     if let Some(shortcut) = special_shortcuts.get(&modifier) {
                         if let Some(action) = shortcut.get(&key) {
@@ -878,7 +886,25 @@ mod imp {
                     Propagation::Proceed
                 }
             });
+            evt_ctrl_key.connect_key_released({
+                let this = self.obj().downgrade();
+                move |_, key, _, _modifier| {
+                    let Some(this) = this.upgrade() else { return };
+
+                    if key == gdk::Key::Control_L || key == gdk::Key::Control_R {
+                        this.continue_refreshing();
+                    }
+                }
+            });
             self.obj().add_controller(evt_ctrl_key);
+
+            // The key-released event is lost if focus leaves the window while
+            // CTRL is held; resume updates on deactivation to avoid a stuck pause.
+            self.obj().connect_is_active_notify(|window| {
+                if !window.is_active() {
+                    window.continue_refreshing();
+                }
+            });
 
             self.header_search_entry
                 .set_key_capture_widget(Some(&self.header_search_entry.get()));
@@ -1211,6 +1237,12 @@ impl MissionCenterWindow {
 
         let this = self.imp();
 
+        if self.refreshing_paused() {
+            this.stored_readings
+                .replace(Some(std::mem::replace(readings, Readings::new())));
+            return true;
+        }
+
         result &= this.performance_page.update_readings(readings);
         result &= this.apps_page.update_readings(readings);
         result &= this.update_services(readings);
@@ -1226,6 +1258,24 @@ impl MissionCenterWindow {
         });
 
         result
+    }
+
+    pub fn pause_refreshing(&self) {
+        self.imp().is_refreshing_paused.set(true);
+    }
+
+    pub fn continue_refreshing(&self) {
+        let this = self.imp();
+
+        if this.is_refreshing_paused.replace(false) {
+            if let Some(mut readings) = this.stored_readings.take() {
+                self.update_readings(&mut readings);
+            }
+        }
+    }
+
+    pub fn refreshing_paused(&self) -> bool {
+        self.imp().is_refreshing_paused.get()
     }
 
     pub fn update_animations(&self, ticks: AnimationFrame) -> bool {
