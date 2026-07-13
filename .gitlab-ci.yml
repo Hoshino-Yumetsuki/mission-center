@@ -21,7 +21,7 @@ spec:
       type: string
       description: "Tarball url to use, must be a valid url"
 ---
-image: "ubuntu:25.10"
+image: "ubuntu:26.04"
 
 workflow:
   auto_cancel:
@@ -40,16 +40,16 @@ stages:
 
   setup_apt:
     - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://archive.ubuntu.com/ubuntu questing main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu questing-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu questing-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu resolute-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu resolute-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
 
   setup_apt_ports:
     - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports questing main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports questing-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports questing-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports resolute main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports resolute-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports resolute-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
 
   setup_apt_noble:
