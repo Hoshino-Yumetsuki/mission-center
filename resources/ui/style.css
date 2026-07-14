@@ -15,6 +15,7 @@ window listview row {
 themeselector {
     margin: 9px;
 }
+
 themeselector checkbutton {
     padding: 0;
     min-height: 44px;
@@ -24,6 +25,7 @@ themeselector checkbutton {
     border-radius: 9999px;
     box-shadow: inset 0 0 0 1px @borders;
 }
+
 themeselector checkbutton.follow:checked,
 themeselector checkbutton.light:checked,
 themeselector checkbutton.dark:checked {
@@ -33,12 +35,15 @@ themeselector checkbutton.dark:checked {
 themeselector checkbutton.follow {
     background-image: linear-gradient(to bottom right, #fff 49.99%, #202020 50.01%);
 }
+
 themeselector checkbutton.light {
     background-color: #fff;
 }
+
 themeselector checkbutton.dark {
     background-color: #202020;
 }
+
 themeselector checkbutton radio {
     -gtk-icon-source: none;
     border: none;
@@ -49,10 +54,15 @@ themeselector checkbutton radio {
     transform: translate(27px, 14px);
     padding: 2px;
 }
+
 window checkbutton.theme-selector radio:checked {
     -gtk-icon-source: -gtk-icontheme("object-select-symbolic");
     background-color: var(--accent-bg-color);
     color: var(--accent-fg-color);
+}
+
+.flipped {
+    transform: rotate(180deg);
 }
 
 .transparent {
@@ -68,18 +78,22 @@ preferencesgroup > box > box:last-child > list {
 }
 
 @keyframes mc-loading-shimmer {
-    0%   { background-position:  200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 .placeholder-shimmer {
     background-color: alpha(@theme_fg_color, 0.09);
     border-radius: 6px;
     background-image: linear-gradient(
-        90deg,
-        alpha(@theme_fg_color, 0.00) 0%,
-        alpha(@theme_fg_color, 0.06) 50%,
-        alpha(@theme_fg_color, 0.00) 100%);
+            90deg,
+            alpha(@theme_fg_color, 0.00) 0%,
+            alpha(@theme_fg_color, 0.06) 50%,
+            alpha(@theme_fg_color, 0.00) 100%);
     background-size: 200% 100%;
     animation: mc-loading-shimmer 5s linear infinite;
 }

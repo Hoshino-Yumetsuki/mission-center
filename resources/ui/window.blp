@@ -154,9 +154,10 @@ template $MissionCenterWindow: Adw.ApplicationWindow {
                     ToggleButton info_button {
                         styles [
                             "flat",
+                            "flipped",
                         ]
 
-                        icon-name: "sidebar-toggle-right-symbolic";
+                        icon-name: "sidebar-toggle-left-symbolic";
                         visible: bind template.info-button-visible;
                         active: false;
                         tooltip-text: _("Toggle Device Information");
