@@ -880,17 +880,14 @@ mod imp {
             self.memory_column.set_title(Some(buffer.as_str()));
 
             buffer.clear();
-            if readings.disks_info.is_empty() {
-                let _ = write!(&mut buffer, "{}\n0%", i18n("Drive"));
-            } else {
-                let mut sum = 0.;
-                for disk in &readings.disks_info {
-                    sum += disk.busy_percent
-                }
-                let drive_usage = sum / readings.disks_info.len() as f32;
-                let drive_usage = drive_usage.round() as u32;
-                let _ = write!(&mut buffer, "{}\n{}%", i18n("Drive"), drive_usage);
-            }
+            let drive_usage = readings
+                .disks_info
+                .iter()
+                .filter(|disk| disk.capacity_bytes > 0)
+                .map(|disk| disk.busy_percent)
+                .fold(0., f32::max);
+            let drive_usage = drive_usage.round() as u32;
+            let _ = write!(&mut buffer, "{}\n{}%", i18n("Drive"), drive_usage);
             self.drive_column.set_title(Some(buffer.as_str()));
 
             buffer.clear();
