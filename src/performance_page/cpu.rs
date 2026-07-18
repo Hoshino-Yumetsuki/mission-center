@@ -83,6 +83,8 @@ mod imp {
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
         pub infobar_content: OnceCell<gtk::Box>,
         pub power_row: OnceCell<gtk::Box>,
+        pub handles_row: OnceCell<gtk::Box>,
+        pub base_speed_label: OnceCell<gtk::Label>,
 
         pub utilization: OnceCell<gtk::Label>,
         pub speed: OnceCell<gtk::Label>,
@@ -190,6 +192,8 @@ mod imp {
 
                 infobar_content: Default::default(),
                 power_row: Default::default(),
+                handles_row: Default::default(),
+                base_speed_label: Default::default(),
 
                 utilization: Default::default(),
                 speed: Default::default(),
@@ -507,6 +511,10 @@ mod imp {
 
             if let Some(base_speed) = this.base_speed.get() {
                 if let Some(base_frequency) = static_cpu_info.base_freq_khz {
+                    base_speed.set_visible(true);
+                    if let Some(lbl) = this.base_speed_label.get() {
+                        lbl.set_visible(true);
+                    }
                     if this.is_bogomips.get() {
                         let freq = base_frequency as f32 / 1000.;
                         base_speed.set_text(&format!("{:.2} BogoMIPS", freq));
@@ -521,7 +529,11 @@ mod imp {
                             .set_dataset_max_scale(GRAPH_CLOCK_DATASET, freq);
                     }
                 } else {
-                    base_speed.set_text(&i18n("Unknown"));
+                    // Apple Silicon etc. often has no fixed base frequency — hide row.
+                    base_speed.set_visible(false);
+                    if let Some(lbl) = this.base_speed_label.get() {
+                        lbl.set_visible(false);
+                    }
                 }
             }
 
@@ -673,20 +685,36 @@ mod imp {
             }
 
             if let Some(speed) = this.speed.get() {
-                if this.is_bogomips.get() {
-                    let freq = dynamic_cpu_info.current_frequency_mhz as f32;
-
-                    this.bottom_graph
-                        .add_single_data_point(GRAPH_CLOCK_DATASET, vec![freq]);
-
-                    speed.set_text(&format!("{:.2} BogoMIPS", freq));
+                let mhz = dynamic_cpu_info.current_frequency_mhz;
+                if mhz == 0 && !this.is_bogomips.get() {
+                    // Apple Silicon has no public instantaneous MHz; hide Speed.
+                    speed.set_visible(false);
+                    if let Some(l) = this.speed_label.get() {
+                        l.set_visible(false);
+                    }
+                    if let Some(i) = this.speed_indicator.get() {
+                        i.set_visible(false);
+                    }
                 } else {
-                    let freq = dynamic_cpu_info.current_frequency_mhz as f32 * 1000. * 1000.;
+                    speed.set_visible(true);
+                    if let Some(l) = this.speed_label.get() {
+                        l.set_visible(true);
+                    }
+                    if this.is_bogomips.get() {
+                        let freq = mhz as f32;
 
-                    this.bottom_graph
-                        .add_single_data_point(GRAPH_CLOCK_DATASET, vec![freq]);
+                        this.bottom_graph
+                            .add_single_data_point(GRAPH_CLOCK_DATASET, vec![freq]);
 
-                    speed.set_text(&crate::to_human_readable_nice(freq, &DataType::Hertz));
+                        speed.set_text(&format!("{:.2} BogoMIPS", freq));
+                    } else {
+                        let freq = mhz as f32 * 1000. * 1000.;
+
+                        this.bottom_graph
+                            .add_single_data_point(GRAPH_CLOCK_DATASET, vec![freq]);
+
+                        speed.set_text(&crate::to_human_readable_nice(freq, &DataType::Hertz));
+                    }
                 }
             }
 
@@ -714,7 +742,15 @@ mod imp {
             }
 
             if let Some(handles) = this.handles.get() {
-                handles.set_text(&format!("{}", dynamic_cpu_info.total_handle_count));
+                // Handles are a Windows/Linux concept; macOS has no equivalent count.
+                if dynamic_cpu_info.total_handle_count > 0 {
+                    handles.set_text(&format!("{}", dynamic_cpu_info.total_handle_count));
+                    if let Some(row) = this.handles_row.get() {
+                        row.set_visible(true);
+                    }
+                } else if let Some(row) = this.handles_row.get() {
+                    row.set_visible(false);
+                }
             }
 
             let uptime = dynamic_cpu_info.uptime_seconds;
@@ -1185,6 +1221,16 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("handles")
                     .expect("Could not find `handles` object in details pane"),
+            );
+            let _ = self.handles_row.set(
+                sidebar_content_builder
+                    .object::<gtk::Box>("handles_row")
+                    .expect("Could not find `handles_row` object in details pane"),
+            );
+            let _ = self.base_speed_label.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("base_speed_label")
+                    .expect("Could not find `base_speed_label` object in details pane"),
             );
             let _ = self.uptime.set(
                 sidebar_content_builder

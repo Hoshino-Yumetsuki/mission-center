@@ -573,25 +573,47 @@ mod imp {
                 let _ = write!(&mut ogl_version, "{}.{}", api_ver.major, api_ver.minor);
             }
 
+            // Prefer showing Metal on platforms that only expose that (macOS).
             if ogl_version.is_empty() {
-                ogl_version.push_str(&i18n("Unknown"));
+                if let Some(metal) = gpu.metal_version.as_ref() {
+                    let _ = write!(&mut ogl_version, "Metal {}.{}", metal.major, metal.minor);
+                    this.infobar_content
+                        .opengl_version_label()
+                        .set_text(&i18n("Metal version:"));
+                }
+            } else {
+                this.infobar_content
+                    .opengl_version_label()
+                    .set_text(&i18n("OpenGL version:"));
             }
 
+            let show_ogl = !ogl_version.is_empty();
+            this.infobar_content.opengl_version().set_visible(show_ogl);
             this.infobar_content
-                .opengl_version()
-                .set_text(ogl_version.as_str());
+                .opengl_version_label()
+                .set_visible(show_ogl);
+            if show_ogl {
+                this.infobar_content
+                    .opengl_version()
+                    .set_text(ogl_version.as_str());
+            }
 
-            let vk_version = if let Some(vulkan_version) = gpu.vulkan_version.as_ref() {
-                format!(
+            if let Some(vulkan_version) = gpu.vulkan_version.as_ref() {
+                let vk_version = format!(
                     "{}.{}.{}",
                     vulkan_version.major,
                     vulkan_version.minor,
                     vulkan_version.patch.unwrap_or(0)
-                )
+                );
+                this.infobar_content.vulkan_version().set_visible(true);
+                this.infobar_content.vulkan_version_label().set_visible(true);
+                this.infobar_content.vulkan_version().set_text(&vk_version);
             } else {
-                i18n("Unsupported")
-            };
-            this.infobar_content.vulkan_version().set_text(&vk_version);
+                this.infobar_content.vulkan_version().set_visible(false);
+                this.infobar_content
+                    .vulkan_version_label()
+                    .set_visible(false);
+            }
 
             if let (Some(pcie_gen), Some(pcie_lanes)) = (gpu.pcie_gen, gpu.pcie_lanes) {
                 this.infobar_content.set_pcie_info_visible(true);

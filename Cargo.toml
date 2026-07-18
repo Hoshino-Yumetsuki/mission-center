@@ -33,7 +33,7 @@ version = "0.11"
 features = ["gnome_48"]
 
 [dependencies.magpie-types]
-path = "subprojects/magpie/types"
+path = "third_party/magpie/types"
 
 [dependencies.nng-c-sys]
 version = "1.11"

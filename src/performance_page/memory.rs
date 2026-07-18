@@ -97,6 +97,10 @@ mod imp {
         pub slots_used: OnceCell<gtk::Label>,
         pub form_factor: OnceCell<gtk::Label>,
         pub ram_type: OnceCell<gtk::Label>,
+        pub speed_caption: OnceCell<gtk::Label>,
+        pub slots_used_caption: OnceCell<gtk::Label>,
+        pub form_factor_caption: OnceCell<gtk::Label>,
+        pub ram_type_caption: OnceCell<gtk::Label>,
 
         pub legend_used: OnceCell<gtk::Picture>,
         pub legend_commited: OnceCell<gtk::Picture>,
@@ -149,6 +153,10 @@ mod imp {
                 slots_used: Default::default(),
                 form_factor: Default::default(),
                 ram_type: Default::default(),
+                speed_caption: Default::default(),
+                slots_used_caption: Default::default(),
+                form_factor_caption: Default::default(),
+                ram_type_caption: Default::default(),
 
                 legend_used: Default::default(),
                 legend_commited: Default::default(),
@@ -346,12 +354,28 @@ mod imp {
             }
 
             let mem_module_count = readings.mem_devices.len();
+            let set_pair_visible = |caption: &OnceCell<gtk::Label>, value: &OnceCell<gtk::Label>, visible: bool| {
+                if let Some(c) = caption.get() {
+                    c.set_visible(visible);
+                }
+                if let Some(v) = value.get() {
+                    v.set_visible(visible);
+                }
+            };
+
             if mem_module_count > 0 {
-                if let Some(sp) = this.speed.get() {
-                    if readings.mem_devices[0].speed != 0 {
-                        sp.set_text(&format!("{} MT/s", readings.mem_devices[0].speed));
+                let dev = &readings.mem_devices[0];
+
+                let show_speed = dev.speed != 0;
+                set_pair_visible(&this.speed_caption, &this.speed, show_speed);
+                if show_speed {
+                    if let Some(sp) = this.speed.get() {
+                        sp.set_text(&format!("{} MT/s", dev.speed));
                     }
                 }
+
+                // Always show slots when we have device info (1 of 1 on Apple Silicon).
+                set_pair_visible(&this.slots_used_caption, &this.slots_used, true);
                 if let Some(su) = this.slots_used.get() {
                     if readings.mem_info.max_devices > 0 {
                         su.set_text(&i18n_f(
@@ -365,20 +389,28 @@ mod imp {
                         su.set_text(&format!("{}", mem_module_count));
                     }
                 }
-                if let Some(ff) = this.form_factor.get() {
-                    if readings.mem_devices[0].form_factor != "" {
-                        ff.set_text(&format!("{}", readings.mem_devices[0].form_factor));
+
+                let show_ff = !dev.form_factor.is_empty();
+                set_pair_visible(&this.form_factor_caption, &this.form_factor, show_ff);
+                if show_ff {
+                    if let Some(ff) = this.form_factor.get() {
+                        ff.set_text(&dev.form_factor);
                     }
                 }
-                if let Some(rt) = this.ram_type.get() {
-                    if readings.mem_devices[0].ram_type != "" {
-                        rt.set_text(&format!("{}", readings.mem_devices[0].ram_type));
+
+                let show_type = !dev.ram_type.is_empty();
+                set_pair_visible(&this.ram_type_caption, &this.ram_type, show_type);
+                if show_type {
+                    if let Some(rt) = this.ram_type.get() {
+                        rt.set_text(&dev.ram_type);
                     }
                 }
             } else {
-                this.toast_overlay.add_toast(adw::Toast::new(&i18n(
-                    "Getting additional memory information failed",
-                )))
+                // No device topology — hide the static hardware rows entirely.
+                set_pair_visible(&this.speed_caption, &this.speed, false);
+                set_pair_visible(&this.slots_used_caption, &this.slots_used, false);
+                set_pair_visible(&this.form_factor_caption, &this.form_factor, false);
+                set_pair_visible(&this.ram_type_caption, &this.ram_type, false);
             }
 
             true
@@ -830,29 +862,35 @@ mod imp {
             let default_label = format!("{}", i18n("Unknown"));
             let default_label = default_label.as_str();
 
-            let speed: gtk::Label = sidebar_content_builder
-                .object("speed")
-                .expect("Could not find `speed` object in details pane");
+            let bind_label = |name: &str| -> gtk::Label {
+                sidebar_content_builder
+                    .object(name)
+                    .unwrap_or_else(|| panic!("Could not find `{name}` object in details pane"))
+            };
+
+            let speed = bind_label("speed");
             speed.set_label(default_label);
             let _ = self.speed.set(speed);
+            let _ = self.speed_caption.set(bind_label("speed_caption"));
 
-            let slots_used: gtk::Label = sidebar_content_builder
-                .object("slots_used")
-                .expect("Could not find `slots_used` object in details pane");
+            let slots_used = bind_label("slots_used");
             slots_used.set_label(default_label);
             let _ = self.slots_used.set(slots_used);
+            let _ = self
+                .slots_used_caption
+                .set(bind_label("slots_used_caption"));
 
-            let form_factor: gtk::Label = sidebar_content_builder
-                .object::<gtk::Label>("form_factor")
-                .expect("Could not find `form_factor` object in details pane");
+            let form_factor = bind_label("form_factor");
             form_factor.set_label(default_label);
             let _ = self.form_factor.set(form_factor);
+            let _ = self
+                .form_factor_caption
+                .set(bind_label("form_factor_caption"));
 
-            let ram_type: gtk::Label = sidebar_content_builder
-                .object("ram_type")
-                .expect("Could not find `ram_type` object in details pane");
+            let ram_type = bind_label("ram_type");
             ram_type.set_label(default_label);
             let _ = self.ram_type.set(ram_type);
+            let _ = self.ram_type_caption.set(bind_label("ram_type_caption"));
         }
     }
 

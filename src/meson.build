@@ -1,7 +1,10 @@
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
 
 gnome = import('gnome')
-libudev = dependency('libudev', required: true)
+# libudev is Linux-only; unused by the Rust app sources but kept for Linux meson parity.
+if host_machine.system() == 'linux'
+  libudev = dependency('libudev', required: true)
+endif
 
 conf = configuration_data()
 conf.set_quoted('VERSION', meson.project_version())

@@ -189,6 +189,49 @@ And run the app from the command-line:
 ./"Mission Center-${version}-${arch}.AppImage"
 ```
 
+### Building - macOS
+
+macOS support is experimental. Magpie (data collector) is vendored at `third_party/magpie` and symlinked as `subprojects/magpie`.
+
+**Requirements (Homebrew):**
+
+```bash
+brew install gtk4 libadwaita glib librsvg blueprint-compiler pkg-config gettext
+# optional for DMG packaging:
+brew install create-dmg
+```
+
+See `scripts/macos/DEPENDENCIES.md` for details.
+
+**Dev run (debug build + launch):**
+
+```bash
+# Ensure third_party/magpie is present (subprojects/magpie -> ../third_party/magpie)
+./run-macos.sh
+```
+
+This will:
+
+1. Build `magpie` for `aarch64-apple-darwin` from `third_party/magpie`
+2. Generate `build-macos/src/config.rs` and build `missioncenter` with `BUILD_ROOT`
+3. Compile Blueprint UI, GSettings schemas, and `missioncenter.gresource`
+4. Stage `missioncenter-magpie` on `PATH` and launch the app
+
+**Release package (`.app` + DMG):**
+
+```bash
+# Build release binaries first (or use .github/workflows/build-macos-dmg.yml)
+(cd third_party/magpie && cargo build --release --target aarch64-apple-darwin)
+mkdir -p build-macos && cp third_party/magpie/target/aarch64-apple-darwin/release/magpie build-macos/missioncenter-magpie
+# compile resources/schemas/gresource + config.rs as in run-macos.sh / CI
+BUILD_ROOT="$(pwd)/build-macos" cargo build --release --target aarch64-apple-darwin
+bash scripts/macos/make-icns.sh
+bash scripts/macos/package.sh
+# -> dist/MissionCenter.dmg
+```
+
+Note: GTK/libadwaita are **not** bundled; they must be installed via Homebrew on the target machine.
+
 ### Building - Flatpak
 
 **Requirements:**

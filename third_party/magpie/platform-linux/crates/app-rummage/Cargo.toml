@@ -1,0 +1,21 @@
+[package]
+name = "app-rummage"
+description = "Find installed and running applications on Linux"
+repository = "https://gitlab.com/mission-center-devs/app-detection.git"
+version = "1.2.0"
+edition = "2021"
+license = "MIT"
+readme = "README.md"
+
+exclude = [
+    ".idea/*",
+    "Cargo.lock",
+]
+
+[dependencies]
+log = "0.4"
+regex = "1"
+
+[dependencies.nix]
+version = "0.31"
+features = ["user", "inotify"]

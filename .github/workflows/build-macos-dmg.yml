@@ -1,0 +1,109 @@
+name: Build macOS DMG
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-macos-dmg:
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Homebrew dependencies
+        run: |
+          brew update
+          brew install \
+            rust \
+            gtk4 \
+            libadwaita \
+            blueprint-compiler \
+            gettext \
+            glib \
+            pkg-config \
+            librsvg \
+            create-dmg \
+            protobuf
+
+      - name: Set up Rust toolchain
+        run: |
+          rustup target add aarch64-apple-darwin
+
+      - name: Build magpie
+        working-directory: third_party/magpie
+        run: |
+          cargo build --release --target aarch64-apple-darwin
+          mkdir -p ../../build-macos
+          cp target/aarch64-apple-darwin/release/magpie ../../build-macos/missioncenter-magpie
+          chmod +x ../../build-macos/missioncenter-magpie
+
+      - name: Compile Blueprint UI files
+        run: |
+          mkdir -p build-macos/resources/ui
+          find resources/ui -name "*.blp" | while read blp; do
+            rel="${blp#resources/}"
+            out="build-macos/resources/${rel%.blp}.ui"
+            mkdir -p "$(dirname "$out")"
+            blueprint-compiler compile --output "$out" "$blp"
+          done
+
+      - name: Compile GSettings schema
+        run: |
+          mkdir -p build-macos/data
+          glib-compile-schemas --targetdir=build-macos/data data/
+
+      - name: Compile gresource
+        working-directory: resources
+        run: |
+          glib-compile-resources \
+            --sourcedir=../build-macos/resources \
+            --sourcedir=. \
+            --sourcedir=../data \
+            --target=../build-macos/resources/missioncenter.gresource \
+            missioncenter.gresource.xml
+
+      - name: Generate config.rs
+        run: |
+          mkdir -p build-macos/src
+          VERSION=$(grep '^version' Cargo.toml | head -1 | sed 's/.*= *"\(.*\)"/\1/')
+          sed \
+            -e "s|@VERSION@|\"$VERSION\"|g" \
+            -e 's|@GETTEXT_PACKAGE@|"missioncenter"|g' \
+            -e 's|@LOCALEDIR@|""|g' \
+            -e 's|@PKGDATADIR@|""|g' \
+            -e 's|@APP_ID@|"io.missioncenter.MissionCenter"|g' \
+            src/config.rs.in > build-macos/src/config.rs
+
+      - name: Build main application (release)
+        env:
+          BUILD_ROOT: ${{ github.workspace }}/build-macos
+          PKG_CONFIG_PATH: /opt/homebrew/lib/pkgconfig:/opt/homebrew/share/pkgconfig
+        run: |
+          cargo build --release --target aarch64-apple-darwin
+
+      - name: Generate .icns icon
+        run: bash scripts/macos/make-icns.sh
+
+      - name: Package .app bundle and DMG
+        run: bash scripts/macos/package.sh
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: MissionCenter-macOS-${{ github.sha }}
+          path: dist/MissionCenter.dmg
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/MissionCenter.dmg
+          generate_release_notes: true

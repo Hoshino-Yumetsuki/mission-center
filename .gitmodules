@@ -1,3 +1,2 @@
-[submodule "subprojects/magpie"]
-	path = subprojects/magpie
-	url = ../gng.git
+# magpie (gng) and app-rummage are vendored under third_party/
+# subprojects/magpie is a symlink to ../third_party/magpie for meson/flatpak compatibility

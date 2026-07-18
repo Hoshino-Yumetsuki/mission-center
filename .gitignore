@@ -83,3 +83,13 @@ compile_commands.json
 /subprojects/.wraplock
 _build
 BUILD
+
+# Vendored magpie build artifacts
+/third_party/magpie/target/
+/third_party/magpie/**/target/
+
+# OMC / local agent state
+.omc/
+
+/build-macos/
+/dist/

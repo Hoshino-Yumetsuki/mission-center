@@ -75,7 +75,11 @@ mod imp {
         #[template_child]
         pub opengl_version: TemplateChild<gtk::Label>,
         #[template_child]
+        pub opengl_version_label: TemplateChild<gtk::Label>,
+        #[template_child]
         pub vulkan_version: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub vulkan_version_label: TemplateChild<gtk::Label>,
         #[template_child]
         pub pcie_speed_label: TemplateChild<gtk::Label>,
         #[template_child]
@@ -168,7 +172,9 @@ mod imp {
                 decode_percent: TemplateChild::default(),
                 temperature: TemplateChild::default(),
                 opengl_version: TemplateChild::default(),
+                opengl_version_label: TemplateChild::default(),
                 vulkan_version: TemplateChild::default(),
+                vulkan_version_label: TemplateChild::default(),
                 pcie_speed_label: TemplateChild::default(),
                 pcie_speed: TemplateChild::default(),
                 max_pcie_speed_label: TemplateChild::default(),
@@ -404,8 +410,16 @@ impl GpuDetails {
         &self.imp().opengl_version
     }
 
+    pub fn opengl_version_label(&self) -> &gtk::Label {
+        &self.imp().opengl_version_label
+    }
+
     pub fn vulkan_version(&self) -> &gtk::Label {
         &self.imp().vulkan_version
+    }
+
+    pub fn vulkan_version_label(&self) -> &gtk::Label {
+        &self.imp().vulkan_version_label
     }
 
     pub fn pcie_speed_label(&self) -> &gtk::Label {

@@ -482,6 +482,9 @@ impl ServicesPage {
 
         if !imp.has_loaded.get()
             && (!readings.system_services.is_empty() || !readings.user_services.is_empty())
+            // GTK 4 list-item manager can SEGV on set_incremental when the
+            // column view is not yet realized (seen on macOS Homebrew GTK).
+            && self.is_realized()
         {
             glib::idle_add_local_once({
                 let this = self.downgrade();
@@ -489,6 +492,9 @@ impl ServicesPage {
                     let Some(this) = this.upgrade() else {
                         return;
                     };
+                    if !this.is_realized() {
+                        return;
+                    }
                     let imp = this.imp();
 
                     let filter_list_model = imp.table_view.imp().filter_list_model.borrow();
