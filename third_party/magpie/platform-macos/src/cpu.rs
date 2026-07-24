@@ -47,7 +47,10 @@ impl CpuCache {
         let info = &mut self.cpu;
         info.name = Some(name);
         info.socket_count = Some(packages);
-        info.base_freq_khz = sysctl_u64("hw.cpufrequency").map(|f| f / 1000);
+        // Apple Silicon: hw.cpufrequency is often missing or 0 — treat as unavailable.
+        info.base_freq_khz = sysctl_u64("hw.cpufrequency")
+            .map(|f| f / 1000)
+            .filter(|&f| f > 0);
 
         let l1i = sysctl_u64("hw.l1icachesize").unwrap_or(0);
         let l1d = sysctl_u64("hw.l1dcachesize").unwrap_or(0);
@@ -109,6 +112,7 @@ impl CpuCache {
         self.cpu.current_frequency_mhz = sysctl_u64("hw.cpufrequency")
             .or_else(|| sysctl_u64("hw.cpufrequency_max"))
             .map(|f| f / 1_000_000)
+            .filter(|&f| f > 0)
             .unwrap_or(0);
 
         self.cpu.temperature_celsius = None;

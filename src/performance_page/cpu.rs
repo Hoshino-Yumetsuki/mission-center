@@ -510,7 +510,8 @@ mod imp {
             );
 
             if let Some(base_speed) = this.base_speed.get() {
-                if let Some(base_frequency) = static_cpu_info.base_freq_khz {
+                // Treat 0 as missing (Apple Silicon / broken sysctl often report 0).
+                if let Some(base_frequency) = static_cpu_info.base_freq_khz.filter(|&f| f > 0) {
                     base_speed.set_visible(true);
                     if let Some(lbl) = this.base_speed_label.get() {
                         lbl.set_visible(true);
@@ -636,6 +637,24 @@ mod imp {
 
                 if cpu_bottom_graph == GRAPH_TEMPERATURE {
                     cpu_bottom_graph = GRAPH_CLOCK;
+                    Self::set_graph_settings(cpu_bottom_graph);
+                }
+            }
+
+            // Same pattern as power/temp: hide clock graph when frequency is unavailable
+            // (Apple Silicon / VMs often report 0 MHz and a flat "Clock speed over 1 min" line).
+            let clock_available = this.is_bogomips.get()
+                || static_cpu_info.current_frequency_mhz > 0
+                || static_cpu_info
+                    .base_freq_khz
+                    .map(|f| f > 0)
+                    .unwrap_or(false);
+            if clock_available {
+                this.graph_clocks.set_enabled(true);
+            } else {
+                this.graph_clocks.set_enabled(false);
+                if cpu_bottom_graph == GRAPH_CLOCK {
+                    cpu_bottom_graph = GRAPH_NONE;
                     Self::set_graph_settings(cpu_bottom_graph);
                 }
             }
