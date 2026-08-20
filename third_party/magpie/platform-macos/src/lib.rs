@@ -24,6 +24,8 @@ mod battery;
 mod cpu;
 mod disks;
 mod fan;
+#[cfg(target_arch = "aarch64")]
+mod sensors;
 mod gpus;
 mod memory;
 mod network;

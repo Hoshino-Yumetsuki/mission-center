@@ -21,6 +21,10 @@
 use magpie_platform::cpu::Cpu;
 
 use crate::util::{sysctl_string, sysctl_u32, sysctl_u64, uptime_seconds};
+#[cfg(target_arch = "aarch64")]
+use crate::sensors::apple_silicon_temperature;
+#[cfg(not(target_arch = "aarch64"))]
+use crate::fan::smc_cpu_temperature;
 
 struct CpuTicks {
     user: u64,
@@ -115,7 +119,16 @@ impl CpuCache {
             .filter(|&f| f > 0)
             .unwrap_or(0);
 
-        self.cpu.temperature_celsius = None;
+        self.cpu.temperature_celsius = {
+            #[cfg(target_arch = "aarch64")]
+            {
+                apple_silicon_temperature()
+            }
+            #[cfg(not(target_arch = "aarch64"))]
+            {
+                smc_cpu_temperature()
+            }
+        };
         self.cpu.frequency_driver = None;
         self.cpu.frequency_governor = None;
         self.cpu.power_preference = None;

@@ -19,6 +19,7 @@
  */
 
 use std::collections::HashMap;
+use std::process::Command;
 use std::time::Instant;
 
 use magpie_platform::disks::{
@@ -155,13 +156,47 @@ impl magpie_platform::disks::DisksManager for DisksManager {
 
     fn eject(
         &self,
-        _id: &str,
+        id: &str,
         _processes: &Mutex<HashMap<u32, Process>>,
     ) -> Result<(), DisksResponseErrorEjectFailed> {
-        // ponytail: eject unsupported on macOS port for now; wire diskutil eject when needed.
-        Err(DisksResponseErrorEjectFailed {
-            blockers: Vec::new(),
-        })
+        // Accept whole disks and partitions, but never pass arbitrary arguments to diskutil.
+        let valid_id = id.strip_prefix("disk").is_some_and(|rest| {
+            let (disk_number, partition_number) = rest.split_once('s').unwrap_or((rest, ""));
+            !disk_number.is_empty()
+                && disk_number.bytes().all(|byte| byte.is_ascii_digit())
+                && (partition_number.is_empty()
+                    || (!partition_number.is_empty()
+                        && partition_number.bytes().all(|byte| byte.is_ascii_digit())))
+        });
+        if !valid_id {
+            log::error!("Refusing to eject invalid macOS disk identifier: {id:?}");
+            return Err(DisksResponseErrorEjectFailed {
+                blockers: Vec::new(),
+            });
+        }
+
+        match Command::new("/usr/sbin/diskutil")
+            .args(["eject", id])
+            .output()
+        {
+            Ok(output) if output.status.success() => Ok(()),
+            Ok(output) => {
+                log::error!(
+                    "diskutil eject {id} failed with status {}: {}",
+                    output.status,
+                    String::from_utf8_lossy(&output.stderr).trim()
+                );
+                Err(DisksResponseErrorEjectFailed {
+                    blockers: Vec::new(),
+                })
+            }
+            Err(error) => {
+                log::error!("Failed to run diskutil eject {id}: {error}");
+                Err(DisksResponseErrorEjectFailed {
+                    blockers: Vec::new(),
+                })
+            }
+        }
     }
 
     fn smart_data(&self, _id: &str) -> Option<DiskSmartData> {

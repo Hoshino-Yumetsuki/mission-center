@@ -56,7 +56,7 @@ impl magpie_platform::network::NetworkCache for NetworkCache {
             return;
         }
 
-        let stats = read_netstat();
+        let stats = read_interface_stats();
         let now = Instant::now();
         let mut next = HashMap::with_capacity(hw_ports.len());
 
@@ -197,23 +197,69 @@ fn list_hardware_ports() -> Vec<(String, String, Option<String>)> {
     result
 }
 
-/// Map of interface -> (tx_bytes, rx_bytes).
-fn read_netstat() -> HashMap<String, (u64, u64)> {
+/// Map of interface -> (tx_bytes, rx_bytes), from the public route sysctl.
+fn read_interface_stats() -> HashMap<String, (u64, u64)> {
     let mut map = HashMap::new();
-    let output = std::process::Command::new("/usr/sbin/netstat")
-        .args(["-ibn"])
-        .output();
-    if let Ok(o) = output {
-        let s = String::from_utf8_lossy(&o.stdout);
-        for line in s.lines().skip(1) {
-            let parts: Vec<&str> = line.split_whitespace().collect();
-            if parts.len() < 10 {
-                continue;
+    unsafe {
+        let mut mib = [
+            libc::CTL_NET,
+            libc::PF_ROUTE,
+            0,
+            0,
+            libc::NET_RT_IFLIST2,
+            0,
+        ];
+        let mut size = 0usize;
+        if libc::sysctl(
+            mib.as_mut_ptr(),
+            mib.len() as u32,
+            std::ptr::null_mut(),
+            &mut size,
+            std::ptr::null_mut(),
+            0,
+        ) != 0
+            || size == 0
+        {
+            return map;
+        }
+        let mut buf = vec![0u8; size];
+        if libc::sysctl(
+            mib.as_mut_ptr(),
+            mib.len() as u32,
+            buf.as_mut_ptr() as *mut libc::c_void,
+            &mut size,
+            std::ptr::null_mut(),
+            0,
+        ) != 0
+        {
+            return map;
+        }
+
+        let mut offset = 0usize;
+        while offset + 4 <= size {
+            let record = buf.as_ptr().add(offset);
+            let msg_len = (record as *const u16).read_unaligned() as usize;
+            let msg_type = *record.add(3) as i32;
+            if msg_len < 4 || offset + msg_len > size {
+                break;
             }
-            let name = parts[0].to_string();
-            let rx: u64 = parts[6].parse().unwrap_or(0);
-            let tx: u64 = parts[9].parse().unwrap_or(0);
-            map.entry(name).or_insert((tx, rx));
+            if msg_type == libc::RTM_IFINFO2
+                && msg_len >= std::mem::size_of::<libc::if_msghdr2>()
+            {
+                let header = record as *const libc::if_msghdr2;
+                let index = std::ptr::addr_of!((*header).ifm_index).read_unaligned() as u32;
+                let ibytes = std::ptr::addr_of!((*header).ifm_data.ifi_ibytes).read_unaligned();
+                let obytes = std::ptr::addr_of!((*header).ifm_data.ifi_obytes).read_unaligned();
+                let mut name = [0i8; libc::IF_NAMESIZE];
+                if !libc::if_indextoname(index, name.as_mut_ptr()).is_null() {
+                    let name = std::ffi::CStr::from_ptr(name.as_ptr())
+                        .to_string_lossy()
+                        .into_owned();
+                    // Address records are skipped, so IPv4 and IPv6 do not duplicate totals.
+                    map.entry(name).or_insert((obytes, ibytes));
+                }
+            }
+            offset += msg_len;
         }
     }
     map

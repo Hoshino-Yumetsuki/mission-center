@@ -109,6 +109,29 @@ fn smc_read_fpe2_key(key: &[u8]) -> f32 {
     }
 }
 
+#[cfg(not(target_arch = "aarch64"))]
+pub(crate) fn smc_cpu_temperature() -> Option<f32> {
+    let temp = unsafe {
+        let conn = smc_open();
+        if conn == 0 {
+            return None;
+        }
+        let value = smc_read_key_raw(conn, b"TC0P");
+        smc_close(conn);
+        if value.data_size >= 2 {
+            let raw = u16::from_be_bytes([value.bytes[0], value.bytes[1]]);
+            raw as f32 / 256.0
+        } else {
+            return None;
+        }
+    };
+    if temp.is_finite() && temp > 0.0 && temp < 150.0 {
+        Some(temp)
+    } else {
+        None
+    }
+}
+
 #[repr(C)]
 struct SmcVal {
     bytes: [u8; 32],

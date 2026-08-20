@@ -27,107 +27,112 @@ pub struct MemoryCache {
     devices: Vec<MemoryDevice>,
 }
 
+#[repr(C)]
+#[derive(Default, Copy, Clone)]
+struct XswUsage {
+    total: u64,
+    avail: u64,
+    used: u64,
+    pagesize: u32,
+    encrypted: libc::c_int,
+}
+
+
 fn refresh_memory(memory: &mut Memory) {
     if let Some(total) = sysctl_u64("hw.memsize") {
         memory.mem_total = total;
     }
 
-    let Ok(vm_stat_output) = std::process::Command::new("vm_stat").output() else {
-        return;
+    let (stats, page_size) = match read_vm_statistics() {
+        Some(value) => value,
+        None => return,
     };
-    let vm_stat_str = String::from_utf8_lossy(&vm_stat_output.stdout);
+    let (swap_total, swap_used) = read_swap_usage().unwrap_or((0, 0));
+    let page = page_size as u64;
+    let pages_free = stats.free_count as u64;
+    let pages_inactive = stats.inactive_count as u64;
+    let pages_wired = stats.wire_count as u64;
+    let pages_purgeable = stats.purgeable_count as u64;
+    let pages_speculative = stats.speculative_count as u64;
+    let pages_file_backed = stats.external_page_count as u64;
+    let pages_anonymous = stats.internal_page_count as u64;
+    let pages_compressor = stats.compressor_page_count as u64;
+    let pages_stored_in_compressor = stats.total_uncompressed_pages_in_compressor as u64;
 
-    let mut page_size: u64 = 4096;
-    let mut pages_free: u64 = 0;
-    let mut pages_active: u64 = 0;
-    let mut pages_inactive: u64 = 0;
-    let mut pages_wired: u64 = 0;
-    let mut pages_purgeable: u64 = 0;
-    let mut pages_speculative: u64 = 0;
-    let mut pages_anonymous: u64 = 0;
-    let mut pages_file_backed: u64 = 0;
-    let mut pages_compressor: u64 = 0;
-    let mut pages_stored_in_compressor: u64 = 0;
-
-    for line in vm_stat_str.lines() {
-        if line.starts_with("Mach Virtual Memory Statistics:") {
-            if let Some(ps) = line.split("page size of ").nth(1) {
-                if let Some(ps) = ps.split(" bytes").next() {
-                    page_size = ps.trim().parse::<u64>().unwrap_or(4096);
-                }
-            }
-        }
-        let mut parts = line.splitn(2, ':');
-        let key = parts.next().unwrap_or("").trim();
-        let val = parts
-            .next()
-            .unwrap_or("")
-            .trim()
-            .trim_end_matches('.')
-            .trim()
-            .parse::<u64>()
-            .unwrap_or(0);
-        match key {
-            "Pages free" => pages_free = val,
-            "Pages active" => pages_active = val,
-            "Pages inactive" => pages_inactive = val,
-            "Pages wired down" => pages_wired = val,
-            "Pages purgeable" => pages_purgeable = val,
-            "Pages speculative" => pages_speculative = val,
-            "Anonymous pages" => pages_anonymous = val,
-            "File-backed pages" => pages_file_backed = val,
-            "Pages occupied by compressor" => pages_compressor = val,
-            "Pages stored in compressor" => pages_stored_in_compressor = val,
-            _ => {}
-        }
-    }
-
-    let mut swap_used: u64 = 0;
-    let mut swap_total: u64 = 0;
-    if let Ok(out) = std::process::Command::new("sysctl")
-        .arg("vm.swapusage")
-        .output()
-    {
-        let s = String::from_utf8_lossy(&out.stdout);
-        // "vm.swapusage: total = 1024.00M  used = 12.50M  free = 1011.50M ..."
-        for part in s.split_whitespace() {
-            if let Some(stripped) = part.strip_suffix('M') {
-                if let Ok(v) = stripped.parse::<f64>() {
-                    let bytes = (v * 1024.0 * 1024.0) as u64;
-                    if swap_total == 0 {
-                        swap_total = bytes;
-                    } else if swap_used == 0 {
-                        swap_used = bytes;
-                    }
-                }
-            }
-        }
-    }
-
-    let in_use = (pages_anonymous + pages_wired + pages_compressor) * page_size;
-    let cached = (pages_file_backed + pages_purgeable) * page_size;
+    let in_use = (pages_anonymous + pages_wired + pages_compressor) * page;
+    let cached = (pages_file_backed + pages_purgeable) * page;
     let real_free = pages_free.saturating_sub(pages_speculative);
-    let available = (real_free + pages_inactive) * page_size;
+    let available = (real_free + pages_inactive) * page;
     let committed =
-        (pages_anonymous + pages_wired + pages_stored_in_compressor) * page_size + swap_used;
+        (pages_anonymous + pages_wired + pages_stored_in_compressor) * page + swap_used;
 
-    memory.mem_free = real_free * page_size;
+    memory.mem_free = real_free * page;
     memory.mem_available = available;
     memory.active = in_use;
-    memory.inactive = pages_inactive * page_size;
+    memory.inactive = pages_inactive * page;
     memory.cached = cached;
-    memory.anon_pages = pages_anonymous * page_size;
-    memory.active_anon = pages_anonymous * page_size;
-    memory.active_file = pages_file_backed * page_size;
-    memory.unevictable = pages_wired * page_size;
-    memory.m_locked = pages_wired * page_size;
+    memory.anon_pages = pages_anonymous * page;
+    memory.active_anon = pages_anonymous * page;
+    memory.active_file = pages_file_backed * page;
+    memory.unevictable = pages_wired * page;
+    memory.m_locked = pages_wired * page;
     memory.swap_total = swap_total;
     memory.swap_free = swap_total.saturating_sub(swap_used);
     memory.committed = committed;
-    // Map compressor occupancy into zswap-like fields for UI parity.
-    memory.zswap = pages_compressor * page_size;
-    memory.zswapped = pages_stored_in_compressor * page_size;
-    let _ = pages_active; // used via in_use composition above
+    memory.zswap = pages_compressor * page;
+    memory.zswapped = pages_stored_in_compressor * page;
+}
+
+fn read_vm_statistics() -> Option<(libc::vm_statistics64, u32)> {
+    unsafe {
+        type Host = mach2::mach_types::host_t;
+        type Count = mach2::message::mach_msg_type_number_t;
+        extern "C" {
+            fn mach_host_self() -> Host;
+            fn host_page_size(host: Host, size: *mut u32) -> i32;
+            fn host_statistics64(host: Host, flavor: i32, info: *mut i32, count: *mut Count) -> i32;
+        }
+        let host = mach_host_self();
+        let mut page_size = 0u32;
+        let mut stats: libc::vm_statistics64 = std::mem::zeroed();
+        let mut count = (std::mem::size_of::<libc::vm_statistics64>()
+            / std::mem::size_of::<u32>()) as Count;
+        let expected_count = count;
+        if host_page_size(host, &mut page_size) != 0
+            || page_size == 0
+            || host_statistics64(
+                host,
+                4,
+                &mut stats as *mut libc::vm_statistics64 as *mut i32,
+                &mut count,
+            ) != 0
+            || count < expected_count
+        {
+            None
+        } else {
+            Some((stats, page_size))
+        }
+    }
+}
+
+fn read_swap_usage() -> Option<(u64, u64)> {
+    unsafe {
+        let name = std::ffi::CString::new("vm.swapusage").ok()?;
+        let mut usage = XswUsage::default();
+        let mut size = std::mem::size_of::<XswUsage>();
+        if libc::sysctlbyname(
+            name.as_ptr(),
+            &mut usage as *mut XswUsage as *mut libc::c_void,
+            &mut size,
+            std::ptr::null_mut(),
+            0,
+        ) == 0 && size >= std::mem::size_of::<XswUsage>()
+        {
+            Some((usage.total, usage.used))
+        } else {
+            None
+        }
+    }
 }
 
 fn load_memory_devices() -> (Vec<MemoryDevice>, u64) {
