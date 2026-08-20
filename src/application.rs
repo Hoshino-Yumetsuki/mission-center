@@ -203,6 +203,17 @@ mod imp {
                     gtk::STYLE_PROVIDER_PRIORITY_APPLICATION,
                 );
 
+                #[cfg(target_os = "macos")]
+                window.connect_close_request({
+                    let application = application.downgrade();
+                    move |_| {
+                        if let Some(application) = application.upgrade() {
+                            application.quit();
+                        }
+                        glib::Propagation::Stop
+                    }
+                });
+
                 window.upcast()
             };
 

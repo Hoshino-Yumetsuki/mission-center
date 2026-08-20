@@ -491,7 +491,7 @@ fn app_id(fallback: String) -> String {
     app_id
 }
 
-fn main() {
+fn main() -> std::process::ExitCode {
     bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR).expect("Unable to bind the text domain");
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8")
         .expect("Unable to set the text domain encoding");
@@ -524,5 +524,7 @@ fn main() {
     gtk::Application::set_default(app.upcast_ref::<gtk::Application>());
 
     let exit_code = app.run();
-    std::process::exit(exit_code.get() as _);
+    let exit_status = exit_code.get() as u8;
+    drop(app);
+    std::process::ExitCode::from(exit_status)
 }
