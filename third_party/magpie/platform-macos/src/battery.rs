@@ -63,7 +63,8 @@ fn read_smart_batteries() -> Vec<Battery> {
 
     let percentage = ioreg_u64(&text, "CurrentCapacity")
         .or_else(|| ioreg_u64(&text, "MaxCapacity"))
-        .unwrap_or(0) as f32;
+        .and_then(|value| normalized_ratio(value, 100))
+        .unwrap_or(0.0);
 
     let design_cap = ioreg_u64(&text, "DesignCapacity").unwrap_or(0);
     let nom_cap = ioreg_u64(&text, "NominalChargeCapacity").unwrap_or(0);
@@ -79,7 +80,7 @@ fn read_smart_batteries() -> Vec<Battery> {
     let fully_charged = ioreg_bool(&text, "FullyCharged").unwrap_or(false);
     let external = ioreg_bool(&text, "ExternalConnected").unwrap_or(false);
 
-    let state = if fully_charged || (percentage >= 100.0 && external) {
+    let state = if fully_charged || (percentage >= 1.0 && external) {
         Some(BatteryState::FullyCharged as i32)
     } else if is_charging {
         Some(BatteryState::Charging as i32)
@@ -110,11 +111,7 @@ fn read_smart_batteries() -> Vec<Battery> {
     let serial = ioreg_string(&text, "Serial");
     let model = ioreg_string(&text, "DeviceName");
 
-    let capacity = if design_cap > 0 && nom_cap > 0 {
-        Some((nom_cap as f32 / design_cap as f32) * 100.0)
-    } else {
-        None
-    };
+    let capacity = normalized_ratio(nom_cap, design_cap);
 
     vec![Battery {
         name: "InternalBattery-0".into(),
@@ -125,15 +122,14 @@ fn read_smart_batteries() -> Vec<Battery> {
         technology: None,
         power_supply: Some(true),
         energy_empty: Some(0),
-        // mAh-ish values; Linux path uses mWh. Best-effort raw numbers.
-        energy_full: (nom_cap > 0).then_some(nom_cap as u32),
-        energy_full_design: (design_cap > 0).then_some(design_cap as u32),
+        energy_full: charge_to_energy(nom_cap, voltage_mv),
+        energy_full_design: charge_to_energy(design_cap, voltage_mv),
         capacity,
         voltage_min_design: None,
         voltage_max_design: None,
         charge_cycles: cycles,
         percentage,
-        energy: (raw_current > 0).then_some(raw_current as u32),
+        energy: charge_to_energy(raw_current, voltage_mv),
         voltage,
         power,
         time_to_full,
@@ -148,6 +144,15 @@ fn read_smart_batteries() -> Vec<Battery> {
         history: Vec::new(),
         history_changed: false,
     }]
+}
+
+fn normalized_ratio(value: u64, maximum: u64) -> Option<f32> {
+    (maximum > 0).then(|| (value as f32 / maximum as f32).clamp(0.0, 1.0))
+}
+
+fn charge_to_energy(charge_mah: u64, voltage_mv: Option<u64>) -> Option<u32> {
+    let energy_mwh = charge_mah.checked_mul(voltage_mv?)? / 1000;
+    u32::try_from(energy_mwh).ok().filter(|&value| value > 0)
 }
 
 fn ioreg_u64(text: &str, key: &str) -> Option<u64> {
@@ -209,5 +214,27 @@ fn ioreg_string(text: &str, key: &str) -> Option<String> {
         None
     } else {
         Some(s.to_string())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{charge_to_energy, normalized_ratio};
+
+    #[test]
+    fn normalizes_battery_ratios() {
+        assert_eq!(normalized_ratio(100, 100), Some(1.0));
+        assert_eq!(normalized_ratio(102, 100), Some(1.0));
+        assert_eq!(normalized_ratio(6_393, 6_249), Some(1.0));
+        assert_eq!(normalized_ratio(1, 0), None);
+    }
+
+    #[test]
+    fn converts_apple_charge_capacity_to_milliwatt_hours() {
+        assert_eq!(charge_to_energy(6_182, Some(13_173)), Some(81_435));
+        assert_eq!(charge_to_energy(0, Some(13_173)), None);
+        assert_eq!(charge_to_energy(6_182, None), None);
+        assert_eq!(charge_to_energy(u64::MAX, Some(2)), None);
+        assert_eq!(charge_to_energy(u32::MAX as u64 + 1, Some(1_000)), None);
     }
 }
