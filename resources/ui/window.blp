@@ -104,20 +104,10 @@ template $MissionCenterWindow: Adw.ApplicationWindow {
             [top]
             Adw.HeaderBar header_bar {
                 [start]
-                Box {
-                    spacing: 8;
-
-                    ToggleButton toggle_sidebar_button {
-                        action-name: "win.toggle-sidebar";
-                        icon-name: "sidebar-toggle-left-symbolic";
-                        tooltip-text: _("Toggle Sidebar");
-                    }
-
-                    Button system_about {
-                        action-name: "app.system-about";
-                        tooltip-text: _("System Information");
-                        icon-name: "info-outline-symbolic";
-                    }
+                ToggleButton toggle_sidebar_button {
+                    action-name: "win.toggle-sidebar";
+                    icon-name: "sidebar-toggle-left-symbolic";
+                    tooltip-text: _("Toggle Sidebar");
                 }
 
                 title-widget: Stack header_stack {
@@ -161,6 +151,12 @@ template $MissionCenterWindow: Adw.ApplicationWindow {
                         visible: bind template.info-button-visible;
                         active: false;
                         tooltip-text: _("Toggle Device Information");
+                    }
+
+                    Button system_about {
+                        action-name: "app.system-about";
+                        tooltip-text: _("System Information");
+                        icon-name: "info-outline-symbolic";
                     }
 
                     ToggleButton search_button {
