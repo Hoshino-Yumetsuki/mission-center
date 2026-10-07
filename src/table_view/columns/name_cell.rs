@@ -25,7 +25,7 @@ use gdk::pango::EllipsizeMode;
 use gtk::{gdk, glib, prelude::*, subclass::prelude::*};
 
 use crate::app;
-use crate::table_view::cached_icon::{CachedIcon, LightCachedIcon};
+use crate::table_view::cached_icon::{CachedIcon, IconApply, LightCachedIcon};
 use crate::table_view::row_model::{ContentType, RowModel};
 use crate::widgets::ListCell;
 
@@ -93,12 +93,12 @@ mod imp {
                     };
                     let this = this.imp();
 
-                    model.imp().light_icon().apply_to_image(&this.icon);
+                    this.apply_icon(model);
                 }
             });
             self.sig_light_icon.set(Some(sig_icon));
 
-            model.imp().light_icon().apply_to_image(&self.icon);
+            self.apply_icon(model);
 
             // Re-decode the icon when the device scale factor changes so raster icons stay sharp.
             // The image may not be realized yet at bind time (reporting a scale factor of 1), and
@@ -114,7 +114,7 @@ mod imp {
                     let Some(model) = this.model.take().upgrade() else {
                         return;
                     };
-                    model.imp().light_icon().apply_to_image(&this.icon);
+                    this.apply_icon(&model);
                     this.model.set(model.downgrade());
                 }
             });
@@ -157,6 +157,23 @@ mod imp {
             });
             self.sig_children_changed.set(Some(sig_children_changed));
             expander.set_hide_expander(model.children().n_items() == 0);
+        }
+
+        fn apply_icon(&self, model: &RowModel) {
+            if model.imp().light_icon().apply(&self.icon, None) == IconApply::Pending {
+                app!().register_pending_icon_cell(&self.obj());
+            }
+        }
+
+        pub fn reapply_icon(&self) -> IconApply {
+            let Some(model) = self.model.take().upgrade() else {
+                return IconApply::Unavailable;
+            };
+
+            let result = model.imp().light_icon().apply(&self.icon, None);
+            self.model.set(model.downgrade());
+
+            result
         }
 
         pub fn unbind(&self) {
@@ -345,5 +362,9 @@ impl NameCell {
 
     pub fn unbind(&self) {
         self.imp().unbind();
+    }
+
+    pub fn reapply_icon(&self) -> IconApply {
+        self.imp().reapply_icon()
     }
 }

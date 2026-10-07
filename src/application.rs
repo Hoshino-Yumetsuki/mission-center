@@ -26,7 +26,7 @@ use adw::glib::g_warning;
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::{
     gio,
-    glib::{self, g_critical, property::PropertySet},
+    glib::{self, g_critical, property::PropertySet, WeakRef},
     Image,
 };
 
@@ -34,7 +34,8 @@ use magpie_types::apps::icon::Icon;
 
 use crate::about_system_dialog::AboutSystemDialog;
 use crate::first_run_dialog::FirstRunDialog;
-use crate::table_view::cached_icon::CachedIcon;
+use crate::table_view::cached_icon::{decode_icon, CachedIcon, DecodedIcon, IconApply, IconState};
+use crate::table_view::columns::NameCell;
 use crate::{config::VERSION, i18n::i18n, magpie_client::Readings};
 
 pub const INTERVAL_STEP: f64 = 0.05;
@@ -67,6 +68,7 @@ mod imp {
         pub window: RefCell<Option<crate::MissionCenterWindow>>,
 
         pub apps_icons_cache: Cell<Option<HashMap<String, CachedIcon>>>,
+        pub pending_icon_cells: RefCell<Vec<WeakRef<NameCell>>>,
     }
 
     impl Default for MissionCenterApplication {
@@ -76,6 +78,7 @@ mod imp {
                 sys_info: RefCell::new(None),
                 window: RefCell::new(None),
                 apps_icons_cache: Cell::new(None),
+                pending_icon_cells: RefCell::new(Vec::new()),
             }
         }
     }
@@ -225,29 +228,114 @@ glib::wrapper! {
 }
 
 impl MissionCenterApplication {
-    pub fn apply_app_icon(&self, image: &Image, app_id: String, width: i32) -> bool {
+    pub fn apply_app_icon(&self, image: &Image, app_id: String, width: i32) -> IconApply {
         let this = self.imp();
 
         // if it was default::default, then this has no side effects and we can safely return
         let Some(mut icons) = this.apps_icons_cache.take() else {
-            return false;
+            return IconApply::Unavailable;
         };
 
-        let retval = if let Some(mut icon) = icons.remove(&app_id) {
-            icon.apply_to_image(image, width);
+        let retval = match icons.get_mut(&app_id) {
+            Some(CachedIcon::CachedData((bytes, caches))) => {
+                let width = width * image.scale_factor().max(1);
 
-            icons.insert(app_id, icon);
+                match caches.get(&width) {
+                    Some(IconState::Ready(pixbuf)) => {
+                        #[allow(deprecated)]
+                        image.set_from_pixbuf(Some(pixbuf));
 
-            true
-        } else {
-            CachedIcon::apply_blank(image);
+                        IconApply::Applied
+                    }
+                    Some(IconState::Failed) => {
+                        CachedIcon::apply_blank(image);
 
-            false
+                        IconApply::Unavailable
+                    }
+                    Some(IconState::Pending) => {
+                        CachedIcon::apply_blank(image);
+
+                        IconApply::Pending
+                    }
+                    None => {
+                        caches.insert(width, IconState::Pending);
+                        self.decode_app_icon(app_id.clone(), width, bytes.clone());
+                        CachedIcon::apply_blank(image);
+
+                        IconApply::Pending
+                    }
+                }
+            }
+            Some(icon) => {
+                if icon.apply_to_image(image, width) {
+                    IconApply::Applied
+                } else {
+                    IconApply::Unavailable
+                }
+            }
+            None => {
+                CachedIcon::apply_blank(image);
+
+                IconApply::Unavailable
+            }
         };
 
         this.apps_icons_cache.set(Some(icons));
 
         retval
+    }
+
+    fn decode_app_icon(&self, app_id: String, width: i32, bytes: glib::Bytes) {
+        let imp = self.imp().downgrade();
+
+        glib::spawn_future_local(async move {
+            let Some(imp) = imp.upgrade() else {
+                return;
+            };
+
+            let decoded = gio::spawn_blocking(move || decode_icon(&bytes, width))
+                .await
+                .ok()
+                .flatten();
+
+            let state = match decoded.and_then(DecodedIcon::into_pixbuf) {
+                Some(pixbuf) => IconState::Ready(pixbuf),
+                None => IconState::Failed,
+            };
+
+            if let Some(mut icons) = imp.apps_icons_cache.take() {
+                if let Some(CachedIcon::CachedData((_, caches))) = icons.get_mut(&app_id) {
+                    caches.insert(width, state);
+                }
+
+                imp.apps_icons_cache.set(Some(icons));
+            }
+
+            let mut pending_icon_cells = imp.pending_icon_cells.borrow_mut();
+            let pending_len = pending_icon_cells.len();
+
+            let waiting = std::mem::take(&mut *pending_icon_cells);
+            let still_pending = waiting.into_iter().filter(|cell| {
+                cell.upgrade()
+                    .is_some_and(|cell| cell.reapply_icon() == IconApply::Pending)
+            });
+
+            pending_icon_cells.reserve(pending_len);
+            pending_icon_cells.extend(still_pending);
+        });
+    }
+
+    pub fn register_pending_icon_cell(&self, cell: &NameCell) {
+        let mut cells = self.imp().pending_icon_cells.borrow_mut();
+
+        if cells
+            .iter()
+            .any(|pending| pending.upgrade().is_some_and(|pending| &pending == cell))
+        {
+            return;
+        }
+
+        cells.push(cell.downgrade());
     }
 
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {

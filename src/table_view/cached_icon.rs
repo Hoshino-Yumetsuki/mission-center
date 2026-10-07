@@ -23,7 +23,7 @@ use std::hash::Hash;
 
 use adw::glib::Bytes;
 use adw::{gdk, gio};
-use gtk::gdk_pixbuf::Pixbuf;
+use gtk::gdk_pixbuf::{Colorspace, Pixbuf};
 use gtk::prelude::WidgetExt;
 use gtk::Image;
 
@@ -36,7 +36,68 @@ pub enum CachedIcon {
     #[default]
     Empty,
     Id(String),
-    CachedData((Bytes, HashMap<i32, Option<Pixbuf>>)),
+    CachedData((Bytes, HashMap<i32, IconState>)),
+}
+
+#[derive(Clone)]
+pub enum IconState {
+    Pending,
+    Ready(Pixbuf),
+    Failed,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum IconApply {
+    Applied,
+    Pending,
+    Unavailable,
+}
+
+pub struct DecodedIcon {
+    rgba: Vec<u8>,
+    width: i32,
+    height: i32,
+    stride: i32,
+    has_alpha: bool,
+    colorspace: Colorspace,
+}
+
+impl DecodedIcon {
+    // Must be called on the main thread.
+    pub fn into_pixbuf(self) -> Option<Pixbuf> {
+        if self.width <= 0 || self.height <= 0 || self.stride <= 0 {
+            return None;
+        }
+
+        Some(Pixbuf::from_mut_slice(
+            self.rgba,
+            self.colorspace,
+            self.has_alpha,
+            8,
+            self.width,
+            self.height,
+            self.stride,
+        ))
+    }
+}
+
+pub fn decode_icon(bytes: &Bytes, width: i32) -> Option<DecodedIcon> {
+    let input_stream = gio::MemoryInputStream::from_bytes(bytes);
+    let pixbuf =
+        Pixbuf::from_stream_at_scale(&input_stream, width, -1, true, None::<&gio::Cancellable>)
+            .ok()?;
+
+    // SAFETY: This thread is the pixbuf's only owner
+    let rgba = unsafe { pixbuf.pixels() }.to_vec();
+
+    Some(DecodedIcon {
+        rgba,
+        width: pixbuf.width(),
+        height: pixbuf.height(),
+        stride: pixbuf.rowstride(),
+        has_alpha: pixbuf.has_alpha(),
+        colorspace: pixbuf.colorspace(),
+    })
 }
 
 /// A light-weight version of CachedIcon that tells you where to find the real icon rather than
@@ -98,37 +159,34 @@ impl CachedIcon {
             true
         }
 
-        fn create_img_cache(bytes: &Bytes, width: i32) -> Option<Pixbuf> {
-            let input_stream = gio::MemoryInputStream::from_bytes(bytes);
-
-            Pixbuf::from_stream_at_scale(&input_stream, width, -1, true, None::<&gio::Cancellable>)
-                .ok()
-        }
-
         match self {
             Self::Empty => Self::apply_blank(image),
             Self::Id(id) => Self::set_icon_from_stringlike(image, &id),
             Self::CachedData((img, caches)) => {
                 let width = width * image.scale_factor().max(1);
+
                 let pixbuf = match caches.get(&width) {
-                    Some(pixbuf) => pixbuf,
-                    None => {
-                        let out = create_img_cache(img, width);
+                    Some(IconState::Ready(pixbuf)) => Some(pixbuf.clone()),
+                    Some(IconState::Failed) => None,
+                    _ => {
+                        let pixbuf = decode_icon(img, width).and_then(DecodedIcon::into_pixbuf);
 
-                        caches.insert(width, out);
+                        caches.insert(
+                            width,
+                            match &pixbuf {
+                                Some(pixbuf) => IconState::Ready(pixbuf.clone()),
+                                None => IconState::Failed,
+                            },
+                        );
 
-                        caches.get(&width).unwrap()
+                        pixbuf
                     }
                 };
 
-                if pixbuf.is_some() {
-                    apply_buf(image, pixbuf.as_ref());
-
-                    true
+                if let Some(pixbuf) = pixbuf {
+                    apply_buf(image, Some(&pixbuf))
                 } else {
-                    Self::apply_blank(image);
-
-                    false
+                    Self::apply_blank(image)
                 }
             }
         }
@@ -154,21 +212,31 @@ impl CachedIcon {
 }
 
 impl LightCachedIcon {
-    pub fn apply_to_image(&self, image: &Image) -> bool {
+    pub fn apply(&self, image: &Image, width: Option<i32>) -> IconApply {
         match self {
-            LightCachedIcon::Empty => CachedIcon::apply_blank(image),
-            LightCachedIcon::StringPayload(p) => CachedIcon::set_icon_from_stringlike(image, p),
+            LightCachedIcon::Empty => {
+                CachedIcon::apply_blank(image);
+
+                IconApply::Unavailable
+            }
+            LightCachedIcon::StringPayload(p) => {
+                if CachedIcon::set_icon_from_stringlike(image, p) {
+                    IconApply::Applied
+                } else {
+                    IconApply::Unavailable
+                }
+            }
             LightCachedIcon::AppCachedKey(k, v) => {
-                app!().apply_app_icon(image, k.clone(), v.clone())
+                app!().apply_app_icon(image, k.clone(), width.unwrap_or(*v))
             }
         }
     }
 
+    pub fn apply_to_image(&self, image: &Image) -> bool {
+        self.apply(image, None) == IconApply::Applied
+    }
+
     pub fn apply_to_image_custom_size(&self, image: &Image, w: i32) -> bool {
-        match self {
-            LightCachedIcon::Empty => CachedIcon::apply_blank(image),
-            LightCachedIcon::StringPayload(p) => CachedIcon::set_icon_from_stringlike(image, p),
-            LightCachedIcon::AppCachedKey(k, _) => app!().apply_app_icon(image, k.clone(), w),
-        }
+        self.apply(image, Some(w)) == IconApply::Applied
     }
 }

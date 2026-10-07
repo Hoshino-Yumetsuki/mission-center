@@ -225,31 +225,37 @@ pub fn update_services(
         !has_died.contains(&object.downcast_ref::<RowModel>().unwrap().service_id())
     });
 
-    for (_, service) in services
-        .iter()
-        .filter(|(_, serv)| !does_exist.contains(&serv.id))
-    {
-        let row_model = RowModelBuilder::new()
-            .id(&service.id.to_string())
-            .content_type(ContentType::Service)
-            .section_type(section_type)
-            .service_id(service.id)
-            .name(&service.name)
-            .file_path(&service.file_path())
-            .user(&service.user.clone().unwrap_or("".to_string()))
-            .group(&service.group.clone().unwrap_or("".to_string()))
-            .light_cached_icon(LightCachedIcon::StringPayload(service_icon(&service)))
-            .build();
-        list.append(&row_model);
+    let new_rows = services
+        .values()
+        .filter(|service| !does_exist.contains(&service.id))
+        .map(|service| {
+            let row_model = RowModelBuilder::new()
+                .id(&service.id.to_string())
+                .content_type(ContentType::Service)
+                .section_type(section_type)
+                .service_id(service.id)
+                .name(&service.name)
+                .file_path(&service.file_path())
+                .user(&service.user.clone().unwrap_or("".to_string()))
+                .group(&service.group.clone().unwrap_or("".to_string()))
+                .light_cached_icon(LightCachedIcon::StringPayload(service_icon(service)))
+                .build();
 
-        update_service(
-            process_map,
-            &row_model,
-            service,
-            app_icons,
-            icon,
-            use_merged_stats,
-        )
+            update_service(
+                process_map,
+                &row_model,
+                service,
+                app_icons,
+                icon,
+                use_merged_stats,
+            );
+
+            row_model
+        })
+        .collect::<Vec<_>>();
+
+    if !new_rows.is_empty() {
+        list.splice(list.n_items(), 0, &new_rows);
     }
 }
 
