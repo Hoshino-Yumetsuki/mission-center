@@ -153,12 +153,6 @@ template $MissionCenterWindow: Adw.ApplicationWindow {
                         tooltip-text: _("Toggle Device Information");
                     }
 
-                    Button system_about {
-                        action-name: "app.system-about";
-                        tooltip-text: _("System Information");
-                        icon-name: "info-outline-symbolic";
-                    }
-
                     ToggleButton search_button {
                         styles [
                             "flat",
@@ -168,6 +162,12 @@ template $MissionCenterWindow: Adw.ApplicationWindow {
                         icon-name: "system-search-symbolic";
                         visible: bind template.search-button-visible;
                         tooltip-text: _("Search");
+                    }
+
+                    Button system_about {
+                        action-name: "app.system-about";
+                        tooltip-text: _("System Information");
+                        icon-name: "info-outline-symbolic";
                     }
 
                     MenuButton menu_button {
