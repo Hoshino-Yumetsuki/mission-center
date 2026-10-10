@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-25 09:06+0300\n"
-"PO-Revision-Date: 2026-07-30 12:01+0000\n"
+"PO-Revision-Date: 2026-10-10 14:51+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/cs/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.8.dev0\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -1190,7 +1190,7 @@ msgstr "Jednotky"
 
 #: resources/ui/preferences/units_page.blp:30
 msgid "Memory Usage Unit"
-msgstr "Jednotka využití paměti"
+msgstr "Jednotka pro využití paměti"
 
 #: resources/ui/preferences/units_page.blp:37
 msgid "Use Bytes as a Unit of Measurement for Memory"
@@ -1238,7 +1238,7 @@ msgstr "Dvojkový (IETF)"
 
 #: resources/ui/preferences/units_page.blp:68
 msgid "Drive Usage Unit"
-msgstr "Jednotka využití úložiště"
+msgstr "Jednotka pro využití úložiště"
 
 #: resources/ui/preferences/units_page.blp:75
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
