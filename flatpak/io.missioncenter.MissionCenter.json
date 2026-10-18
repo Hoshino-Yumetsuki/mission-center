@@ -300,14 +300,14 @@
             },
             {
               "type": "archive",
-              "url": "https://github.com/Syllo/nvtop/archive/3d4a953da02bc18886734613bb9f60ff80669de7.tar.gz",
-              "sha256": "e1c8651d299cab61f3e178b9fa97dcf4651f9cc526a51818fca1a47f7838cbd3",
-              "dest": "nvtop-3d4a953da02bc18886734613bb9f60ff80669de7"
+              "url": "https://github.com/Syllo/nvtop/archive/71094a9f7dfbfe7cbe9faebfdf055e580a034283.tar.gz",
+              "sha256": "a6f3df5615aa69853bb13b5b9641d6620944f05827d092eb16395c04377f88de",
+              "dest": "nvtop-71094a9f7dfbfe7cbe9faebfdf055e580a034283"
             },
             {
               "type": "shell",
               "commands": [
-                "cd nvtop-* && find ../subprojects/magpie/platform-linux/3rdparty/nvtop/patches -type f -iname \"*.patch\" -exec sh -c 'patch -p1 < {}' \\;"
+                "cd nvtop-* && N=../subprojects/magpie/platform-linux/3rdparty/nvtop && patches=$(python3 -c 'import json, sys; print(*json.load(open(sys.argv[1]))[\"patches\"])' $N/nvtop.json) && for p in $patches; do patch -p1 -i $N/$p || exit 1; done"
               ]
             },
             {
