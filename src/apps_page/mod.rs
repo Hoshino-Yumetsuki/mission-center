@@ -19,7 +19,7 @@
  */
 
 use std::cell::{Cell, OnceCell, RefCell};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
 
 use adw::glib::g_critical;
@@ -29,10 +29,11 @@ use gtk::{gio, glib, subclass::prelude::*};
 
 use crate::i18n::{i18n, ni18n_f};
 use crate::magpie_client::App;
+use crate::settings;
 use crate::table_view::cached_icon::LightCachedIcon;
 use crate::table_view::{
-    update_apps, update_processes, ContentType, ProcessActionBar, RowModel, RowModelBuilder,
-    SectionType, SettingsNamespace, TableView,
+    collect_process_subtree, update_apps, update_processes, ContentType, ProcessActionBar,
+    RowModel, RowModelBuilder, SectionType, SettingsNamespace, TableView,
 };
 use crate::widgets::Placeholder;
 
@@ -62,6 +63,7 @@ mod imp {
         pub processes_section: RowModel,
 
         pub root_process: Cell<u32>,
+        pub tree_view: Cell<bool>,
         pub running_apps: RefCell<HashMap<String, App>>,
 
         pub row_sorter: OnceCell<gtk::TreeListRowSorter>,
@@ -94,6 +96,7 @@ mod imp {
                     .build(),
 
                 root_process: Cell::new(1),
+                tree_view: Cell::new(true),
                 running_apps: RefCell::new(HashMap::new()),
 
                 row_sorter: OnceCell::new(),
@@ -308,16 +311,44 @@ impl AppsPage {
 
         imp.table_view.imp().update_column_titles(readings);
 
+        let tree_view = settings!().boolean("apps-services-tree-view");
+        let flat = !tree_view;
+        if tree_view != imp.tree_view.get() {
+            imp.apps_section.children().remove_all();
+            imp.processes_section.children().remove_all();
+            imp.tree_view.set(tree_view);
+        }
+
+        let use_merged_stats = imp.table_view.imp().use_merged_stats.get();
+
         let mut process_model_map = HashMap::new();
         let root_process = readings.running_processes.keys().min().unwrap_or(&1);
-        if let Some(init) = readings.running_processes.get(root_process) {
+        if flat {
+            let mut pids = HashSet::new();
+            if let Some(init) = readings.running_processes.get(root_process) {
+                for child in &init.children {
+                    collect_process_subtree(&readings.running_processes, *child, &mut pids);
+                }
+            }
+            update_processes(
+                &readings.running_processes,
+                pids,
+                &imp.processes_section.children(),
+                &imp.app_icons.borrow(),
+                &Default::default(),
+                use_merged_stats,
+                SectionType::SecondSection,
+                None,
+                &mut process_model_map,
+            );
+        } else if let Some(init) = readings.running_processes.get(root_process) {
             update_processes(
                 &readings.running_processes,
                 init.children.clone().drain(..).collect(),
                 &imp.processes_section.children(),
                 &imp.app_icons.borrow(),
                 &Default::default(),
-                imp.table_view.imp().use_merged_stats.get(),
+                use_merged_stats,
                 SectionType::SecondSection,
                 None,
                 &mut process_model_map,

@@ -160,37 +160,5 @@ pub fn action_details(column_view_frame: &TableView) -> gio::SimpleAction {
 }
 
 fn app_pids(row_model: &RowModel) -> Vec<u32> {
-    let children = row_model.children();
-    let mut result = Vec::with_capacity(children.n_items() as usize);
-
-    for i in 0..children.n_items() {
-        let Some(child) = children
-            .item(i)
-            .and_then(|i| i.downcast::<RowModel>().ok())
-            .and_then(|rm| find_stoppable_child(&rm))
-        else {
-            continue;
-        };
-        result.push(child.pid());
-    }
-
-    result
-}
-
-fn find_stoppable_child(row_model: &RowModel) -> Option<RowModel> {
-    if row_model.name() != "bwrap" {
-        return Some(row_model.clone());
-    }
-
-    let children = row_model.children();
-    for i in 0..children.n_items() {
-        let Some(child) = children.item(i).and_then(|i| i.downcast::<RowModel>().ok()) else {
-            continue;
-        };
-        if let Some(rm) = find_stoppable_child(&child) {
-            return Some(rm);
-        }
-    }
-
-    None
+    row_model.app_pids()
 }

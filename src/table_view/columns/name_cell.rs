@@ -42,6 +42,7 @@ mod imp {
         sig_name: Cell<Option<glib::SignalHandlerId>>,
         sig_content_type: Cell<Option<glib::SignalHandlerId>>,
         sig_children_changed: Cell<Option<glib::SignalHandlerId>>,
+        sig_app_icons: Cell<Option<glib::SignalHandlerId>>,
 
         model: Cell<glib::WeakRef<RowModel>>,
         expander: RefCell<glib::WeakRef<gtk::TreeExpander>>,
@@ -59,6 +60,7 @@ mod imp {
                 sig_name: Cell::new(None),
                 sig_content_type: Cell::new(None),
                 sig_children_changed: Cell::new(None),
+                sig_app_icons: Cell::new(None),
 
                 model: Cell::new(glib::WeakRef::default()),
                 expander: RefCell::new(glib::WeakRef::default()),
@@ -99,6 +101,21 @@ mod imp {
             self.sig_light_icon.set(Some(sig_icon));
 
             self.apply_icon(model);
+
+            let sig_app_icons = app!().connect_local("app-icons-changed", false, {
+                let this = this.clone();
+                move |_| {
+                    let this = this.upgrade()?;
+                    let this = this.imp();
+
+                    let model = this.model.take().upgrade()?;
+                    this.apply_icon(&model);
+                    this.model.set(model.downgrade());
+
+                    None
+                }
+            });
+            self.sig_app_icons.set(Some(sig_app_icons));
 
             // Re-decode the icon when the device scale factor changes so raster icons stay sharp.
             // The image may not be realized yet at bind time (reporting a scale factor of 1), and
@@ -181,6 +198,10 @@ mod imp {
 
             if let Some(sig_id) = self.sig_scale_factor.take() {
                 self.icon.disconnect(sig_id);
+            }
+
+            if let Some(sig_id) = self.sig_app_icons.take() {
+                app!().disconnect(sig_id);
             }
 
             let Some(model) = self.model.take().upgrade() else {

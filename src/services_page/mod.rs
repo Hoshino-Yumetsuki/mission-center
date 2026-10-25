@@ -27,6 +27,7 @@ use glib::{g_critical, ParamSpec, Properties, Value, WeakRef};
 use gtk::{gio, glib, subclass::prelude::*};
 
 use crate::i18n::{i18n, ni18n_f};
+use crate::settings;
 use crate::table_view::{
     update_services, ContentType, ProcessActionBar, RowModel, RowModelBuilder, SectionType,
     ServiceActionBar, SettingsNamespace, TableView,
@@ -73,6 +74,7 @@ mod imp {
         pub system_section: RowModel,
 
         pub use_merged_stats: Cell<bool>,
+        pub tree_view: Cell<bool>,
 
         pub total_services: Cell<u32>,
         pub running_services: Cell<u32>,
@@ -190,6 +192,7 @@ mod imp {
                     .build(),
 
                 use_merged_stats: Cell::new(false),
+                tree_view: Cell::new(true),
 
                 total_services: Cell::new(0),
                 running_services: Cell::new(0),
@@ -425,6 +428,13 @@ glib::wrapper! {
 impl ServicesPage {
     fn update_common(&self, readings: &mut crate::magpie_client::Readings) {
         let imp = self.imp();
+
+        let tree_view = settings!().boolean("apps-services-tree-view");
+        if tree_view != imp.tree_view.get() {
+            imp.user_section.children().remove_all();
+            imp.system_section.children().remove_all();
+            imp.tree_view.set(tree_view);
+        }
 
         update_services(
             &readings.running_processes,

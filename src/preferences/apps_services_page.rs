@@ -32,6 +32,8 @@ mod imp {
     #[template(resource = "/io/missioncenter/MissionCenter/ui/preferences/apps_services_page.ui")]
     pub struct PreferencesAppsServicesPage {
         #[template_child]
+        pub tree_view: TemplateChild<SwitchRow>,
+        #[template_child]
         pub merged_process_stats: TemplateChild<SwitchRow>,
         #[template_child]
         pub remember_sorting: TemplateChild<SwitchRow>,
@@ -64,7 +66,15 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
+            settings!()
+                .bind("apps-services-tree-view", &self.tree_view.get(), "active")
+                .build();
             connect_switch_to_setting!(self.merged_process_stats, "apps-page-merged-process-stats");
+
+            self.tree_view
+                .bind_property("active", &*self.merged_process_stats, "sensitive")
+                .sync_create()
+                .build();
             connect_switch_to_setting!(self.remember_sorting, "apps-page-remember-sorting");
             connect_switch_to_setting!(
                 self.remember_column_order,

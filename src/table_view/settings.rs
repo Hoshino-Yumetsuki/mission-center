@@ -9,6 +9,7 @@ use crate::table_view::TableView;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 static HIDE_IS_ZERO: AtomicBool = AtomicBool::new(false);
+static TREE_VIEW: AtomicBool = AtomicBool::new(true);
 
 pub fn configure(table_view: &TableView) {
     let settings = settings!();
@@ -21,16 +22,33 @@ pub fn configure(table_view: &TableView) {
         )
         .build();
 
-    table_view.set_use_merged_stats(settings.boolean("apps-page-merged-process-stats"));
-    settings.connect_changed(Some("apps-page-merged-process-stats"), {
+    table_view.set_use_merged_stats(merged_stats_enabled(&settings));
+    let update_merged_stats = {
         let this = table_view.downgrade();
-        move |settings, _| {
+        move |settings: &gio::Settings, _: &str| {
             if let Some(this) = this.upgrade() {
                 this.imp()
                     .use_merged_stats
-                    .set(settings.boolean("apps-page-merged-process-stats"));
+                    .set(merged_stats_enabled(settings));
             }
         }
+    };
+    settings.connect_changed(
+        Some("apps-page-merged-process-stats"),
+        update_merged_stats.clone(),
+    );
+    settings.connect_changed(Some("apps-services-tree-view"), update_merged_stats);
+
+    TREE_VIEW.store(
+        settings.boolean("apps-services-tree-view"),
+        Ordering::Relaxed,
+    );
+
+    settings.connect_changed(Some("apps-services-tree-view"), move |settings, _| {
+        TREE_VIEW.store(
+            settings.boolean("apps-services-tree-view"),
+            Ordering::Relaxed,
+        );
     });
 
     HIDE_IS_ZERO.store(
@@ -50,6 +68,15 @@ pub fn configure(table_view: &TableView) {
 
 pub fn get_hide_is_zero() -> bool {
     HIDE_IS_ZERO.load(Ordering::Relaxed)
+}
+
+pub fn get_tree_view() -> bool {
+    TREE_VIEW.load(Ordering::Relaxed)
+}
+
+fn merged_stats_enabled(settings: &gio::Settings) -> bool {
+    settings.boolean("apps-services-tree-view")
+        && settings.boolean("apps-page-merged-process-stats")
 }
 
 fn configure_sorting(table_view: &TableView, settings: &gio::Settings) {

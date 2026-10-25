@@ -21,6 +21,7 @@
 use std::cell::{BorrowError, Cell, Ref, RefCell};
 use std::collections::HashMap;
 use std::process::Command;
+use std::sync::OnceLock;
 
 use adw::glib::g_warning;
 use adw::{prelude::*, subclass::prelude::*};
@@ -91,6 +92,13 @@ mod imp {
     }
 
     impl ObjectImpl for MissionCenterApplication {
+        fn signals() -> &'static [glib::subclass::Signal] {
+            static SIGNALS: OnceLock<Vec<glib::subclass::Signal>> = OnceLock::new();
+
+            SIGNALS
+                .get_or_init(|| vec![glib::subclass::Signal::builder("app-icons-changed").build()])
+        }
+
         fn constructed(&self) {
             self.parent_constructed();
             let obj = self.obj();
@@ -393,7 +401,9 @@ impl MissionCenterApplication {
     pub fn set_app_icons(&self, icons: HashMap<String, Icon>) {
         self.imp()
             .apps_icons_cache
-            .set(Some(CachedIcon::convert_hash_map(icons)))
+            .set(Some(CachedIcon::convert_hash_map(icons)));
+
+        self.emit_by_name::<()>("app-icons-changed", &[]);
     }
 
     pub fn merge_app_icons(&self, icons: HashMap<String, Icon>) {
@@ -411,6 +421,8 @@ impl MissionCenterApplication {
         }
 
         self.imp().apps_icons_cache.set(Some(old));
+
+        self.emit_by_name::<()>("app-icons-changed", &[]);
     }
 
     pub fn missing_icons(&self, mut appids: Vec<&String>) -> Option<Vec<String>> {

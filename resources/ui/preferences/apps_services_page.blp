@@ -26,6 +26,11 @@ template $PreferencesAppsServicesPage: Adw.PreferencesPage {
   icon-name: "overlapping-windows-symbolic";
 
   Adw.PreferencesGroup {
+    Adw.SwitchRow tree_view {
+      title: _("Tree View");
+      subtitle: _("Nest child processes under their parent app, process or service");
+    }
+
     Adw.SwitchRow merged_process_stats {
       title: _("Merge Process Stats");
       subtitle: _("Parent and child process stats are shown individually or merged upwards");

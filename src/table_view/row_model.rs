@@ -93,6 +93,8 @@ mod imp {
         pub light_icon: Cell<LightCachedIcon>,
 
         pub children: RefCell<gio::ListStore>,
+
+        pub app_pids: RefCell<Vec<u32>>,
     }
 
     impl Default for RowModel {
@@ -133,6 +135,8 @@ mod imp {
                 light_icon_changed: Cell::new(false),
 
                 children: RefCell::new(gio::ListStore::new::<super::RowModel>()),
+
+                app_pids: RefCell::new(Vec::new()),
             }
         }
     }
@@ -234,6 +238,7 @@ mod imp {
 
             if old != icon_name {
                 self.light_icon_changed.set(!self.light_icon_changed.get());
+                self.obj().notify("light-icon-changed");
             }
         }
     }
@@ -534,5 +539,13 @@ impl RowModel {
 
     pub fn set_children(&self, children: gio::ListStore) {
         self.imp().children.replace(children);
+    }
+
+    pub fn app_pids(&self) -> Vec<u32> {
+        self.imp().app_pids.borrow().clone()
+    }
+
+    pub fn set_app_pids(&self, pids: Vec<u32>) {
+        self.imp().app_pids.replace(pids);
     }
 }
