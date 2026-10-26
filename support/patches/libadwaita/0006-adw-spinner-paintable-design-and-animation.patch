@@ -6,11 +6,11 @@ Subject: Align AdwSpinnerPaintable Design and Animation to
 Forwarded: no, ubuntu only.
 Bug-Ubuntu: https://bugs.launchpad.net/bugs/2114778
 ---
- src/adw-spinner-paintable.c | 155 ++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 155 insertions(+)
+ src/adw-spinner-paintable.c | 164 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 164 insertions(+)
 
 diff --git a/src/adw-spinner-paintable.c b/src/adw-spinner-paintable.c
-index aaf0eac..74ed7d6 100644
+index 96d6734..b320741 100644
 --- a/src/adw-spinner-paintable.c
 +++ b/src/adw-spinner-paintable.c
 @@ -11,6 +11,7 @@
@@ -21,7 +21,7 @@ index aaf0eac..74ed7d6 100644
  #include "adw-timed-animation.h"
  
  #include <math.h>
-@@ -34,6 +35,17 @@
+@@ -32,6 +33,17 @@
   * where k is an integer */
  #define N_CYCLES 53
  
@@ -39,7 +39,22 @@ index aaf0eac..74ed7d6 100644
  /**
   * AdwSpinnerPaintable:
   *
-@@ -194,6 +206,28 @@ widget_map_cb (AdwSpinnerPaintable *self)
+@@ -94,6 +106,14 @@ enum {
+ 
+ static GParamSpec *props[LAST_PROP];
+ 
++static inline double
++inverse_lerp (double a,
++              double b,
++              double t)
++{
++  return (t - a) / (b - a);
++}
++
+ static double
+ normalize_angle (double angle)
+ {
+@@ -184,6 +204,29 @@ widget_map_cb (AdwSpinnerPaintable *self)
    adw_animation_play (self->animation);
  }
  
@@ -52,8 +67,9 @@ index aaf0eac..74ed7d6 100644
 +    adw_timed_animation_set_easing (ADW_TIMED_ANIMATION (self->animation),
 +                                    ADW_LINEAR);
 +    adw_timed_animation_set_duration (ADW_TIMED_ANIMATION (self->animation),
-+                                      ADW_DURATION_INFINITE);
-+    adw_timed_animation_set_value_to (ADW_TIMED_ANIMATION (self->animation), 0);
++                                      SPIN_DURATION_MS * N_CYCLES);
++    adw_timed_animation_set_value_to (ADW_TIMED_ANIMATION (self->animation),
++                                      N_CYCLES * G_PI * 2);
 +    return;
 +  }
 +
@@ -68,7 +84,7 @@ index aaf0eac..74ed7d6 100644
  static void
  adw_spinner_paintable_dispose (GObject *object)
  {
-@@ -282,6 +316,113 @@ adw_spinner_paintable_init (AdwSpinnerPaintable *self)
+@@ -272,6 +315,113 @@ adw_spinner_paintable_init (AdwSpinnerPaintable *self)
  {
  }
  
@@ -182,7 +198,7 @@ index aaf0eac..74ed7d6 100644
  static void
  adw_spinner_paintable_snapshot_symbolic (GtkSymbolicPaintable *paintable,
                                           GtkSnapshot          *snapshot,
-@@ -301,6 +442,13 @@ adw_spinner_paintable_snapshot_symbolic (GtkSymbolicPaintable *paintable,
+@@ -340,6 +490,13 @@ adw_spinner_paintable_snapshot_with_weight (GtkSymbolicPaintable *paintable,
    GskPathPoint start_point, end_point;
    GskPathMeasure *measure;
  
@@ -194,9 +210,9 @@ index aaf0eac..74ed7d6 100644
 +  }
 +
    radius = MIN (floorf (MIN (width, height) / 2), MAX_RADIUS);
-   line_width = adw_lerp (SMALL_WIDTH, LARGE_WIDTH,
-                          inverse_lerp (MIN_RADIUS, MAX_RADIUS, radius));
-@@ -477,6 +625,8 @@ adw_spinner_paintable_set_widget (AdwSpinnerPaintable *self,
+   line_width = calculate_line_width (radius * 2, weight);
+ 
+@@ -516,6 +673,8 @@ adw_spinner_paintable_set_widget (AdwSpinnerPaintable *self,
      g_clear_object (&self->animation);
  
      g_signal_handlers_disconnect_by_func (self->widget, widget_map_cb, self);
@@ -205,7 +221,7 @@ index aaf0eac..74ed7d6 100644
  
      g_object_weak_unref (G_OBJECT (self->widget),
                           (GWeakNotify) widget_notify_cb,
-@@ -500,6 +650,11 @@ adw_spinner_paintable_set_widget (AdwSpinnerPaintable *self,
+@@ -539,6 +698,11 @@ adw_spinner_paintable_set_widget (AdwSpinnerPaintable *self,
      adw_timed_animation_set_repeat_count (ADW_TIMED_ANIMATION (self->animation), 0);
      adw_timed_animation_set_easing (ADW_TIMED_ANIMATION (self->animation), ADW_LINEAR);
  

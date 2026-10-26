@@ -106,7 +106,7 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 | Dependency                   | Comment                    | Minimum Version |
 |------------------------------|----------------------------|----------------:|
 | Meson                        |                            |           1.0.2 |
-| Rust                         |                            |            1.90 |
+| Rust                         |                            |            1.96 |
 | CMake                        |                            |            3.15 |
 | Python3                      |                            |            3.10 |
 | Python GObject Introspection | Used by Blueprint Compiler |             N/A |
@@ -208,10 +208,10 @@ Install the required Flatpak runtimes and SDKs:
 
 ```bash
 flatpak install -y \
-    org.freedesktop.Platform//25.08 \
-    org.freedesktop.Sdk//25.08 \
-    org.gnome.Platform//50 \
-    org.gnome.Sdk//50
+    org.freedesktop.Platform//26.08 \
+    org.freedesktop.Sdk//26.08 \
+    org.gnome.Platform//51 \
+    org.gnome.Sdk//51
 ```
 
 Finally build a Flatpak package:

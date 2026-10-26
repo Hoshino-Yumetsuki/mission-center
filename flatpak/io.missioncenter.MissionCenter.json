@@ -1,7 +1,7 @@
 {
   "app-id": "io.missioncenter.MissionCenter",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "50",
+  "runtime-version": "51",
   "sdk": "org.gnome.Sdk",
   "command": "missioncenter",
   "build-options": {
@@ -331,8 +331,8 @@
                 {
                   "type": "git",
                   "url": "https://github.com/proot-me/proot.git",
-                  "tag": "v5.4.0",
-                  "commit": "bd5a5f63d72f8210d8cee76195eb9f0749e5bd70"
+                  "tag": "v5.5.0",
+                  "commit": "25dc6a3134891f98a79f57ce1c2c1b23ff15cad1"
                 }
               ],
               "modules": [
@@ -342,8 +342,8 @@
                   "sources": [
                     {
                       "type": "archive",
-                      "url": "https://www.samba.org/ftp/talloc/talloc-2.4.1.tar.gz",
-                      "sha256": "410a547f08557007be0e88194f218868358edc0ab98c98ba8c167930db3d33f9"
+                      "url": "https://www.samba.org/ftp/talloc/talloc-2.5.0.tar.gz",
+                      "sha256": "912afa237510ae542a7733998eb18a12bcda35ab6729c8e2ddb43e8d0ebab007"
                     }
                   ],
                   "cleanup": [
