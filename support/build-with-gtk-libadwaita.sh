@@ -12,8 +12,8 @@ export HOME=/root
 export TERM=xterm
 export PATH="$HOME/llvm-tooling/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:"
 
-SCRIPT_RUST_VESION=1.96.1
-SCRIPT_CLANG_VERSION=22.1.8
+SCRIPT_RUST_VESION=1.99.1
+SCRIPT_CLANG_VERSION=23.1.4
 
 apt-get update
 
