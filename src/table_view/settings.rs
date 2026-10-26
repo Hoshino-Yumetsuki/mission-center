@@ -1,3 +1,23 @@
+/* table_view/settings.rs
+ *
+ * Copyright 2026 Mission Center Developers
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 use glib::g_critical;
 use gtk::prelude::*;
 use gtk::subclass::prelude::*;
@@ -8,7 +28,7 @@ use crate::table_view::SettingsValues::*;
 use crate::table_view::TableView;
 use std::sync::atomic::{AtomicBool, Ordering};
 
-static HIDE_IS_ZERO: AtomicBool = AtomicBool::new(false);
+static HIDE_ZEROES: AtomicBool = AtomicBool::new(false);
 static TREE_VIEW: AtomicBool = AtomicBool::new(true);
 
 pub fn configure(table_view: &TableView) {
@@ -51,13 +71,13 @@ pub fn configure(table_view: &TableView) {
         );
     });
 
-    HIDE_IS_ZERO.store(
+    HIDE_ZEROES.store(
         settings.boolean("apps-page-hide-is-zero"),
         Ordering::Relaxed,
     );
 
     settings.connect_changed(Some("apps-page-hide-is-zero"), move |settings, _| {
-        HIDE_IS_ZERO.store(
+        HIDE_ZEROES.store(
             settings.boolean("apps-page-hide-is-zero"),
             Ordering::Relaxed,
         );
@@ -66,11 +86,11 @@ pub fn configure(table_view: &TableView) {
     configure_sorting(table_view, &settings);
 }
 
-pub fn get_hide_is_zero() -> bool {
-    HIDE_IS_ZERO.load(Ordering::Relaxed)
+pub fn is_hide_zeroes_active() -> bool {
+    HIDE_ZEROES.load(Ordering::Relaxed)
 }
 
-pub fn get_tree_view() -> bool {
+pub fn is_tree_view() -> bool {
     TREE_VIEW.load(Ordering::Relaxed)
 }
 

@@ -1,6 +1,6 @@
 /* application.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 use std::cell::{BorrowError, Cell, Ref, RefCell};
 use std::collections::HashMap;
 use std::process::Command;
-use std::sync::OnceLock;
 
 use adw::glib::g_warning;
 use adw::{prelude::*, subclass::prelude::*};
@@ -36,11 +35,12 @@ use magpie_types::apps::icon::Icon;
 use crate::about_system_dialog::AboutSystemDialog;
 use crate::first_run_dialog::FirstRunDialog;
 use crate::table_view::cached_icon::{decode_icon, CachedIcon, DecodedIcon, IconApply, IconState};
-use crate::table_view::columns::NameCell;
 use crate::{config::VERSION, i18n::i18n, magpie_client::Readings};
 
 pub const INTERVAL_STEP: f64 = 0.05;
 pub const BASE_INTERVAL: f64 = 1f64;
+
+type PendingIcon = (WeakRef<gtk::Widget>, Box<dyn Fn(&gtk::Widget) -> IconApply>);
 
 #[macro_export]
 macro_rules! app {
@@ -69,7 +69,7 @@ mod imp {
         pub window: RefCell<Option<crate::MissionCenterWindow>>,
 
         pub apps_icons_cache: Cell<Option<HashMap<String, CachedIcon>>>,
-        pub pending_icon_cells: RefCell<Vec<WeakRef<NameCell>>>,
+        pub pending_icons: RefCell<Vec<PendingIcon>>,
     }
 
     impl Default for MissionCenterApplication {
@@ -79,7 +79,7 @@ mod imp {
                 sys_info: RefCell::new(None),
                 window: RefCell::new(None),
                 apps_icons_cache: Cell::new(None),
-                pending_icon_cells: RefCell::new(Vec::new()),
+                pending_icons: RefCell::new(Vec::new()),
             }
         }
     }
@@ -92,13 +92,6 @@ mod imp {
     }
 
     impl ObjectImpl for MissionCenterApplication {
-        fn signals() -> &'static [glib::subclass::Signal] {
-            static SIGNALS: OnceLock<Vec<glib::subclass::Signal>> = OnceLock::new();
-
-            SIGNALS
-                .get_or_init(|| vec![glib::subclass::Signal::builder("app-icons-changed").build()])
-        }
-
         fn constructed(&self) {
             self.parent_constructed();
             let obj = self.obj();
@@ -239,9 +232,10 @@ impl MissionCenterApplication {
     pub fn apply_app_icon(&self, image: &Image, app_id: String, width: i32) -> IconApply {
         let this = self.imp();
 
-        // if it was default::default, then this has no side effects and we can safely return
         let Some(mut icons) = this.apps_icons_cache.take() else {
-            return IconApply::Unavailable;
+            CachedIcon::apply_blank(image);
+
+            return IconApply::Pending;
         };
 
         let retval = match icons.get_mut(&app_id) {
@@ -284,7 +278,7 @@ impl MissionCenterApplication {
             None => {
                 CachedIcon::apply_blank(image);
 
-                IconApply::Unavailable
+                IconApply::Pending
             }
         };
 
@@ -319,31 +313,49 @@ impl MissionCenterApplication {
                 imp.apps_icons_cache.set(Some(icons));
             }
 
-            let mut pending_icon_cells = imp.pending_icon_cells.borrow_mut();
-            let pending_len = pending_icon_cells.len();
-
-            let waiting = std::mem::take(&mut *pending_icon_cells);
-            let still_pending = waiting.into_iter().filter(|cell| {
-                cell.upgrade()
-                    .is_some_and(|cell| cell.reapply_icon() == IconApply::Pending)
-            });
-
-            pending_icon_cells.reserve(pending_len);
-            pending_icon_cells.extend(still_pending);
+            imp.obj().retry_pending_icons();
         });
     }
 
-    pub fn register_pending_icon_cell(&self, cell: &NameCell) {
-        let mut cells = self.imp().pending_icon_cells.borrow_mut();
+    fn retry_pending_icons(&self) {
+        let mut waiting = self.imp().pending_icons.take();
+        waiting.retain(|(widget, reapply)| {
+            widget
+                .upgrade()
+                .is_some_and(|widget| reapply(&widget) == IconApply::Pending)
+        });
 
-        if cells
+        let mut pending_icons = self.imp().pending_icons.borrow_mut();
+        waiting.retain(|(widget, _)| {
+            let widget = widget.upgrade();
+            !pending_icons
+                .iter()
+                .any(|(pending, _)| pending.upgrade() == widget)
+        });
+        pending_icons.append(&mut waiting);
+    }
+
+    pub fn register_pending_icon<W: IsA<gtk::Widget>>(
+        &self,
+        widget: &W,
+        reapply: fn(&W) -> IconApply,
+    ) {
+        let widget = widget.upcast_ref::<gtk::Widget>();
+        let mut pending_icons = self.imp().pending_icons.borrow_mut();
+
+        if pending_icons
             .iter()
-            .any(|pending| pending.upgrade().is_some_and(|pending| &pending == cell))
+            .any(|(pending, _)| pending.upgrade().is_some_and(|pending| &pending == widget))
         {
             return;
         }
 
-        cells.push(cell.downgrade());
+        let reapply = move |widget: &gtk::Widget| {
+            widget
+                .downcast_ref::<W>()
+                .map_or(IconApply::Unavailable, reapply)
+        };
+        pending_icons.push((widget.downgrade(), Box::new(reapply)));
     }
 
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
@@ -403,7 +415,7 @@ impl MissionCenterApplication {
             .apps_icons_cache
             .set(Some(CachedIcon::convert_hash_map(icons)));
 
-        self.emit_by_name::<()>("app-icons-changed", &[]);
+        self.retry_pending_icons();
     }
 
     pub fn merge_app_icons(&self, icons: HashMap<String, Icon>) {
@@ -422,35 +434,7 @@ impl MissionCenterApplication {
 
         self.imp().apps_icons_cache.set(Some(old));
 
-        self.emit_by_name::<()>("app-icons-changed", &[]);
-    }
-
-    pub fn missing_icons(&self, mut appids: Vec<&String>) -> Option<Vec<String>> {
-        let this = self.imp();
-        let icons = this.apps_icons_cache.take();
-
-        this.apps_icons_cache.set(icons.clone());
-
-        let Some(apps) = icons else {
-            return Some(appids.drain(..).map(|app_id| app_id.to_string()).collect());
-        };
-
-        let out: Vec<_> = appids
-            .drain(..)
-            .filter_map(|appid| {
-                if !apps.contains_key(appid) {
-                    Some(appid.clone())
-                } else {
-                    None
-                }
-            })
-            .collect();
-
-        if out.is_empty() {
-            None
-        } else {
-            Some(out)
-        }
+        self.retry_pending_icons();
     }
 
     pub fn setup_animations(&self) {

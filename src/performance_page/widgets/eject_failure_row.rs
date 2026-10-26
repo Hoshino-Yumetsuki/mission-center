@@ -1,6 +1,6 @@
 /* performance_page/widgets/eject_failure_row.rs
  *
- * Copyright 2024 Mission Center Devs
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ use gtk::glib::{self, g_critical, WeakRef};
 
 use crate::app;
 use crate::performance_page::widgets::EjectFailureDialog;
+use crate::table_view::cached_icon::IconApply;
 
 mod imp {
     use super::*;
@@ -49,11 +50,25 @@ mod imp {
 
         pub raw_pid: Cell<u32>,
         pub dialog: RefCell<WeakRef<EjectFailureDialog>>,
+        app_id: RefCell<String>,
     }
 
     impl EjectFailureRow {
         pub fn set_icon(&self, app_id: String) {
-            app!().apply_app_icon(&self.icon.get(), app_id, 48);
+            self.app_id.replace(app_id);
+            self.apply_icon();
+        }
+
+        pub fn apply_icon(&self) -> IconApply {
+            let apply_result = app!().apply_app_icon(&self.icon, self.app_id.borrow().clone(), 48);
+
+            if apply_result == IconApply::Pending {
+                app!().register_pending_icon(&*self.obj(), |this| this.imp().apply_icon());
+
+                return IconApply::Pending;
+            }
+
+            apply_result
         }
     }
 
@@ -68,6 +83,7 @@ mod imp {
 
                 raw_pid: Cell::new(0),
                 dialog: Default::default(),
+                app_id: Default::default(),
             }
         }
     }

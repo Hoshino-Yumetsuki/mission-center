@@ -40,6 +40,7 @@ pub use process_details_dialog::ProcessDetailsDialog;
 pub use row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 pub use service_action_bar::ServiceActionBar;
 pub use service_details_dialog::ServiceDetailsDialog;
+pub use settings::is_tree_view;
 
 pub mod cached_icon;
 pub mod columns;

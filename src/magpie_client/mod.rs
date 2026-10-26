@@ -1,6 +1,6 @@
 /* magpie_client/mod.rs
  *
- * Copyright 2025 Romeo Calota
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::num::NonZeroU32;
 use std::sync::atomic;
 use std::sync::atomic::{AtomicBool, AtomicU64};
@@ -905,6 +905,7 @@ impl MagpieClient {
 
         let mut app_icons =
             magpie.app_icons(readings.running_apps.keys().map(|k| k.clone()).collect());
+        let mut apps_with_icons: HashSet<String> = app_icons.keys().cloned().collect();
 
         idle_add_once({
             let initial_readings = Readings {
@@ -1050,11 +1051,18 @@ impl MagpieClient {
                     timer.elapsed()
                 );
 
-                if let Some(missing) = app!().missing_icons(readings.running_apps.keys().collect())
-                {
-                    let app_icons = magpie.app_icons(missing);
+                let missing_icons: Vec<String> = readings
+                    .running_apps
+                    .keys()
+                    .filter(|app_id| !apps_with_icons.contains(*app_id))
+                    .cloned()
+                    .collect();
+
+                if !missing_icons.is_empty() {
+                    let app_icons = magpie.app_icons(missing_icons);
 
                     if !app_icons.is_empty() {
+                        apps_with_icons.extend(app_icons.keys().cloned());
                         idle_add_once({
                             move || {
                                 app!().merge_app_icons(app_icons);

@@ -1,6 +1,6 @@
 /* table_view/columns/name_cell.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ use gdk::pango::EllipsizeMode;
 use gtk::{gdk, glib, prelude::*, subclass::prelude::*};
 
 use crate::app;
-use crate::table_view::cached_icon::{CachedIcon, IconApply, LightCachedIcon};
+use crate::table_view::cached_icon::IconApply;
 use crate::table_view::row_model::{ContentType, RowModel};
 use crate::widgets::ListCell;
 
@@ -42,7 +42,6 @@ mod imp {
         sig_name: Cell<Option<glib::SignalHandlerId>>,
         sig_content_type: Cell<Option<glib::SignalHandlerId>>,
         sig_children_changed: Cell<Option<glib::SignalHandlerId>>,
-        sig_app_icons: Cell<Option<glib::SignalHandlerId>>,
 
         model: Cell<glib::WeakRef<RowModel>>,
         expander: RefCell<glib::WeakRef<gtk::TreeExpander>>,
@@ -60,7 +59,6 @@ mod imp {
                 sig_name: Cell::new(None),
                 sig_content_type: Cell::new(None),
                 sig_children_changed: Cell::new(None),
-                sig_app_icons: Cell::new(None),
 
                 model: Cell::new(glib::WeakRef::default()),
                 expander: RefCell::new(glib::WeakRef::default()),
@@ -101,21 +99,6 @@ mod imp {
             self.sig_light_icon.set(Some(sig_icon));
 
             self.apply_icon(model);
-
-            let sig_app_icons = app!().connect_local("app-icons-changed", false, {
-                let this = this.clone();
-                move |_| {
-                    let this = this.upgrade()?;
-                    let this = this.imp();
-
-                    let model = this.model.take().upgrade()?;
-                    this.apply_icon(&model);
-                    this.model.set(model.downgrade());
-
-                    None
-                }
-            });
-            self.sig_app_icons.set(Some(sig_app_icons));
 
             // Re-decode the icon when the device scale factor changes so raster icons stay sharp.
             // The image may not be realized yet at bind time (reporting a scale factor of 1), and
@@ -176,18 +159,24 @@ mod imp {
             expander.set_hide_expander(model.children().n_items() == 0);
         }
 
-        fn apply_icon(&self, model: &RowModel) {
-            if model.imp().light_icon().apply(&self.icon, None) == IconApply::Pending {
-                app!().register_pending_icon_cell(&self.obj());
+        fn apply_icon(&self, model: &RowModel) -> IconApply {
+            let apply_result = model.imp().light_icon().apply(&self.icon, None);
+
+            if apply_result == IconApply::Pending {
+                app!().register_pending_icon(&*self.obj(), |this| this.imp().reapply_icon());
+
+                return IconApply::Pending;
             }
+
+            apply_result
         }
 
-        pub fn reapply_icon(&self) -> IconApply {
+        fn reapply_icon(&self) -> IconApply {
             let Some(model) = self.model.take().upgrade() else {
                 return IconApply::Unavailable;
             };
 
-            let result = model.imp().light_icon().apply(&self.icon, None);
+            let result = self.apply_icon(&model);
             self.model.set(model.downgrade());
 
             result
@@ -198,10 +187,6 @@ mod imp {
 
             if let Some(sig_id) = self.sig_scale_factor.take() {
                 self.icon.disconnect(sig_id);
-            }
-
-            if let Some(sig_id) = self.sig_app_icons.take() {
-                app!().disconnect(sig_id);
             }
 
             let Some(model) = self.model.take().upgrade() else {
@@ -319,20 +304,6 @@ mod imp {
                 }
             };
         }
-
-        pub fn apply_light_icon(icon: &gtk::Image, cached_icon: LightCachedIcon) {
-            match cached_icon {
-                LightCachedIcon::Empty => {
-                    CachedIcon::apply_blank(icon);
-                }
-                LightCachedIcon::StringPayload(p) => {
-                    CachedIcon::set_icon_from_stringlike(icon, &p);
-                }
-                LightCachedIcon::AppCachedKey(k, w) => {
-                    app!().apply_app_icon(icon, k, w);
-                }
-            }
-        }
     }
 
     #[glib::object_subclass]
@@ -383,9 +354,5 @@ impl NameCell {
 
     pub fn unbind(&self) {
         self.imp().unbind();
-    }
-
-    pub fn reapply_icon(&self) -> IconApply {
-        self.imp().reapply_icon()
     }
 }

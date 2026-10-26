@@ -1,6 +1,6 @@
 /* table_view/columns/mod.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ use gtk::glib;
 use gtk::prelude::*;
 use std::cmp::Ordering;
 
-use super::settings::get_hide_is_zero;
+use super::settings::is_hide_zeroes_active;
 use crate::i18n::i18n;
 use crate::table_view::row_model::RowModel;
 
@@ -285,7 +285,7 @@ fn sort_order(column_view: &gtk::ColumnView) -> gtk::SortType {
 }
 
 pub fn set_label_zero(label: &LabelCell, usage: f32) {
-    if get_hide_is_zero() && usage.abs() == 0.0 {
+    if is_hide_zeroes_active() && usage.abs() == 0.0 {
         label.set_opacity(IS_ZERO_OPACITY)
     } else {
         label.set_opacity(1.0)

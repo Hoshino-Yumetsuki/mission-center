@@ -1,6 +1,6 @@
 /* apps_page/mod.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,11 @@ use gtk::{gio, glib, subclass::prelude::*};
 
 use crate::i18n::{i18n, ni18n_f};
 use crate::magpie_client::App;
-use crate::settings;
 use crate::table_view::cached_icon::LightCachedIcon;
 use crate::table_view::{
-    collect_process_subtree, update_apps, update_processes, ContentType, ProcessActionBar,
-    RowModel, RowModelBuilder, SectionType, SettingsNamespace, TableView,
+    collect_process_subtree, is_tree_view, update_app_icons, update_apps, update_processes,
+    ContentType, ProcessActionBar, RowModel, RowModelBuilder, SectionType, SettingsNamespace,
+    TableView,
 };
 use crate::widgets::Placeholder;
 
@@ -63,7 +63,6 @@ mod imp {
         pub processes_section: RowModel,
 
         pub root_process: Cell<u32>,
-        pub tree_view: Cell<bool>,
         pub running_apps: RefCell<HashMap<String, App>>,
 
         pub row_sorter: OnceCell<gtk::TreeListRowSorter>,
@@ -96,7 +95,6 @@ mod imp {
                     .build(),
 
                 root_process: Cell::new(1),
-                tree_view: Cell::new(true),
                 running_apps: RefCell::new(HashMap::new()),
 
                 row_sorter: OnceCell::new(),
@@ -311,14 +309,13 @@ impl AppsPage {
 
         imp.table_view.imp().update_column_titles(readings);
 
-        let tree_view = settings!().boolean("apps-services-tree-view");
-        let flat = !tree_view;
-        if tree_view != imp.tree_view.get() {
-            imp.apps_section.children().remove_all();
-            imp.processes_section.children().remove_all();
-            imp.tree_view.set(tree_view);
-        }
+        update_app_icons(
+            &readings.running_apps,
+            &readings.running_processes,
+            &mut imp.app_icons.borrow_mut(),
+        );
 
+        let flat = !is_tree_view();
         let use_merged_stats = imp.table_view.imp().use_merged_stats.get();
 
         let mut process_model_map = HashMap::new();
@@ -360,7 +357,6 @@ impl AppsPage {
             &readings.running_apps,
             &readings.running_processes,
             &process_model_map,
-            &mut imp.app_icons.borrow_mut(),
             &imp.apps_section.children(),
         );
 

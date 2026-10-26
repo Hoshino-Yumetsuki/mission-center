@@ -1,6 +1,6 @@
 /* table_view/models.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,17 +32,33 @@ use magpie_types::services::Service;
 use crate::table_view::cached_icon::LightCachedIcon;
 use crate::table_view::row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
-use super::settings::get_tree_view;
+use super::settings::is_tree_view;
+
+pub fn update_app_icons(
+    app_map: &HashMap<String, App>,
+    process_map: &HashMap<u32, Process>,
+    app_icons: &mut HashMap<u32, LightCachedIcon>,
+) {
+    app_icons.clear();
+
+    for app in app_map.values() {
+        let icon = LightCachedIcon::AppCachedKey(app.id.clone(), 16);
+        for pid in &app.pids {
+            app_icons.insert(*pid, icon.clone());
+        }
+    }
+
+    if !is_tree_view() {
+        propagate_app_icons(process_map, app_icons);
+    }
+}
 
 pub fn update_apps(
     app_map: &HashMap<String, App>,
     process_map: &HashMap<u32, Process>,
     process_model_map: &HashMap<u32, RowModel>,
-    app_icons: &mut HashMap<u32, LightCachedIcon>,
     list: &gio::ListStore,
 ) {
-    app_icons.clear();
-
     let mut has_died = HashSet::new();
     let mut does_exist = HashSet::new();
 
@@ -50,7 +66,7 @@ pub fn update_apps(
         let app_id = row_model.id();
         let app_id = app_id.to_string();
         if let Some(app) = app_map.get(&app_id) {
-            update_app(app, process_map, process_model_map, app_icons, row_model);
+            update_app(app, process_map, process_model_map, row_model);
 
             does_exist.insert(app_id);
         } else {
@@ -78,10 +94,8 @@ pub fn update_apps(
             .build();
         list.append(&row_model);
 
-        update_app(app, process_map, process_model_map, app_icons, row_model);
+        update_app(app, process_map, process_model_map, row_model);
     }
-
-    propagate_app_icons(process_map, app_icons);
 }
 
 pub fn update_processes(
@@ -267,7 +281,6 @@ fn update_app(
     app: &App,
     process_map: &HashMap<u32, Process>,
     process_model_map: &HashMap<u32, RowModel>,
-    app_icons: &mut HashMap<u32, LightCachedIcon>,
     row_model: RowModel,
 ) {
     let primary_processes = primary_processes(app, process_map);
@@ -278,7 +291,7 @@ fn update_app(
 
     // nothing to do/clear; it doesnt exist yet
     if primary_processes.is_empty() {
-        list.remove_all();
+        clear_children(&list);
 
         g_critical!(
             "MissionCenter::AppsPage",
@@ -292,7 +305,7 @@ fn update_app(
         .imp()
         .set_light_icon(LightCachedIcon::AppCachedKey(app.id.clone(), 24));
 
-    let displayed_processes = if !get_tree_view() {
+    let displayed_processes = if !is_tree_view() {
         let mut pids = HashSet::new();
         for pid in &primary_processes {
             collect_process_subtree(process_map, *pid, &mut pids);
@@ -302,23 +315,21 @@ fn update_app(
         primary_processes.clone()
     };
 
-    let mut has_died = HashSet::new();
-    let mut does_exist = HashSet::new();
-
-    list.iter::<RowModel>().flatten().for_each(|row_model| {
-        if displayed_processes.contains(&row_model.pid()) {
-            does_exist.insert(row_model.pid());
-        } else {
-            has_died.insert(row_model.pid());
-        }
-    });
-
-    list.retain(|row_model| {
-        row_model
+    list.retain(|object| {
+        object
             .downcast_ref::<RowModel>()
-            .map(|rm| !has_died.contains(&rm.pid()))
+            .map(|rm| {
+                displayed_processes.contains(&rm.pid())
+                    && process_model_map.get(&rm.pid()) == Some(rm)
+            })
             .unwrap_or(false)
     });
+
+    let does_exist: HashSet<u32> = list
+        .iter::<RowModel>()
+        .flatten()
+        .map(|rm| rm.pid())
+        .collect();
 
     let mut usage_stats = ProcessUsageStats::default();
 
@@ -327,10 +338,6 @@ fn update_app(
         .filter_map(|pid| process_map.get(pid))
     {
         usage_stats.merge(&process.merged_usage_stats(&process_map));
-    }
-
-    for pid in &app.pids {
-        app_icons.insert(*pid, LightCachedIcon::AppCachedKey(app.id.clone(), 16));
     }
 
     for pid in displayed_processes
@@ -375,8 +382,8 @@ fn update_process(
         set_service(&row_model, parent_service);
     }
 
-    if !get_tree_view() {
-        row_model.children().remove_all();
+    if !is_tree_view() {
+        clear_children(&row_model.children());
     } else {
         update_processes(
             process_map,
@@ -421,7 +428,7 @@ fn update_service(
 
         let app_children = row_model.children();
 
-        let process_pids = if !get_tree_view() {
+        let process_pids = if !is_tree_view() {
             let mut pids = HashSet::new();
             collect_process_subtree(process_map, pid, &mut pids);
             pids
@@ -448,9 +455,15 @@ fn update_service(
             &mut HashMap::new(),
         );
     } else {
-        row_model.children().remove_all();
+        clear_children(&row_model.children());
 
         set_empty_stats(&row_model);
+    }
+}
+
+fn clear_children(list: &gio::ListStore) {
+    if list.n_items() > 0 {
+        list.remove_all();
     }
 }
 
@@ -574,39 +587,16 @@ fn propagate_app_icons(
     process_map: &HashMap<u32, Process>,
     app_icons: &mut HashMap<u32, LightCachedIcon>,
 ) {
-    let mut parent = HashMap::new();
-    let mut has_parent = HashSet::new();
-    for process in process_map.values() {
-        for child in &process.children {
-            parent.insert(*child, process.pid);
-            has_parent.insert(*child);
-        }
-    }
-
-    let mut visited = HashSet::new();
-    let mut stack: Vec<u32> = process_map
-        .keys()
-        .filter(|pid| !has_parent.contains(pid))
-        .copied()
-        .collect();
-
+    let mut stack: Vec<u32> = app_icons.keys().copied().collect();
     while let Some(pid) = stack.pop() {
-        if !visited.insert(pid) {
+        let (Some(process), Some(icon)) = (process_map.get(&pid), app_icons.get(&pid).cloned())
+        else {
             continue;
-        }
+        };
 
-        if !app_icons.contains_key(&pid) {
-            if let Some(icon) = parent
-                .get(&pid)
-                .and_then(|parent_pid| app_icons.get(parent_pid))
-            {
-                let icon = icon.clone();
-                app_icons.insert(pid, icon);
-            }
-        }
-
-        if let Some(process) = process_map.get(&pid) {
-            for child in &process.children {
+        for child in &process.children {
+            if !app_icons.contains_key(child) {
+                app_icons.insert(*child, icon.clone());
                 stack.push(*child);
             }
         }

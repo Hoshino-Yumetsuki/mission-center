@@ -231,12 +231,4 @@ impl LightCachedIcon {
             }
         }
     }
-
-    pub fn apply_to_image(&self, image: &Image) -> bool {
-        self.apply(image, None) == IconApply::Applied
-    }
-
-    pub fn apply_to_image_custom_size(&self, image: &Image, w: i32) -> bool {
-        self.apply(image, Some(w)) == IconApply::Applied
-    }
 }
