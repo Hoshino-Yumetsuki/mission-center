@@ -7,20 +7,20 @@ description: |
    * Monitor overall or per-thread CPU usage
    * See system process, thread, and handle count, uptime, clock speed (base and current), cache sizes
    * Monitor RAM and Swap usage
-   * See a breakdown how the memory is being used by the system
+   * See a breakdown of how the memory is being used by the system
    * Monitor Disk utilization and transfer rates
    * Monitor network utilization and transfer speeds
    * See network interface information such as network card name, connection type (Wi-Fi or Ethernet), wireless speeds and frequency, hardware address, IP address
    * Monitor overall GPU usage, video encoder and decoder usage, memory usage and power consumption, powered by the popular NVTOP project
    * Monitor system fans
+   * Monitor battery charge and see detailed battery information
    * See a breakdown of resource usage by app and process
+   * View and control system services using systemd or OpenRC
    * Supports a minified summary view for simple monitoring
    * Use hardware accelerated rendering for all the graphs in an effort to reduce CPU and overall resource usage
-   * Uses GTK4 and Libadwaita
-   * Written in Rust
-  Limitations (there is ongoing work to overcome all of these):
-   * Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature monitoring
-   * When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section (Upstream issue: https://github.com/linuxmint/cinnamon/issues/12015)
+  Limitations:
+   * Per-process network monitoring requires manual setup, see the project wiki for more information
+   * Intel GPU monitoring is only supported for Broadwell and later GPUs
 grade: stable
 confinement: strict
 

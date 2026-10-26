@@ -1,4 +1,4 @@
-<img align="left"  src="https://gitlab.com/mission-center-devs/mission-center/-/raw/main/data/icons/hicolor/scalable/apps/io.missioncenter.MissionCenter.svg" alt="drawing" width="64"/> 
+<img float="left"  src="https://gitlab.com/mission-center-devs/mission-center/-/raw/main/data/icons/hicolor/scalable/apps/io.missioncenter.MissionCenter.svg" alt="drawing" width="64"/> 
 
 # Mission Center
 
@@ -11,18 +11,19 @@ Monitor your CPU, Memory, Disk, Network and GPU usage with [Mission Center](http
 * Monitor overall or per-thread CPU usage
 * See system process, thread, and handle count, uptime, clock speed (base and current), cache sizes
 * Monitor RAM and Swap usage
-* See a breakdown how the memory is being used by the system
+* See a breakdown of how the memory is being used by the system
 * Monitor Disk utilization and transfer rates
 * Monitor network utilization and transfer speeds
 * See network interface information such as network card name, connection type (Wi-Fi or Ethernet), wireless speeds and
   frequency, hardware address, IP address
 * Monitor overall GPU usage, video encoder and decoder usage, memory usage and power consumption, powered by the popular
   NVTOP project
+* Monitor system fans
+* Monitor battery charge and see detailed battery information
 * See a breakdown of resource usage by app and process
+* View and control system services using systemd or OpenRC
 * Supports a minified summary view for simple monitoring
 * Use hardware accelerated rendering for all the graphs in an effort to reduce CPU and overall resource usage
-* Uses GTK4 and Libadwaita
-* Written in Rust
 
 ## Limitations
 
@@ -30,10 +31,7 @@ Please note there is ongoing work to overcome all of these.
 
 * Per-process network monitoring requires manual setup,
   see [this page](https://gitlab.com/mission-center-devs/mission-center/-/wikis/Home/Nethogs) for more information.
-* Intel GPU monitoring is only supported for Broadwell and later GPUs; and does not support VRAM, power, or temperature
-  monitoring.
-* When using Linux Mint/Cinnamon, launched applications may not show up in the "Applications" section. (Upstream
-  issue: https://github.com/linuxmint/cinnamon/issues/12015)
+* Intel GPU monitoring is only supported for Broadwell and later GPUs.
 
 Please also note that as Mission Center is a libadwaita application, it will not follow system-defined stylesheets
 (themes).
@@ -88,7 +86,7 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 *Apps page*  
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-apps.png)
 
-*Services page*
+*Services page*  
 ![](https://gitlab.com/mission-center-devs/mission-center/-/raw/main/screenshots/0008-services.png)
 
 *Dark mode*  
@@ -97,143 +95,9 @@ Source code is available at [GitLab](https://gitlab.com/mission-center-devs/miss
 
   </details>
 
-## Building and running
+## Building
 
-### Building - Native
-
-**Requirements:**
-
-| Dependency                   | Comment                    | Minimum Version |
-|------------------------------|----------------------------|----------------:|
-| Meson                        |                            |           1.0.2 |
-| Rust                         |                            |            1.96 |
-| CMake                        |                            |            3.15 |
-| Python3                      |                            |            3.10 |
-| Python GObject Introspection | Used by Blueprint Compiler |             N/A |
-| DRM development libraries    |                            |             N/A |
-| GBM development libraries    |                            |             N/A |
-| udev development libraries   |                            |             N/A |
-| GTK 4                        |                            |            4.22 |
-| libadwaita                   |                            |             1.9 |
-
-**Build instructions**
-
-Note: A native build requires, at least, GTK 4.22 and libadwaita 1.9. That means ArchLinux >= 20260501, Fedora >= 44,
-Ubuntu >= 26.04.
-
-```bash
-# Avoid using "--depth=1" flag as it will not include the submodules which will result in failed build
-git clone https://gitlab.com/mission-center-devs/mission-center --recursive
-cd mission-center
-
-# On Ubuntu 26.04 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential cmake curl desktop-file-utils gettext git libadwaita-1-dev libdbus-1-dev libdrm-dev libgbm-dev libudev-dev meson pkg-config protobuf-compiler python3-gi python3-pip
-
-BUILD_ROOT="$(pwd)/build-meson-debug"
-
-meson setup "$BUILD_ROOT" -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
-ninja -C "$BUILD_ROOT"
-```
-
-If you want to run the application from the build directory (for development or debugging) some set up is required:
-
-```bash
-export PATH="$BUILD_ROOT/subprojects/magpie/src:$PATH"
-export GSETTINGS_SCHEMA_DIR="$BUILD_ROOT/data"
-export MC_MAGPIE_HW_DB="$BUILD_ROOT/subprojects/magpie/platform-linux/hwdb/hw.db"
-export MC_RESOURCE_DIR="$BUILD_ROOT/resources"
-
-glib-compile-schemas --strict "$(pwd)/data" && mv "$(pwd)/data/gschemas.compiled" "$BUILD_ROOT/data/"
-```
-
-And then to run the app:
-
-```bash
-"$BUILD_ROOT/src/missioncenter"
-```
-
-If you want to install the app just run:
-
-```bash
-ninja -C $BUILD_ROOT install
-```
-
-And run the app from your launcher or from the command-line:
-
-```bash
-missioncenter
-```
-
-### Building - AppImage
-
-**Note:** Creating a fully distro-agnostic AppImage requires an running the `support/create-appimage.sh` script in an
-ArchLinux container. The process described here is just informative.
-
-```bash
-# On Ubuntu 26.04 all dependencies, except for the Rust toolchain, can be installed with:
-sudo apt install build-essential cmake curl desktop-file-utils gettext git libadwaita-1-dev libdbus-1-dev libdrm-dev libgbm-dev libudev-dev meson pkg-config protobuf-compiler python3-gi python3-pip
-
-meson setup _build -Dbuildtype=debug # Alternatively pass `-Dbuildtype=release` for a release build
-ninja -C _build
-```
-
-And then build the AppImage:
-
-```bash
-meson install -C _build --no-rebuild --destdir "AppDir"
-
-appimage-builder --appdir _build/AppDir/ 
-```
-
-And run the app from the command-line:
-
-```bash
-./"Mission Center-${version}-${arch}.AppImage"
-```
-
-### Building - Flatpak
-
-**Requirements:**
-
-* Flatpak
-* Flatpak-Builder
-
-Add the `flathub` repo is not already present:
-
-```bash
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-```
-
-Install the required Flatpak runtimes and SDKs:
-
-```bash
-flatpak install -y \
-    org.freedesktop.Platform//26.08 \
-    org.freedesktop.Sdk//26.08 \
-    org.gnome.Platform//51 \
-    org.gnome.Sdk//51
-```
-
-Finally build a Flatpak package:
-
-```bash
-cd flatpak
-flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
-flatpak build-bundle repo missioncenter.flatpak io.missioncenter.MissionCenter
-```
-
-Install the package:
-
-```bash
-flatpak uninstall -y io.missioncenter.MissionCenter
-flatpak install -y missioncenter.flatpak
-```
-
-Run the app from your launcher or from the command-line:
-
-```bash
-flatpak run io.missioncenter.MissionCenter
-```
+See [BUILD.md](BUILD.md) for instructions on building Mission Center.
 
 ## Contributing
 
