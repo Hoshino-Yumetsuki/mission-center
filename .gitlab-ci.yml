@@ -114,6 +114,7 @@ stages:
         python3 -I ../support/nightly/flatpak-manifest.py io.missioncenter.MissionCenter.json "$VERSION_STRING" io.missioncenter.MissionCenter.nightly.json
         flatpak-builder --repo=repo --ccache --force-clean --default-branch=nightly build io.missioncenter.MissionCenter.nightly.json
         flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter nightly
+        flatpak build-bundle --runtime repo missioncenter-locale-$(arch).flatpak io.missioncenter.MissionCenter.Locale nightly
       else
         flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
         flatpak build-bundle repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter
@@ -250,6 +251,7 @@ flatpak-job-x86:
   artifacts:
     paths:
       - flatpak/missioncenter-x86_64.flatpak
+      - flatpak/missioncenter-locale-x86_64.flatpak
   rules:
     - if: "'true' == '$[[ inputs.BUILD_FLATPAK ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
@@ -271,6 +273,7 @@ flatpak-job-arm:
   artifacts:
     paths:
       - flatpak/missioncenter-aarch64.flatpak
+      - flatpak/missioncenter-locale-aarch64.flatpak
   rules:
     - if: "'true' == '$[[ inputs.BUILD_ARM ]]' && 'true' == '$[[ inputs.BUILD_FLATPAK ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
@@ -459,6 +462,31 @@ nightly-publish:
     - appimage-job-arm
     - snap-job-x86
     - snap-job-arm
+    - job: nightly-flatpak-repo
+      artifacts: false
+  rules:
+    - !reference [ ".shared", "nightly_on_main" ]
+
+nightly-flatpak-repo:
+  stage: publish
+  image: alpine:latest
+  interruptible: false
+  before_script:
+    - apk add --no-cache flatpak gnupg ostree
+  script:
+    - sh support/nightly/flatpak-repo.sh
+  pages: true
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 week
+  needs:
+    - job: test-job-x86
+      artifacts: false
+    - job: test-job-arm
+      artifacts: false
+    - flatpak-job-x86
+    - flatpak-job-arm
   rules:
     - !reference [ ".shared", "nightly_on_main" ]
 
