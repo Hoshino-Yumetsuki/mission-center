@@ -1982,12 +1982,20 @@ mod imp {
                                     network_connection.state() == ConnectionState::Unavailable;
                                 summary.set_opacity(if grey_out { 0.6 } else { 1. });
 
+                                let temperature = network_connection
+                                    .temperature_milli_k
+                                    .map(|v| ((v as i32 + MK_TO_0_C) as f64 / 1000.).round());
+
                                 if network_connection.state() != ConnectionState::Connected {
                                     summary.set_info1(i18n_f(
                                         "{}",
                                         &[network_connection.state().as_str_name()],
                                     ));
-                                    summary.set_info2("");
+                                    if let Some(v) = temperature {
+                                        summary.set_info2(format!("{v} °C"));
+                                    } else {
+                                        summary.set_info2("");
+                                    }
                                 } else {
                                     let send_speed = network_connection.tx_rate_bytes_ps;
                                     let rec_speed = network_connection.rx_rate_bytes_ps;
@@ -2002,7 +2010,11 @@ mod imp {
                                     );
 
                                     summary.set_info1(i18n_f("{}: {}", &["S", &sent_speed]));
-                                    summary.set_info2(i18n_f("{}: {}", &["R", &rect_speeed]));
+                                    let mut info2 = i18n_f("{}: {}", &["R", &rect_speeed]);
+                                    if let Some(v) = temperature {
+                                        let _ = write!(&mut info2, " ({v} °C)");
+                                    }
+                                    summary.set_info2(info2);
                                 }
 
                                 result &= page.update_readings(network_connection);

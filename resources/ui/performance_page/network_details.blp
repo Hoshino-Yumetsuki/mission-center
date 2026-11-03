@@ -323,6 +323,25 @@ Box root {
       halign: start;
       margin-end: 5;
 
+      visible: bind temperature.visible;
+
+      label: _("Temperature:");
+      ellipsize: end;
+    }
+
+    Label {
+      layout {
+        column: '1';
+        row: '10';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      margin-end: 5;
+
       label: _("Hardware address:");
       ellipsize: end;
     }
@@ -435,10 +454,26 @@ Box root {
       selectable: true;
     }
 
-    Label hw_address {
+    Label temperature {
       layout {
         column: '3';
         row: '9';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      visible: false;
+
+      selectable: true;
+    }
+
+    Label hw_address {
+      layout {
+        column: '3';
+        row: '10';
       }
 
       styles [

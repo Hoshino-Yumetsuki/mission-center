@@ -145,14 +145,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/cc/cc-1.10.0.crate",
-    "sha256": "86e055fa6e3e40ad6187ba25b6855eeb635d5271f8e0f0e1e9a5826b8d75bea0",
-    "dest": "cargo/vendor/cc-1.10.0"
+    "url": "https://static.crates.io/crates/cc/cc-1.11.0.crate",
+    "sha256": "375989decec1a0fa424442bed520fa12ede43a48475ce8c7417d2c69b32b5f6b",
+    "dest": "cargo/vendor/cc-1.11.0"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"86e055fa6e3e40ad6187ba25b6855eeb635d5271f8e0f0e1e9a5826b8d75bea0\", \"files\": {}}",
-    "dest": "cargo/vendor/cc-1.10.0",
+    "contents": "{\"package\": \"375989decec1a0fa424442bed520fa12ede43a48475ce8c7417d2c69b32b5f6b\", \"files\": {}}",
+    "dest": "cargo/vendor/cc-1.11.0",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -925,14 +925,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/log/log-0.4.34.crate",
-    "sha256": "f9f8bd3e56ce4dfc153cf470fffbfa98c7620958b312ca5c3a4b8d5181fd13c6",
-    "dest": "cargo/vendor/log-0.4.34"
+    "url": "https://static.crates.io/crates/log/log-0.4.35.crate",
+    "sha256": "5d15f86d12da44cd8d4ec3c73984537eb7f4cadcb9776a575a0a8a05ca11005c",
+    "dest": "cargo/vendor/log-0.4.35"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"f9f8bd3e56ce4dfc153cf470fffbfa98c7620958b312ca5c3a4b8d5181fd13c6\", \"files\": {}}",
-    "dest": "cargo/vendor/log-0.4.34",
+    "contents": "{\"package\": \"5d15f86d12da44cd8d4ec3c73984537eb7f4cadcb9776a575a0a8a05ca11005c\", \"files\": {}}",
+    "dest": "cargo/vendor/log-0.4.35",
     "dest-filename": ".cargo-checksum.json"
   },
   {
@@ -1471,14 +1471,14 @@
   {
     "type": "archive",
     "archive-type": "tar-gzip",
-    "url": "https://static.crates.io/crates/rustix/rustix-1.1.5.crate",
-    "sha256": "891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d",
-    "dest": "cargo/vendor/rustix-1.1.5"
+    "url": "https://static.crates.io/crates/rustix/rustix-1.1.6.crate",
+    "sha256": "e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa",
+    "dest": "cargo/vendor/rustix-1.1.6"
   },
   {
     "type": "inline",
-    "contents": "{\"package\": \"891efababe418670775f199f0d233d84843c227a0949a883ce15b37c78d6629d\", \"files\": {}}",
-    "dest": "cargo/vendor/rustix-1.1.5",
+    "contents": "{\"package\": \"e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa\", \"files\": {}}",
+    "dest": "cargo/vendor/rustix-1.1.6",
     "dest-filename": ".cargo-checksum.json"
   },
   {
