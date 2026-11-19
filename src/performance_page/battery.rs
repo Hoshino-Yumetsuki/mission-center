@@ -81,6 +81,7 @@ mod imp {
         #[property(get = Self::infobar_content, type = Option < gtk::Widget >)]
         pub infobar_content: OnceCell<gtk::Grid>,
 
+        pub graph_power: Cell<bool>,
         pub percentage: OnceCell<gtk::Label>,
         pub energy: OnceCell<gtk::Label>,
         pub power: OnceCell<gtk::Label>,
@@ -131,6 +132,7 @@ mod imp {
 
                 infobar_content: Default::default(),
 
+                graph_power: Cell::new(false),
                 percentage: Default::default(),
                 energy: Default::default(),
                 power: Default::default(),
@@ -360,7 +362,9 @@ mod imp {
 
             let mut energy_rate_graph;
             let power_supply = battery.power_supply.unwrap_or(false);
-            if power_supply && battery.state.is_some() {
+            this.graph_power
+                .set(power_supply && battery.power.is_some() && battery.state.is_some());
+            if this.graph_power.get() {
                 energy_rate_graph = DatasetGroup::new_with_fill(0.0);
                 energy_rate_graph.dataset_settings.scaling_settings =
                     ScalingSettings::StickyUpDownEqualMagnitude;
@@ -430,12 +434,14 @@ mod imp {
             }
 
             if let Some(voltage) = this.voltage.get() {
+                voltage.set_visible(battery.voltage.is_some());
                 if let Some(v) = &battery.voltage {
                     voltage.set_text(&crate::to_human_readable_nice(*v, &DataType::Volts));
                 }
             }
 
             if let Some(energy) = this.energy.get() {
+                energy.set_visible(battery.energy.is_some());
                 if let Some(v) = &battery.energy {
                     energy.set_text(&crate::to_human_readable_nice(
                         *v as f32 / 1000.,
@@ -485,6 +491,7 @@ mod imp {
             }
 
             if let Some(charge_cycles) = this.charge_cycles.get() {
+                charge_cycles.set_visible(battery.charge_cycles.is_some());
                 if let Some(v) = &battery.charge_cycles {
                     charge_cycles.set_text(&v.to_string())
                 }
@@ -534,7 +541,8 @@ mod imp {
                 }
             }
 
-            if battery.power_supply.unwrap_or(false) && battery.state.is_some() {
+            if this.graph_power.get() {
+                this.energy_rate_box.set_visible(battery.power.is_some());
                 if let Some(mut v) = &battery.power {
                     if let Some(v2) = &battery.state {
                         if *v2 == 2 {
@@ -595,7 +603,7 @@ mod imp {
     Energy Empty            {}
     Voltage Max (design):   {}
     Voltage Min (design):   {}
-    Powering System:        {}
+    System power supply:    {}
 
     Percentage:             {}
     State:                  {}{}
@@ -1044,7 +1052,9 @@ fn batterystate_to_str(state: &i32) -> String {
         1 => i18n("Charging"),
         2 => i18n("Discharging"),
         3 => i18n("Empty"),
-        4 | 5 | 6 => i18n("Full"),
+        4 => i18n("Full"),
+        5 => i18n("Waiting to charge"),
+        6 => i18n("Waiting to discharge"),
         _ => String::new(),
     }
 }
