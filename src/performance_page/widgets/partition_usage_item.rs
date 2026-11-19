@@ -168,6 +168,12 @@ impl PartitionUsageItem {
                 .set_text(&info.filesystem.as_deref().unwrap_or(&i18n("Unknown")));
         }
 
+        imp.used_amount.set_visible(info.used.is_some());
+        imp.total_amount.set_visible(info.size.is_some());
+        let has_usage = matches!((info.size, info.used), (Some(size), Some(_)) if size > 0);
+        imp.usage_bar.set_visible(has_usage);
+        imp.usage_pct.set_visible(has_usage);
+
         let mut part_usage_changed = false;
 
         if cache.part_used != info.used {

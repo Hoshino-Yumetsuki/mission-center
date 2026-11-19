@@ -65,6 +65,11 @@ message Disk {
   required uint64 sector_size = 19;
 
   map<string, PartitionInfo> partitions = 20;
+
+  // Absent means available, for compatibility with older collectors.
+  optional bool io_totals_available = 21;
+  optional bool io_rates_available = 22;
+  optional bool response_time_available = 23;
 }
 
 message PartitionInfo {

@@ -1205,6 +1205,23 @@ mod imp {
             }
         }
 
+        fn update_disk_summary(summary: &SummaryGraph, disk: &magpie_types::disks::Disk) {
+            let graph = summary.graph_widget();
+            let mut text = if cfg!(target_os = "macos") {
+                let (read, write) = disk::update_transfer_graph(&graph, disk);
+                i18n_f("R: {} · W: {}", &[&read, &write])
+            } else {
+                if disk.busy_percent.is_finite() {
+                    graph.add_data_point(vec![vec![disk.busy_percent]]);
+                }
+                crate::percent_or_na(disk.busy_percent)
+            };
+            if let Some(mk) = disk.temperature_milli_k {
+                text.push_str(&format!(" ({:.0} °C)", (mk as f64 - 273150.) / 1000.));
+            }
+            summary.set_info2(text);
+        }
+
         fn disk_page_name(disk_id: &str) -> String {
             format!("disk-{}", disk_id)
         }
@@ -1230,15 +1247,6 @@ mod imp {
             if let Some(model) = &disk.model {
                 summary.set_info1(model.as_ref());
             }
-            summary.set_info2(format!(
-                "{:.0}%{}",
-                disk.busy_percent,
-                if let Some(temp_mk) = disk.temperature_milli_k {
-                    format!(" ({:.0} °C)", (temp_mk as i32 + MK_TO_0_C) as f64 / 1000.)
-                } else {
-                    String::new()
-                }
-            ));
 
             summary.set_base_color(gdk::RGBA::new(
                 DISK_BASE_COLOR[0] as f32 / 255.,
@@ -1249,9 +1257,11 @@ mod imp {
 
             let settings = settings!();
 
-            let busy_pct = DatasetGroup::new();
-
-            summary.graph_widget().add_dataset(busy_pct);
+            if cfg!(target_os = "macos") {
+                disk::configure_transfer_graph(&summary.graph_widget());
+            } else {
+                summary.graph_widget().add_dataset(DatasetGroup::new());
+            }
             summary.graph_widget().connect_to_settings(&settings);
 
             let page = DiskPage::new(&page_name, &settings);
@@ -1938,54 +1948,29 @@ mod imp {
                         result &= page.update_readings(readings);
                     }
                     Pages::Disk(pages) => {
-                        let mut new_devices = Vec::new();
-                        let hide_index = readings.disks_info.len() == 1;
+                        let show_index = readings.disks_info.len() != 1;
                         for (index, disk) in readings.disks_info.iter().enumerate() {
-                            if let Some((summary, page)) =
-                                pages.get(&Self::disk_page_name(disk.id.as_ref()))
-                            {
-                                this.imp().update_disk_heading(
-                                    summary,
-                                    disk.kind.and_then(|k| k.try_into().ok()),
-                                    disk.id.as_ref(),
-                                    if hide_index { None } else { Some(index as i32) },
-                                );
-
-                                let graph_widget = summary.graph_widget();
-                                graph_widget.add_data_point(vec![vec![disk.busy_percent]]);
-                                if let Some(temp_mk) = disk.temperature_milli_k {
-                                    summary.set_info2(format!(
-                                        "{:.0}% ({:.0} °C)",
-                                        disk.busy_percent,
-                                        (temp_mk as i32 + MK_TO_0_C) as f64 / 1000.
-                                    ));
-                                } else {
-                                    summary.set_info2(format!("{:.0}%", disk.busy_percent));
+                            let index = show_index.then_some(index);
+                            let disk_id = index.map(|i| i as i32);
+                            let (summary, page) = match pages.entry(Self::disk_page_name(&disk.id)) {
+                                std::collections::hash_map::Entry::Occupied(entry) => {
+                                    entry.into_mut()
                                 }
-
-                                result &= page.update_readings(
-                                    if hide_index { None } else { Some(index) },
-                                    disk,
-                                );
-                            } else {
-                                new_devices.push(index);
-                            }
-                        }
-
-                        for new_device_index in new_devices {
-                            if readings.disks_info[new_device_index].capacity_bytes == 0 {
-                                continue;
-                            }
-                            let (disk_id, page) = this.imp().create_disk_page(
-                                readings,
-                                if hide_index {
-                                    None
-                                } else {
-                                    Some(new_device_index as i32)
-                                },
+                                std::collections::hash_map::Entry::Vacant(entry) => {
+                                    if disk.capacity_bytes == 0 {
+                                        continue;
+                                    }
+                                    entry.insert(this.imp().create_disk_page(readings, disk_id).1)
+                                }
+                            };
+                            this.imp().update_disk_heading(
+                                summary,
+                                disk.kind.and_then(|k| k.try_into().ok()),
+                                &disk.id,
+                                disk_id,
                             );
-
-                            pages.insert(disk_id, page);
+                            Self::update_disk_summary(summary, disk);
+                            result &= page.update_readings(index, disk);
                         }
                     }
                     Pages::Network(pages) => {

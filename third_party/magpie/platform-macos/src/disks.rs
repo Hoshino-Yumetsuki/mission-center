@@ -28,22 +28,49 @@ use magpie_platform::disks::{
 use magpie_platform::processes::Process;
 use magpie_platform::Mutex;
 
-#[derive(Debug, Clone, Default)]
-struct DiskStats {
-    read_bytes: u64,
-    write_bytes: u64,
-    busy_time_ns: u64,
-    total_ops: u64,
-    timestamp: Option<Instant>,
+#[derive(Clone, Default)]
+struct RawDiskStats {
+    bytes: Option<(u64, u64)>,
+    timings: Option<(u64, u64)>,
 }
 
-#[derive(Default, Clone)]
-struct RawDiskStats {
-    read_bytes: u64,
-    write_bytes: u64,
-    busy_time_ns: u64,
-    read_ops: u64,
-    write_ops: u64,
+struct DiskStats {
+    raw: RawDiskStats,
+    timestamp: Instant,
+}
+
+fn disk_rates(
+    raw: &RawDiskStats,
+    previous: Option<&DiskStats>,
+    now: Instant,
+) -> (Option<(u64, u64)>, Option<f32>) {
+    let Some(prev) = previous else {
+        return (None, None);
+    };
+    let elapsed = now.duration_since(prev.timestamp).as_secs_f64();
+    if elapsed <= 0.0 {
+        return (None, None);
+    }
+    let rates = raw
+        .bytes
+        .zip(prev.raw.bytes)
+        .and_then(|((read, write), (old_read, old_write))| {
+            Some((
+                (read.checked_sub(old_read)? as f64 / elapsed) as u64,
+                (write.checked_sub(old_write)? as f64 / elapsed) as u64,
+            ))
+        });
+    let response =
+        raw.timings
+            .zip(prev.raw.timings)
+            .and_then(|((time, ops), (old_time, old_ops))| {
+                let delta_ops = ops.checked_sub(old_ops)?;
+                if delta_ops == 0 {
+                    return None;
+                }
+                Some((time.checked_sub(old_time)? as f64 / delta_ops as f64 / 1_000_000.0) as f32)
+            });
+    (rates, response)
 }
 
 pub struct DisksCache {
@@ -63,9 +90,9 @@ impl magpie_platform::disks::DisksCache for DisksCache {
         let now = Instant::now();
         let disk_names = list_physical_disks();
         let mounts = list_mount_points();
-        let system_disk = detect_system_disk(&mounts);
-        let all_stats = read_all_disk_stats();
         let apfs = read_apfs_containers();
+        let system_disk = detect_system_disk(&mounts, &apfs);
+        let all_stats = read_all_disk_stats();
 
         let mut next_prev = HashMap::with_capacity(disk_names.len());
         let mut disks = Vec::with_capacity(disk_names.len());
@@ -73,44 +100,18 @@ impl magpie_platform::disks::DisksCache for DisksCache {
         for bsd_name in disk_names {
             let raw = all_stats.get(&bsd_name).cloned().unwrap_or_default();
             let info = diskutil_info(&bsd_name);
-            let (capacity, formatted) = capacity_for(&bsd_name, &info, &apfs);
+            let (capacity, formatted) = capacity_for(&info);
             let kind = detect_disk_type(&info);
             let ejectable = info.ejectable;
             let is_system = system_disk.as_deref() == Some(bsd_name.as_str());
-
-            let prev_stats = self.prev.get(&bsd_name).cloned().unwrap_or_default();
-            let prev_ts = prev_stats.timestamp.unwrap_or(now);
-            let elapsed_secs = now.duration_since(prev_ts).as_secs_f64().max(0.001);
-
-            let read_delta = raw.read_bytes.saturating_sub(prev_stats.read_bytes);
-            let write_delta = raw.write_bytes.saturating_sub(prev_stats.write_bytes);
-            let busy_delta_ns = raw.busy_time_ns.saturating_sub(prev_stats.busy_time_ns);
-            let ops_delta = raw
-                .read_ops
-                .saturating_add(raw.write_ops)
-                .saturating_sub(prev_stats.total_ops);
-
-            let read_speed = (read_delta as f64 / elapsed_secs) as u64;
-            let write_speed = (write_delta as f64 / elapsed_secs) as u64;
-            let busy_percent =
-                ((busy_delta_ns as f64 / (elapsed_secs * 1_000_000_000.0)) * 100.0).min(100.0)
-                    as f32;
-            let response_time_ms = if ops_delta > 0 {
-                (busy_delta_ns as f64 / ops_delta as f64 / 1_000_000.0) as f32
-            } else {
-                0.0
-            };
-
-            let partitions = partitions_for(&bsd_name, &mounts);
-
+            let (rates, response) = disk_rates(&raw, self.prev.get(&bsd_name), now);
+            let partitions = partitions_for(&bsd_name, &mounts, &apfs);
+            let totals = raw.bytes;
             next_prev.insert(
                 bsd_name.clone(),
                 DiskStats {
-                    read_bytes: raw.read_bytes,
-                    write_bytes: raw.write_bytes,
-                    busy_time_ns: raw.busy_time_ns,
-                    total_ops: raw.read_ops.saturating_add(raw.write_ops),
-                    timestamp: Some(now),
+                    raw,
+                    timestamp: now,
                 },
             );
 
@@ -120,14 +121,17 @@ impl magpie_platform::disks::DisksCache for DisksCache {
                 kind: kind.map(|k| k as i32),
                 smart_interface: None,
                 capacity_bytes: capacity,
-                formatted_bytes: Some(formatted),
+                formatted_bytes: formatted,
                 is_system,
-                busy_percent,
-                response_time_ms,
-                rx_speed_bytes_ps: read_speed,
-                rx_bytes_total: raw.read_bytes,
-                tx_speed_bytes_ps: write_speed,
-                tx_bytes_total: raw.write_bytes,
+                busy_percent: f32::NAN,
+                response_time_ms: response.unwrap_or(0.0),
+                rx_speed_bytes_ps: rates.map_or(0, |r| r.0),
+                rx_bytes_total: totals.map_or(0, |r| r.0),
+                tx_speed_bytes_ps: rates.map_or(0, |r| r.1),
+                tx_bytes_total: totals.map_or(0, |r| r.1),
+                io_totals_available: Some(totals.is_some()),
+                io_rates_available: Some(rates.is_some()),
+                response_time_available: Some(response.is_some()),
                 ejectable,
                 temperature_milli_k: None,
                 serial_number: info.serial,
@@ -211,111 +215,72 @@ struct DiskInfo {
     ejectable: bool,
     total_size: Option<u64>,
     sector_size: Option<u64>,
-    solid_state: bool,
+    solid_state: Option<bool>,
     nvme: bool,
     optical: bool,
     sd_card: bool,
-    virtual_disk: bool,
+}
+
+fn diskutil_plist(args: &[&str]) -> Option<plist::Value> {
+    let output = Command::new("/usr/sbin/diskutil")
+        .args(args)
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    plist::Value::from_reader_xml(output.stdout.as_slice()).ok()
 }
 
 fn list_physical_disks() -> Vec<String> {
-    let output = std::process::Command::new("/usr/sbin/diskutil")
-        .args(["list", "-plist"])
-        .output();
-    let all_disks = match output {
-        Ok(o) if o.status.success() => {
-            let text = String::from_utf8_lossy(&o.stdout);
-            parse_diskutil_list(&text)
-        }
-        _ => return vec![],
-    };
-
-    all_disks
-        .into_iter()
+    diskutil_plist(&["list", "-plist", "physical"])
+        .and_then(|v| v.as_dictionary()?.get("AllDisks")?.as_array().cloned())
+        .unwrap_or_default()
+        .iter()
+        .filter_map(|v| v.as_string())
         .filter(|name| {
-            let info = diskutil_info(name);
-            !info.virtual_disk
+            name.strip_prefix("disk")
+                .is_some_and(|n| !n.is_empty() && n.bytes().all(|b| b.is_ascii_digit()))
         })
+        .map(str::to_owned)
         .collect()
 }
 
-fn parse_diskutil_list(plist: &str) -> Vec<String> {
-    let mut disks = vec![];
-    let mut in_all_disks = false;
-    for line in plist.lines() {
-        let trimmed = line.trim();
-        if trimmed.contains("<key>AllDisks</key>") {
-            in_all_disks = true;
-            continue;
-        }
-        if in_all_disks {
-            if trimmed.starts_with("</array>") {
-                break;
-            }
-            if let Some(start) = trimmed.find("<string>disk") {
-                let rest = &trimmed[start + 8..];
-                if let Some(end) = rest.find("</string>") {
-                    let name = &rest[..end];
-                    let suffix = &name[4..];
-                    if suffix.chars().all(|c| c.is_ascii_digit()) {
-                        disks.push(name.to_string());
-                    }
-                }
-            }
-        }
-    }
-    disks
-}
-
 fn diskutil_info(bsd_name: &str) -> DiskInfo {
-    let output = std::process::Command::new("/usr/sbin/diskutil")
-        .args(["info", "-plist", bsd_name])
-        .output();
-    let text = match output {
-        Ok(o) if o.status.success() => String::from_utf8_lossy(&o.stdout).into_owned(),
-        _ => return DiskInfo::default(),
+    let Some(value) = diskutil_plist(&["info", "-plist", bsd_name]) else {
+        return DiskInfo::default();
     };
-
-    let mut info = DiskInfo::default();
-    info.model = parse_plist_str(&text, "MediaName").or_else(|| parse_plist_str(&text, "IORegistryEntryName"));
-    info.serial = parse_plist_str(&text, "IORegistryEntrySerialNumber")
-        .or_else(|| parse_plist_str(&text, "DeviceIdentifier"));
-    info.total_size = parse_plist_u64(&text, "TotalSize");
-    info.sector_size = parse_plist_u64(&text, "DeviceBlockSize");
-    info.ejectable = parse_plist_bool(&text, "Ejectable").unwrap_or(false);
-    info.virtual_disk = parse_plist_str(&text, "VirtualOrPhysical")
-        .map(|v| v.contains("Virtual"))
-        .unwrap_or(false);
-
-    let lower = text.to_lowercase();
-    info.solid_state = lower.contains("solid state")
-        || lower.contains("<string>ssd</string>")
-        || lower.contains("flash");
-    info.nvme = lower.contains("nvme");
-    info.optical = lower.contains("optical") || lower.contains("cd-rom") || lower.contains("dvd");
-    info.sd_card = lower.contains("sd card") || lower.contains("sdxc") || lower.contains("secure digital");
-
-    // Prefer human-readable model from plain `diskutil info` when plist MediaName is weak.
-    if info.model.is_none() {
-        if let Ok(o) = std::process::Command::new("/usr/sbin/diskutil")
-            .args(["info", bsd_name])
-            .output()
-        {
-            let plain = String::from_utf8_lossy(&o.stdout);
-            for line in plain.lines() {
-                if line.contains("Device / Media Name:") {
-                    if let Some(val) = line.splitn(2, ':').nth(1) {
-                        let v = val.trim();
-                        if !v.is_empty() {
-                            info.model = Some(v.to_string());
-                        }
-                    }
-                }
-            }
-        }
+    let Some(dict) = value.as_dictionary() else {
+        return DiskInfo::default();
+    };
+    let string = |key: &str| dict.get(key).and_then(|v| v.as_string()).map(str::to_owned);
+    let model = string("MediaName").or_else(|| string("IORegistryEntryName"));
+    let description = format!(
+        "{} {}",
+        model.as_deref().unwrap_or(""),
+        string("BusProtocol").unwrap_or_default()
+    )
+    .to_lowercase();
+    DiskInfo {
+        model,
+        serial: string("IORegistryEntrySerialNumber"),
+        total_size: dict.get("TotalSize").and_then(|v| v.as_unsigned_integer()),
+        sector_size: dict
+            .get("DeviceBlockSize")
+            .and_then(|v| v.as_unsigned_integer()),
+        ejectable: dict
+            .get("Ejectable")
+            .and_then(|v| v.as_boolean())
+            .unwrap_or(false),
+        solid_state: dict.get("SolidState").and_then(|v| v.as_boolean()),
+        nvme: description.contains("nvme"),
+        optical: description.contains("optical")
+            || description.contains("cd-rom")
+            || description.contains("dvd"),
+        sd_card: description.contains("sd card")
+            || description.contains("sdxc")
+            || description.contains("secure digital"),
     }
-
-    info
 }
 
 fn detect_disk_type(info: &DiskInfo) -> Option<DiskKind> {
@@ -325,26 +290,16 @@ fn detect_disk_type(info: &DiskInfo) -> Option<DiskKind> {
         Some(DiskKind::Sd)
     } else if info.nvme {
         Some(DiskKind::NvMe)
-    } else if info.solid_state {
-        Some(DiskKind::Ssd)
     } else {
-        Some(DiskKind::Hdd)
+        info.solid_state
+            .map(|ssd| if ssd { DiskKind::Ssd } else { DiskKind::Hdd })
     }
 }
 
-fn capacity_for(bsd_name: &str, info: &DiskInfo, apfs: &[ApfsContainerInfo]) -> (u64, u64) {
-    let total = info.total_size.unwrap_or(0);
-    let free: u64 = apfs
-        .iter()
-        .filter(|c| c.physical_store == bsd_name)
-        .map(|c| c.free)
-        .sum();
-    let formatted = if free > 0 {
-        total.saturating_sub(free)
-    } else {
-        total
-    };
-    (total, formatted)
+fn capacity_for(info: &DiskInfo) -> (u64, Option<u64>) {
+    // Formatted capacity is not the same as used space. diskutil does not
+    // reliably report it for every partition layout.
+    (info.total_size.unwrap_or(0), None)
 }
 
 fn read_all_disk_stats() -> HashMap<String, RawDiskStats> {
@@ -374,23 +329,17 @@ fn parse_all_ioreg_disk_stats(text: &str) -> HashMap<String, RawDiskStats> {
             }
             _ => continue,
         };
-        let read_bytes = extract_ioreg_stat(block, "Bytes (Read)").unwrap_or(0);
-        let write_bytes = extract_ioreg_stat(block, "Bytes (Write)").unwrap_or(0);
-        let total_time_read = extract_ioreg_stat(block, "Total Time (Read)").unwrap_or(0);
-        let total_time_write = extract_ioreg_stat(block, "Total Time (Write)").unwrap_or(0);
-        let busy_time_ns = total_time_read + total_time_write;
-        let read_ops = extract_ioreg_stat(block, "Operations (Read)").unwrap_or(0);
-        let write_ops = extract_ioreg_stat(block, "Operations (Write)").unwrap_or(0);
-        map.insert(
-            bsd,
-            RawDiskStats {
-                read_bytes,
-                write_bytes,
-                busy_time_ns,
-                read_ops,
-                write_ops,
-            },
-        );
+        let bytes = extract_ioreg_stat(block, "Bytes (Read)")
+            .zip(extract_ioreg_stat(block, "Bytes (Write)"));
+        let timings = extract_ioreg_stat(block, "Total Time (Read)")
+            .zip(extract_ioreg_stat(block, "Total Time (Write)"))
+            .and_then(|(r, w)| r.checked_add(w))
+            .zip(
+                extract_ioreg_stat(block, "Operations (Read)")
+                    .zip(extract_ioreg_stat(block, "Operations (Write)"))
+                    .and_then(|(r, w)| r.checked_add(w)),
+            );
+        map.insert(bsd, RawDiskStats { bytes, timings });
     }
     map
 }
@@ -459,124 +408,126 @@ fn list_mount_points() -> Vec<MountEntry> {
     }
 }
 
-fn detect_system_disk(mounts: &[MountEntry]) -> Option<String> {
-    for m in mounts {
-        if m.mnt == "/" {
-            let bsd = m.dev.trim_start_matches("/dev/");
-            return physical_disk_for_bsd(bsd);
-        }
-    }
-    None
-}
-
 fn strip_partition_suffix(bsd: &str) -> String {
-    if let Some(pos) = bsd.rfind('s') {
-        let suffix = &bsd[pos + 1..];
-        if !suffix.is_empty() && suffix.chars().all(|c| c.is_ascii_digit()) {
-            return bsd[..pos].to_string();
+    if let Some(rest) = bsd.strip_prefix("disk") {
+        if let Some((number, _)) = rest.split_once('s') {
+            return format!("disk{number}");
         }
     }
     bsd.to_string()
 }
 
-fn physical_disk_for_bsd(bsd: &str) -> Option<String> {
-    let output = std::process::Command::new("/usr/sbin/diskutil")
-        .args(["info", "-plist", bsd])
-        .output()
-        .ok()?;
-    if !output.status.success() {
-        return None;
-    }
-    let text = String::from_utf8_lossy(&output.stdout);
-
-    let parent = parse_plist_str(&text, "ParentWholeDisk")?;
-    if parent == bsd {
-        if let Some(store) = parse_plist_str(&text, "APFSPhysicalStore") {
-            return Some(strip_partition_suffix(&store));
-        }
-        return Some(parent);
-    }
-    physical_disk_for_bsd(&parent)
-}
-
 struct ApfsContainerInfo {
-    free: u64,
-    physical_store: String,
+    container: String,
+    physical_stores: Vec<String>,
+    volumes: HashMap<String, u64>,
 }
 
 fn read_apfs_containers() -> Vec<ApfsContainerInfo> {
-    let output = std::process::Command::new("/usr/sbin/diskutil")
-        .args(["apfs", "list", "-plist"])
-        .output();
-    let text = match output {
-        Ok(o) if o.status.success() => String::from_utf8_lossy(&o.stdout).into_owned(),
-        _ => return vec![],
+    let Some(value) = diskutil_plist(&["apfs", "list", "-plist"]) else {
+        return vec![];
     };
-
-    let mut result = vec![];
-    let mut current_free: u64 = 0;
-    let mut current_ceiling: u64 = 0;
-    let mut current_store = String::new();
-    let mut next_key = String::new();
-
-    for line in text.lines() {
-        let t = line.trim();
-
-        if t.starts_with("<key>") && t.ends_with("</key>") {
-            next_key = t[5..t.len() - 6].to_string();
-            continue;
-        }
-
-        if let Some(v) = t
-            .strip_prefix("<integer>")
-            .and_then(|s| s.strip_suffix("</integer>"))
-        {
-            if let Ok(n) = v.parse::<u64>() {
-                match next_key.as_str() {
-                    "CapacityFree" => current_free = n,
-                    "CapacityCeiling" => current_ceiling = n,
-                    _ => {}
-                }
-            }
-            continue;
-        }
-
-        if let Some(v) = t
-            .strip_prefix("<string>")
-            .and_then(|s| s.strip_suffix("</string>"))
-        {
-            if next_key == "DesignatedPhysicalStore" {
-                current_store = strip_partition_suffix(v);
-            }
-            continue;
-        }
-
-        if t == "</dict>" && !current_store.is_empty() && current_ceiling > 0 {
-            result.push(ApfsContainerInfo {
-                free: current_free,
-                physical_store: current_store.clone(),
-            });
-            current_free = 0;
-            current_ceiling = 0;
-            current_store.clear();
-        }
-    }
-    result
+    let Some(containers) = value
+        .as_dictionary()
+        .and_then(|d| d.get("Containers"))
+        .and_then(|v| v.as_array())
+    else {
+        return vec![];
+    };
+    containers
+        .iter()
+        .filter_map(|v| {
+            let d = v.as_dictionary()?;
+            let container = d.get("ContainerReference")?.as_string()?.to_owned();
+            let stores = d.get("PhysicalStores")?.as_array()?;
+            let physical_stores = stores
+                .iter()
+                .filter_map(|v| v.as_dictionary()?.get("DeviceIdentifier")?.as_string())
+                .map(strip_partition_suffix)
+                .collect();
+            let volumes = d
+                .get("Volumes")
+                .and_then(|v| v.as_array())
+                .into_iter()
+                .flatten()
+                .filter_map(|v| {
+                    let volume = v.as_dictionary()?;
+                    Some((
+                        volume.get("DeviceIdentifier")?.as_string()?.to_owned(),
+                        volume.get("CapacityInUse")?.as_unsigned_integer()?,
+                    ))
+                })
+                .collect();
+            Some(ApfsContainerInfo {
+                container,
+                physical_stores,
+                volumes,
+            })
+        })
+        .collect()
 }
 
-fn partitions_for(bsd_name: &str, mounts: &[MountEntry]) -> HashMap<String, PartitionInfo> {
+fn belongs_to_disk(bsd: &str, disk: &str, apfs: &[ApfsContainerInfo]) -> bool {
+    let whole = strip_partition_suffix(bsd);
+    whole == disk
+        || apfs
+            .iter()
+            .any(|c| c.container == whole && c.physical_stores.iter().any(|s| s == disk))
+}
+
+fn detect_system_disk(mounts: &[MountEntry], apfs: &[ApfsContainerInfo]) -> Option<String> {
+    let root = mounts
+        .iter()
+        .find(|m| m.mnt == "/")?
+        .dev
+        .strip_prefix("/dev/")?;
+    let whole = strip_partition_suffix(root);
+    apfs.iter()
+        .find(|c| c.container == whole)
+        .and_then(|c| c.physical_stores.first().cloned())
+        .or(Some(whole))
+}
+
+fn partitions_for(
+    bsd_name: &str,
+    mounts: &[MountEntry],
+    apfs: &[ApfsContainerInfo],
+) -> HashMap<String, PartitionInfo> {
     let mut map = HashMap::new();
     for m in mounts {
         let bsd = m.dev.trim_start_matches("/dev/");
-        if strip_partition_suffix(bsd) != bsd_name {
+        if !belongs_to_disk(bsd, bsd_name, apfs) {
             continue;
         }
         // Whole-disk mounts are rare; still include them.
         let key = bsd.to_string();
+        let apfs_volume = apfs
+            .iter()
+            .find(|c| c.container == strip_partition_suffix(bsd));
+        let volume = bsd
+            .rsplit_once('s')
+            .filter(|(parent, _)| {
+                parent
+                    .strip_prefix("disk")
+                    .is_some_and(|rest| rest.contains('s'))
+            })
+            .map_or(bsd, |(parent, _)| parent);
         map.entry(key.clone()).or_insert_with(|| PartitionInfo {
             devname: m.dev.clone(),
-            size: Some(m.total),
-            used: Some(m.used),
+            size: if apfs_volume.is_some() {
+                None
+            } else {
+                Some(m.total)
+            },
+            used: apfs_volume
+                .and_then(|c| c.volumes.get(volume).copied())
+                .or_else(|| {
+                    if apfs_volume.is_none() {
+                        Some(m.used)
+                    } else {
+                        None
+                    }
+                }),
             filesystem: m.filesystem.clone(),
             mountpoints: vec![m.mnt.clone()],
         });
@@ -587,68 +538,4 @@ fn partitions_for(bsd_name: &str, mounts: &[MountEntry]) -> HashMap<String, Part
         }
     }
     map
-}
-
-fn parse_plist_str(text: &str, key: &str) -> Option<String> {
-    let search = format!("<key>{key}</key>");
-    let mut next = false;
-    for line in text.lines() {
-        let t = line.trim();
-        if t == search {
-            next = true;
-            continue;
-        }
-        if next {
-            if let Some(v) = t
-                .strip_prefix("<string>")
-                .and_then(|s| s.strip_suffix("</string>"))
-            {
-                return Some(v.to_string());
-            }
-            return None;
-        }
-    }
-    None
-}
-
-fn parse_plist_u64(text: &str, key: &str) -> Option<u64> {
-    let search = format!("<key>{key}</key>");
-    let mut next = false;
-    for line in text.lines() {
-        let t = line.trim();
-        if t == search {
-            next = true;
-            continue;
-        }
-        if next {
-            if let Some(v) = t
-                .strip_prefix("<integer>")
-                .and_then(|s| s.strip_suffix("</integer>"))
-            {
-                return v.parse().ok();
-            }
-            return None;
-        }
-    }
-    None
-}
-
-fn parse_plist_bool(text: &str, key: &str) -> Option<bool> {
-    let search = format!("<key>{key}</key>");
-    let mut next = false;
-    for line in text.lines() {
-        let t = line.trim();
-        if t == search {
-            next = true;
-            continue;
-        }
-        if next {
-            return match t {
-                "<true/>" | "<true />" => Some(true),
-                "<false/>" | "<false />" => Some(false),
-                _ => None,
-            };
-        }
-    }
-    None
 }

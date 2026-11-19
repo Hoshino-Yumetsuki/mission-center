@@ -39,6 +39,32 @@ use crate::{app, settings, to_short_human_readable_time, DataType};
 
 use super::PageExt;
 
+pub(super) fn configure_transfer_graph(graph: &GraphWidget) {
+    let mut read = DatasetGroup::new();
+    read.dataset_settings.scaling_settings = ScalingSettings::ScaleUp;
+    read.dataset_settings.rounding_settings = RoundingSettings::Pow2;
+    let mut write = read.clone();
+    write.dataset_settings.fill = FillingSettings::None;
+    write.dataset_settings.dashed = true;
+    graph.add_dataset(read);
+    graph.add_dataset(write);
+    graph.connect_datasets(0, 1);
+    graph.connect_datasets(1, 0);
+}
+
+pub(super) fn update_transfer_graph(graph: &GraphWidget, disk: &Disk) -> (String, String) {
+    let (read, write) = if disk.io_rates_available == Some(false) {
+        (0.0, 0.0)
+    } else {
+        (disk.rx_speed_bytes_ps as f32, disk.tx_speed_bytes_ps as f32)
+    };
+    graph.add_data_point(vec![vec![read], vec![write]]);
+    (
+        crate::to_human_readable_nice(read, &DataType::DriveBytesPerSecond),
+        crate::to_human_readable_nice(write, &DataType::DriveBytesPerSecond),
+    )
+}
+
 mod imp {
     use super::*;
 
@@ -341,13 +367,11 @@ mod imp {
                 this.disk_id.set_text(&i18n_f("Drive ({})", &[&disk.id]));
             }
 
-            this.max_y.set_text(&crate::to_human_readable_nice(
-                this.disk_transfer_rate_graph.get_dataset_max_scale(0),
-                &DataType::DriveBytesPerSecond,
-            ));
-
-            this.usage_graph
-                .add_data_point(vec![vec![disk.busy_percent]]);
+            if disk.busy_percent.is_finite() {
+                this.usage_graph
+                    .add_data_point(vec![vec![disk.busy_percent]]);
+            }
+            this.usage_graph.set_visible(disk.busy_percent.is_finite());
 
             let cap = disk.formatted_bytes;
             this.infobar_content
@@ -360,7 +384,11 @@ mod imp {
 
             this.infobar_content
                 .active_time()
-                .set_text(&format!("{}%", disk.busy_percent.round() as u8));
+                .set_text(&if disk.busy_percent.is_finite() {
+                    format!("{}%", disk.busy_percent.round() as u8)
+                } else {
+                    i18n("N/A")
+                });
 
             if let Some(rotation_rate) = disk.rotation_rate {
                 this.infobar_content
@@ -371,41 +399,40 @@ mod imp {
                 this.infobar_content.set_rotation_visible(false);
             }
 
-            this.infobar_content
-                .avg_response_time()
-                .set_text(&format!("{:.2} ms", disk.response_time_ms));
+            this.infobar_content.avg_response_time().set_text(&if disk
+                .response_time_available
+                .unwrap_or(true)
+            {
+                format!("{:.2} ms", disk.response_time_ms)
+            } else {
+                i18n("N/A")
+            });
+            let (read, write) = update_transfer_graph(&this.disk_transfer_rate_graph, disk);
+            this.max_y.set_text(&crate::to_human_readable_nice(
+                this.disk_transfer_rate_graph.get_dataset_max_scale(0),
+                &DataType::DriveBytesPerSecond,
+            ));
+            this.infobar_content.read_speed().set_text(&read);
+            this.infobar_content.write_speed().set_text(&write);
 
-            this.disk_transfer_rate_graph.add_data_point(vec![
-                vec![disk.rx_speed_bytes_ps as f32],
-                vec![disk.tx_speed_bytes_ps as f32],
-            ]);
-            this.infobar_content
-                .read_speed()
-                .set_text(&crate::to_human_readable_nice(
-                    disk.rx_speed_bytes_ps as f32,
-                    &DataType::DriveBytesPerSecond,
-                ));
-
-            this.infobar_content
-                .total_read()
-                .set_text(&crate::to_human_readable_nice(
-                    disk.rx_bytes_total as f32,
-                    &DataType::DriveBytes,
-                ));
-
-            this.infobar_content
-                .write_speed()
-                .set_text(&crate::to_human_readable_nice(
-                    disk.tx_speed_bytes_ps as f32,
-                    &DataType::DriveBytesPerSecond,
-                ));
-
-            this.infobar_content
-                .total_write()
-                .set_text(&crate::to_human_readable_nice(
-                    disk.tx_bytes_total as f32,
-                    &DataType::DriveBytes,
-                ));
+            let totals_available = disk.io_totals_available.unwrap_or(true);
+            let display = |available, value, unit| {
+                if available {
+                    crate::to_human_readable_nice(value, unit)
+                } else {
+                    i18n("N/A")
+                }
+            };
+            this.infobar_content.total_read().set_text(&display(
+                totals_available,
+                disk.rx_bytes_total as f32,
+                &DataType::DriveBytes,
+            ));
+            this.infobar_content.total_write().set_text(&display(
+                totals_available,
+                disk.tx_bytes_total as f32,
+                &DataType::DriveBytes,
+            ));
 
             let stack = this.infobar_content.partitions_stack();
 
@@ -521,22 +548,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
-            let mut tx_dataset = DatasetGroup::new();
-            let mut rx_dataset = DatasetGroup::new();
-
-            rx_dataset.dataset_settings.scaling_settings = ScalingSettings::ScaleUp;
-            rx_dataset.dataset_settings.rounding_settings = RoundingSettings::Pow2;
-            rx_dataset.dataset_settings.dashed = false;
-
-            tx_dataset.dataset_settings.scaling_settings = ScalingSettings::ScaleUp;
-            tx_dataset.dataset_settings.rounding_settings = RoundingSettings::Pow2;
-            tx_dataset.dataset_settings.fill = FillingSettings::None;
-            tx_dataset.dataset_settings.dashed = true;
-
-            self.disk_transfer_rate_graph.add_dataset(rx_dataset);
-            self.disk_transfer_rate_graph.add_dataset(tx_dataset);
-
-            self.disk_transfer_rate_graph.connect_datasets(0, 1);
+            configure_transfer_graph(&self.disk_transfer_rate_graph);
 
             let usage_dataset = DatasetGroup::new();
 

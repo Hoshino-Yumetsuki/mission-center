@@ -809,6 +809,9 @@ impl DiskWrapper {
             sector_size: 512,
 
             partitions: Default::default(),
+            io_totals_available: None,
+            io_rates_available: None,
+            response_time_available: None,
         }
     }
 

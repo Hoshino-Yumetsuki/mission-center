@@ -891,9 +891,13 @@ mod imp {
                 .iter()
                 .filter(|disk| disk.capacity_bytes > 0)
                 .map(|disk| disk.busy_percent)
-                .fold(0., f32::max);
-            let drive_usage = drive_usage.round() as u32;
-            let _ = write!(&mut buffer, "{}\n{}%", i18n("Drive"), drive_usage);
+                .filter(|v| v.is_finite())
+                .reduce(f32::max);
+            if let Some(percent) = drive_usage {
+                let _ = write!(&mut buffer, "{}\n{percent:.0}%", i18n("Drive"));
+            } else {
+                let _ = write!(&mut buffer, "{}\n{}", i18n("Drive"), i18n("N/A"));
+            }
             self.drive_column.set_title(Some(buffer.as_str()));
 
             buffer.clear();
