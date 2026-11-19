@@ -1110,7 +1110,9 @@ mod imp {
                 dataset_b.dataset_settings.high_watermark = mem_info.mem_total as f32;
                 dataset_b.dataset_settings.scaling_settings = ScalingSettings::Fixed;
 
-                graph_widget.add_dataset(dataset_a);
+                if !cfg!(target_os = "macos") {
+                    graph_widget.add_dataset(dataset_a);
+                }
                 graph_widget.add_dataset(dataset_b);
 
                 // graph_widget.connect_datasets(0, 1);
@@ -1120,8 +1122,7 @@ mod imp {
             }
 
             summary.set_heading(i18n("Memory"));
-            summary.set_info1("0/0 GiB");
-            summary.set_info2("0%");
+            summary.set_info1(i18n("N/A"));
 
             summary.set_base_color(gdk::RGBA::new(
                 MEMORY_BASE_COLOR[0] as f32 / 255.,
@@ -1907,10 +1908,20 @@ mod imp {
 
                         let used_raw = total_raw.saturating_sub(mem_avail);
                         let graph_widget = summary.graph_widget();
-                        graph_widget.add_data_point(vec![
-                            vec![readings.mem_info.committed as _],
-                            vec![used_raw as _],
-                        ]);
+                        if total_raw == 0 {
+                            summary.set_info1(i18n("N/A"));
+                            summary.set_info2("");
+                            page.update_readings(readings);
+                            continue;
+                        }
+                        if cfg!(target_os = "macos") {
+                            graph_widget.add_data_point(vec![vec![used_raw as _]]);
+                        } else {
+                            graph_widget.add_data_point(vec![
+                                vec![mem_info.committed as _],
+                                vec![used_raw as _],
+                            ]);
+                        }
                         let used =
                             crate::to_human_readable_nice(used_raw as _, &DataType::MemoryBytes);
 

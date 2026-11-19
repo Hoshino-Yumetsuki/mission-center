@@ -328,6 +328,7 @@ mod imp {
             }
 
             if let Some(legend_commited) = this.legend_commited.get() {
+                legend_commited.set_visible(!cfg!(target_os = "macos"));
                 legend_commited
                     .set_resource(Some("/io/missioncenter/MissionCenter/line-dashed-mem.svg"));
             }
@@ -355,14 +356,15 @@ mod imp {
             }
 
             let mem_module_count = readings.mem_devices.len();
-            let set_pair_visible = |caption: &OnceCell<gtk::Label>, value: &OnceCell<gtk::Label>, visible: bool| {
-                if let Some(c) = caption.get() {
-                    c.set_visible(visible);
-                }
-                if let Some(v) = value.get() {
-                    v.set_visible(visible);
-                }
-            };
+            let set_pair_visible =
+                |caption: &OnceCell<gtk::Label>, value: &OnceCell<gtk::Label>, visible: bool| {
+                    if let Some(c) = caption.get() {
+                        c.set_visible(visible);
+                    }
+                    if let Some(v) = value.get() {
+                        v.set_visible(visible);
+                    }
+                };
 
             if mem_module_count > 0 {
                 let dev = &readings.mem_devices[0];
@@ -375,8 +377,12 @@ mod imp {
                     }
                 }
 
-                // Always show slots when we have device info (1 of 1 on Apple Silicon).
-                set_pair_visible(&this.slots_used_caption, &this.slots_used, true);
+                // Unified memory describes the RAM type, not a populated DIMM slot.
+                set_pair_visible(
+                    &this.slots_used_caption,
+                    &this.slots_used,
+                    !cfg!(target_os = "macos"),
+                );
                 if let Some(su) = this.slots_used.get() {
                     if readings.mem_info.max_devices > 0 {
                         su.set_text(&i18n_f(
@@ -423,6 +429,21 @@ mod imp {
         ) -> bool {
             let this = this.imp();
             let mem_info = &readings.mem_info;
+            let available = mem_info.mem_total != 0;
+            this.box_system_memory.set_visible(available);
+            if let Some(grid) = this.infobar_content.get() {
+                grid.set_visible(available);
+            }
+            if !available {
+                this.set_swap_space_graph_visible(false);
+                this.box_mem_composition.set_visible(false);
+                this.total_ram.set_text(&i18n("N/A"));
+                return true;
+            }
+            this.box_mem_composition
+                .set_visible(settings!().boolean("performance-page-memory-composition-visible"));
+            this.usage_graph
+                .set_all_datasets_max_scale(mem_info.mem_total as _);
 
             // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
             let mem_avail = if mem_info.mem_available > mem_info.mem_total {
@@ -432,11 +453,15 @@ mod imp {
             };
             let used = mem_info.mem_total.saturating_sub(mem_avail);
             let standby = mem_info.mem_total.saturating_sub(used + mem_info.mem_free);
-            this.usage_graph.add_data_point(vec![
-                vec![mem_info.committed as _],
-                vec![mem_info.dirty as _],
-                vec![used as _],
-            ]);
+            if cfg!(target_os = "macos") {
+                this.usage_graph.add_data_point(vec![vec![used as _]]);
+            } else {
+                this.usage_graph.add_data_point(vec![
+                    vec![mem_info.committed as _],
+                    vec![mem_info.dirty as _],
+                    vec![used as _],
+                ]);
+            }
 
             let total_mem = crate::to_human_readable_nice(
                 readings.mem_info.mem_total as _,
@@ -470,7 +495,11 @@ mod imp {
             let committed =
                 crate::to_human_readable_nice(mem_info.committed as _, &DataType::MemoryBytes);
             if let Some(cm) = this.committed.get() {
-                cm.set_text(&committed);
+                if cfg!(target_os = "macos") {
+                    cm.set_text(&i18n("N/A"));
+                } else {
+                    cm.set_text(&committed);
+                }
             }
 
             let cached =
@@ -491,8 +520,14 @@ mod imp {
                     su.set_visible(false);
                 }
             } else {
+                this.action_swap_usage.set_enabled(true);
+                this.set_swap_space_graph_visible(
+                    settings!().boolean("performance-page-memory-swap-visible"),
+                );
+                this.swap_usage_graph
+                    .set_all_datasets_max_scale(mem_info.swap_total as _);
                 let swap_available =
-                    crate::to_human_readable_nice(mem_info.swap_total as _, &DataType::MemoryBytes);
+                    crate::to_human_readable_nice(mem_info.swap_free as _, &DataType::MemoryBytes);
                 if let Some(sa) = this.swap_available.get() {
                     sa.set_visible(true);
                     sa.set_text(&swap_available);
@@ -554,7 +589,11 @@ mod imp {
             }
 
             if let Some(l) = this.tt_label_modified.get() {
-                l.set_text(&dirty)
+                if cfg!(target_os = "macos") {
+                    l.set_text(&i18n("N/A"));
+                } else {
+                    l.set_text(&dirty);
+                }
             }
 
             if let Some(l) = this.tt_label_standby.get() {
@@ -629,10 +668,12 @@ mod imp {
                     .unwrap_or(unknown.into()),
                 self.swap_available
                     .get()
+                    .filter(|l| l.is_visible())
                     .map(|l| l.label())
                     .unwrap_or(unknown.into()),
                 self.swap_used
                     .get()
+                    .filter(|l| l.is_visible())
                     .map(|l| l.label())
                     .unwrap_or(unknown.into()),
                 self.compressed
@@ -646,7 +687,7 @@ mod imp {
                 self.speed
                     .get()
                     .map(|l| {
-                        if !l.uses_markup() {
+                        if l.is_visible() && !l.uses_markup() {
                             l.label()
                         } else {
                             unknown.into()
@@ -656,7 +697,7 @@ mod imp {
                 self.slots_used
                     .get()
                     .map(|l| {
-                        if !l.uses_markup() {
+                        if l.is_visible() && !l.uses_markup() {
                             l.label()
                         } else {
                             unknown.into()
@@ -666,7 +707,7 @@ mod imp {
                 self.form_factor
                     .get()
                     .map(|l| {
-                        if !l.uses_markup() {
+                        if l.is_visible() && !l.uses_markup() {
                             l.label()
                         } else {
                             unknown.into()
@@ -676,7 +717,7 @@ mod imp {
                 self.ram_type
                     .get()
                     .map(|l| {
-                        if !l.uses_markup() {
+                        if l.is_visible() && !l.uses_markup() {
                             l.label()
                         } else {
                             unknown.into()
@@ -721,22 +762,26 @@ mod imp {
 
             let this = self.obj().clone();
 
-            let mut dataset_a = DatasetGroup::new();
-            dataset_a.dataset_settings.fill = FillingSettings::None;
-            dataset_a.dataset_settings.dashed = true;
+            if cfg!(target_os = "macos") {
+                self.usage_graph.add_dataset(DatasetGroup::new());
+            } else {
+                let mut dataset_a = DatasetGroup::new();
+                dataset_a.dataset_settings.fill = FillingSettings::None;
+                dataset_a.dataset_settings.dashed = true;
 
-            let mut dataset_b = DatasetGroup::new();
-            dataset_b.dataset_settings.fill = FillingSettings::None;
+                let mut dataset_b = DatasetGroup::new();
+                dataset_b.dataset_settings.fill = FillingSettings::None;
 
-            let dataset_c = DatasetGroup::new();
+                let dataset_c = DatasetGroup::new();
 
-            self.usage_graph.add_dataset(dataset_a);
-            self.usage_graph.add_dataset(dataset_b);
-            self.usage_graph.add_dataset(dataset_c);
+                self.usage_graph.add_dataset(dataset_a);
+                self.usage_graph.add_dataset(dataset_b);
+                self.usage_graph.add_dataset(dataset_c);
 
-            self.usage_graph.connect_datasets(0, 1);
-            self.usage_graph.connect_datasets(1, 2);
-            self.usage_graph.connect_datasets(2, 0);
+                self.usage_graph.connect_datasets(0, 1);
+                self.usage_graph.connect_datasets(1, 2);
+                self.usage_graph.connect_datasets(2, 0);
+            }
 
             self.usage_graph.connect_to_settings(&settings!());
 

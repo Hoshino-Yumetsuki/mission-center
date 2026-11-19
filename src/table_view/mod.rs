@@ -863,11 +863,7 @@ mod imp {
 
             buffer.clear();
 
-            let mem_total = if readings.mem_info.mem_total > 0 {
-                readings.mem_info.mem_total
-            } else {
-                1
-            };
+            let mem_total = readings.mem_info.mem_total;
 
             // https://gitlab.com/procps-ng/procps/-/blob/master/library/meminfo.c?ref_type=heads#L736
             let mem_avail = if readings.mem_info.mem_available > readings.mem_info.mem_total {
@@ -877,9 +873,16 @@ mod imp {
             };
 
             let memory_used = mem_total.saturating_sub(mem_avail);
-            let memory_usage = memory_used as f32 * 100. / mem_total as f32;
-            let memory_usage = memory_usage.round() as u32;
-            let _ = write!(&mut buffer, "{}\n{}%", i18n("Memory"), memory_usage);
+            if mem_total > 0 {
+                let _ = write!(
+                    &mut buffer,
+                    "{}\n{:.0}%",
+                    i18n("Memory"),
+                    memory_used as f32 * 100. / mem_total as f32
+                );
+            } else {
+                let _ = write!(&mut buffer, "{}\n{}", i18n("Memory"), i18n("N/A"));
+            }
             self.memory_column.set_title(Some(buffer.as_str()));
 
             buffer.clear();

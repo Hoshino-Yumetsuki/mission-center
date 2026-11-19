@@ -37,17 +37,13 @@ struct XswUsage {
     encrypted: libc::c_int,
 }
 
-
 fn refresh_memory(memory: &mut Memory) {
-    if let Some(total) = sysctl_u64("hw.memsize") {
-        memory.mem_total = total;
-    }
-
-    let (stats, page_size) = match read_vm_statistics() {
-        Some(value) => value,
-        None => return,
+    let (Some(total), Some((stats, page_size))) = (sysctl_u64("hw.memsize"), read_vm_statistics())
+    else {
+        *memory = Memory::default();
+        return;
     };
-    let (swap_total, swap_used) = read_swap_usage().unwrap_or((0, 0));
+    memory.mem_total = total;
     let page = page_size as u64;
     let pages_free = stats.free_count as u64;
     let pages_inactive = stats.inactive_count as u64;
@@ -59,59 +55,50 @@ fn refresh_memory(memory: &mut Memory) {
     let pages_compressor = stats.compressor_page_count as u64;
     let pages_stored_in_compressor = stats.total_uncompressed_pages_in_compressor as u64;
 
-    let in_use = (pages_anonymous + pages_wired + pages_compressor) * page;
-    let cached = (pages_file_backed + pages_purgeable) * page;
-    let real_free = pages_free.saturating_sub(pages_speculative);
-    let available = (real_free + pages_inactive) * page;
-    let committed =
-        (pages_anonymous + pages_wired + pages_stored_in_compressor) * page + swap_used;
-
-    memory.mem_free = real_free * page;
-    memory.mem_available = available;
-    memory.active = in_use;
+    let real_free = pages_free.saturating_sub(pages_speculative) * page;
+    let in_use =
+        (pages_anonymous.saturating_sub(pages_purgeable) + pages_wired + pages_compressor) * page;
+    memory.mem_free = real_free;
+    memory.mem_available = total.saturating_sub(in_use).max(real_free);
+    memory.active = stats.active_count as u64 * page;
     memory.inactive = pages_inactive * page;
-    memory.cached = cached;
+    memory.cached = (pages_file_backed + pages_purgeable) * page;
     memory.anon_pages = pages_anonymous * page;
-    memory.active_anon = pages_anonymous * page;
-    memory.active_file = pages_file_backed * page;
     memory.unevictable = pages_wired * page;
-    memory.m_locked = pages_wired * page;
-    memory.swap_total = swap_total;
-    memory.swap_free = swap_total.saturating_sub(swap_used);
-    memory.committed = committed;
+    if let Some((total, used)) = read_swap_usage() {
+        memory.swap_total = total;
+        memory.swap_free = total.saturating_sub(used);
+    } else {
+        memory.swap_total = 0;
+        memory.swap_free = 0;
+    }
     memory.zswap = pages_compressor * page;
     memory.zswapped = pages_stored_in_compressor * page;
 }
 
 fn read_vm_statistics() -> Option<(libc::vm_statistics64, u32)> {
     unsafe {
-        type Host = mach2::mach_types::host_t;
-        type Count = mach2::message::mach_msg_type_number_t;
         extern "C" {
-            fn mach_host_self() -> Host;
-            fn host_page_size(host: Host, size: *mut u32) -> i32;
-            fn host_statistics64(host: Host, flavor: i32, info: *mut i32, count: *mut Count) -> i32;
+            fn mach_host_self() -> libc::mach_port_t;
         }
         let host = mach_host_self();
-        let mut page_size = 0u32;
+        let page_size = libc::sysconf(libc::_SC_PAGESIZE);
         let mut stats: libc::vm_statistics64 = std::mem::zeroed();
-        let mut count = (std::mem::size_of::<libc::vm_statistics64>()
-            / std::mem::size_of::<u32>()) as Count;
-        let expected_count = count;
-        if host_page_size(host, &mut page_size) != 0
-            || page_size == 0
-            || host_statistics64(
-                host,
-                4,
-                &mut stats as *mut libc::vm_statistics64 as *mut i32,
-                &mut count,
-            ) != 0
-            || count < expected_count
-        {
-            None
-        } else {
-            Some((stats, page_size))
-        }
+        let mut count = libc::HOST_VM_INFO64_COUNT;
+        let result = libc::host_statistics64(
+            host,
+            libc::HOST_VM_INFO64,
+            (&raw mut stats).cast(),
+            &mut count,
+        );
+        mach2::mach_port::mach_port_deallocate(mach2::traps::mach_task_self(), host);
+        // Older kernels return the prefix they implement; we only need the compressor fields.
+        let needed = std::mem::offset_of!(
+            libc::vm_statistics64,
+            total_uncompressed_pages_in_compressor
+        ) + 8;
+        (result == 0 && page_size > 0 && (count as usize) * 4 >= needed)
+            .then_some((stats, page_size as u32))
     }
 }
 
@@ -126,7 +113,8 @@ fn read_swap_usage() -> Option<(u64, u64)> {
             &mut size,
             std::ptr::null_mut(),
             0,
-        ) == 0 && size >= std::mem::size_of::<XswUsage>()
+        ) == 0
+            && size >= std::mem::size_of::<XswUsage>()
         {
             Some((usage.total, usage.used))
         } else {
@@ -135,91 +123,42 @@ fn read_swap_usage() -> Option<(u64, u64)> {
     }
 }
 
-fn load_memory_devices() -> (Vec<MemoryDevice>, u64) {
-    // Apple Silicon reports aggregated memory via SPMemoryDataType (no DIMM slots).
-    let text = std::process::Command::new("/usr/sbin/system_profiler")
-        .args(["SPMemoryDataType", "-detailLevel", "mini"])
+fn load_memory_devices(total: u64) -> Option<MemoryDevice> {
+    // Apple Silicon exposes the type of its unified memory, not DIMM slots.
+    let output = std::process::Command::new("/usr/sbin/system_profiler")
+        .args(["SPMemoryDataType", "-xml", "-detailLevel", "mini"])
         .output()
-        .ok()
-        .filter(|o| o.status.success())
-        .map(|o| String::from_utf8_lossy(&o.stdout).into_owned())
-        .unwrap_or_default();
-
-    let mut ram_type = String::new();
-    let mut size_bytes = 0u64;
-    let mut manufacturer = String::new();
-
-    for line in text.lines() {
-        let t = line.trim();
-        if let Some(v) = t.strip_prefix("Type:") {
-            ram_type = v.trim().to_string();
-        } else if let Some(v) = t.strip_prefix("Memory:") {
-            size_bytes = parse_size_bytes(v.trim()).unwrap_or(0);
-        } else if let Some(v) = t.strip_prefix("Manufacturer:") {
-            manufacturer = v.trim().to_string();
-        }
-    }
-
-    if size_bytes == 0 {
-        size_bytes = sysctl_u64("hw.memsize").unwrap_or(0);
-    }
-
-    if size_bytes == 0 && ram_type.is_empty() {
-        return (Vec::new(), 0);
-    }
-
-    let locator = if manufacturer.is_empty() {
-        "System".to_string()
-    } else {
-        manufacturer
-    };
-
-    (
-        vec![MemoryDevice {
-            size: size_bytes,
-            form_factor: String::new(), // soldered / unknown — hide in UI
-            locator,
-            bank_locator: String::new(),
-            ram_type,
-            speed: 0, // MT/s not exposed — hide in UI
-            rank: 0,
-        }],
-        1,
-    )
-}
-
-fn parse_size_bytes(s: &str) -> Option<u64> {
-    let lower = s.to_lowercase();
-    let num: f64 = lower
-        .chars()
-        .take_while(|c| c.is_ascii_digit() || *c == '.')
-        .collect::<String>()
-        .parse()
         .ok()?;
-    if lower.contains("tb") {
-        Some((num * 1024.0 * 1024.0 * 1024.0 * 1024.0) as u64)
-    } else if lower.contains("gb") {
-        Some((num * 1024.0 * 1024.0 * 1024.0) as u64)
-    } else if lower.contains("mb") {
-        Some((num * 1024.0 * 1024.0) as u64)
-    } else {
-        Some(num as u64)
+    if !output.status.success() {
+        return None;
     }
+    let data = plist::Value::from_reader_xml(&output.stdout[..]).ok()?;
+    let item = data
+        .as_array()?
+        .first()?
+        .as_dictionary()?
+        .get("_items")?
+        .as_array()?
+        .first()?
+        .as_dictionary()?;
+    let ram_type = item.get("dimm_type")?.as_string()?.to_owned();
+    Some(MemoryDevice {
+        size: total,
+        ram_type,
+        ..Default::default()
+    })
 }
 
 impl magpie_platform::memory::MemoryCache for MemoryCache {
     fn new() -> Self {
         let mut memory = Memory::default();
         refresh_memory(&mut memory);
-        let (devices, max_devices) = load_memory_devices();
-        memory.max_devices = max_devices;
+        let devices = load_memory_devices(memory.mem_total).into_iter().collect();
         Self { memory, devices }
     }
 
     fn refresh(&mut self) {
         refresh_memory(&mut self.memory);
-        // Device topology is static; keep cached devices / max_devices.
-        self.memory.max_devices = self.devices.len() as u64;
     }
 
     fn memory(&self) -> &Memory {
