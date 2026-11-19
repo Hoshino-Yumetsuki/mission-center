@@ -35,10 +35,12 @@ use magpie_types::apps::icon::Icon;
 use crate::about_system_dialog::AboutSystemDialog;
 use crate::first_run_dialog::FirstRunDialog;
 use crate::table_view::cached_icon::{decode_icon, CachedIcon, DecodedIcon, IconApply, IconState};
-use crate::{config::VERSION, i18n::i18n, magpie_client::Readings};
+use crate::{i18n::i18n, magpie_client::Readings};
 
 pub const INTERVAL_STEP: f64 = 0.05;
 pub const BASE_INTERVAL: f64 = 1f64;
+
+const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 type PendingIcon = (WeakRef<gtk::Widget>, Box<dyn Fn(&gtk::Widget) -> IconApply>);
 
