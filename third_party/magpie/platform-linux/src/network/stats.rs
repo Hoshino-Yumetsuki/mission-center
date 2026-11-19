@@ -29,7 +29,7 @@ pub fn max_speed(if_name: &str) -> Option<u64> {
     let mut path: ArrayString<256> = ArrayString::new();
     let _ = write!(&mut path, "/sys/class/net/{if_name}/speed");
 
-    read_u64(path.as_str(), "max device speed").map(|speed| (speed / 8) * 1_000_000)
+    read_u64(path.as_str(), "max device speed").map(|speed| (speed * 1_000_000) / 8)
 }
 
 pub fn bytes_transfered(if_name: &str) -> (Option<u64>, Option<u64>) {

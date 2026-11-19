@@ -19,7 +19,7 @@
  */
 use crate::network::device_name::device_name;
 use crate::network::network_manager::NetworkManagerProxy;
-use crate::network::{ip, stats, util, wireless, TransferStats};
+use crate::network::{ip, stats, temperature, util, wireless, TransferStats};
 use crate::sync;
 use magpie_platform::network::{Connection, ConnectionKind, ConnectionState};
 use std::collections::HashMap;
@@ -28,6 +28,7 @@ use zbus::Proxy;
 
 pub struct NetworkWrapper {
     pub connection: Connection,
+    pub if_index: u32,
 
     pub device_proxy: Proxy<'static>,
 }
@@ -37,6 +38,7 @@ impl NetworkWrapper {
         rt: &Handle,
         proxy: &NetworkManagerProxy,
         bus: &zbus::Connection,
+        if_index: u32,
         iface: &str,
         device_name_cache: &mut HashMap<String, String>,
     ) -> Option<Self> {
@@ -82,19 +84,21 @@ impl NetworkWrapper {
             }
         };
 
-        conn.kind = match sync!(rt, device_proxy.get_property::<u64>("DeviceType")) {
-            Ok(p) => util::connection_kind_from_nm_id(p),
+        let device_type = match sync!(rt, device_proxy.get_property::<u32>("DeviceType")) {
+            Ok(t) => Some(t),
             Err(e) => {
                 log::warn!("Failed to get DeviceType for {iface}: {e}");
-                util::connection_kind_from_name(iface)
+                None
             }
-        } as i32;
+        };
+        conn.kind = util::connection_kind(device_type, iface) as i32;
 
         conn.id = iface.to_owned();
         conn.device_name = device_name(device_name_cache, &syspath);
 
         Some(Self {
             connection: conn,
+            if_index,
 
             device_proxy,
         })
@@ -154,6 +158,8 @@ impl NetworkWrapper {
         );
 
         self.connection.max_speed_bytes_ps = stats::max_speed(&self.connection.id);
+
+        self.connection.temperature_milli_k = temperature::temperature_milli_k(&self.connection.id);
 
         self.connection.ipv4_address =
             ip::ipv4_address(&self.connection.id, rt, bus, &self.device_proxy);

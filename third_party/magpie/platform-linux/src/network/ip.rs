@@ -1,6 +1,6 @@
 /* src/network/ip.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,34 +30,14 @@ pub fn ipv4_address(
     bus: &zbus::Connection,
     device_proxy: &Proxy,
 ) -> Option<String> {
-    let ipv4_config_path = match sync!(
+    ip_address(
+        if_name,
         rt,
-        device_proxy.get_property::<OwnedObjectPath>("Ip4Config")
-    ) {
-        Ok(p) => p,
-        Err(e) => {
-            log::warn!("Failed to get syspath for {if_name}: {e}");
-            return None;
-        }
-    };
-
-    let config_proxy = match sync!(
-        rt,
-        Proxy::new(
-            bus,
-            "org.freedesktop.NetworkManager",
-            ipv4_config_path,
-            "org.freedesktop.NetworkManager.IP4Config"
-        )
-    ) {
-        Ok(p) => p,
-        Err(e) => {
-            log::warn!("Failed to get IPv4 configuration proxy for {if_name}: {e}");
-            return None;
-        }
-    };
-
-    find_ip_address(if_name, rt, &config_proxy)
+        bus,
+        device_proxy,
+        "Ip4Config",
+        "org.freedesktop.NetworkManager.IP4Config",
+    )
 }
 
 pub fn ipv6_address(
@@ -66,37 +46,56 @@ pub fn ipv6_address(
     bus: &zbus::Connection,
     device_proxy: &Proxy,
 ) -> Option<String> {
-    let ipv4_config_path = match sync!(
+    ip_address(
+        if_name,
         rt,
-        device_proxy.get_property::<OwnedObjectPath>("Ip6Config")
+        bus,
+        device_proxy,
+        "Ip6Config",
+        "org.freedesktop.NetworkManager.IP6Config",
+    )
+}
+
+fn ip_address(
+    if_name: &str,
+    rt: &Handle,
+    bus: &zbus::Connection,
+    device_proxy: &Proxy,
+    config_property: &str,
+    config_interface: &'static str,
+) -> Option<String> {
+    let config_path = match sync!(
+        rt,
+        device_proxy.get_property::<OwnedObjectPath>(config_property)
     ) {
         Ok(p) => p,
         Err(e) => {
-            log::warn!("Failed to get syspath for {if_name}: {e}");
+            log::warn!("Failed to get {config_property} for {if_name}: {e}");
             return None;
         }
     };
+
+    // NetworkManager returns "/" when the device doesn't have an IP address
+    if config_path.as_str() == "/" {
+        return None;
+    }
 
     let config_proxy = match sync!(
         rt,
         Proxy::new(
             bus,
             "org.freedesktop.NetworkManager",
-            ipv4_config_path,
-            "org.freedesktop.NetworkManager.IP6Config"
+            config_path,
+            config_interface
         )
     ) {
         Ok(p) => p,
         Err(e) => {
-            log::warn!("Failed to get IPv6 configuration proxy for {if_name}: {e}");
+            log::warn!("Failed to get {config_interface} proxy for {if_name}: {e}");
             return None;
         }
     };
 
-    find_ip_address(if_name, rt, &config_proxy)
-}
-
-fn find_ip_address(if_name: &str, rt: &Handle, config_proxy: &Proxy) -> Option<String> {
     match sync!(rt, config_proxy.get_property::<Array>("AddressData")) {
         Ok(arr) => {
             for address in arr.inner() {
@@ -119,11 +118,8 @@ fn find_ip_address(if_name: &str, rt: &Handle, config_proxy: &Proxy) -> Option<S
                 }
             }
         }
-        Err(e) => {
-            log::error!("Failed to get syspath for {if_name}: {e}");
-            return None;
-        }
-    };
+        Err(e) => log::warn!("Failed to get {config_interface} AddressData for {if_name}: {e}"),
+    }
 
     None
 }

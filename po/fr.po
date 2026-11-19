@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-25 09:06+0300\n"
-"PO-Revision-Date: 2026-03-15 10:09+0000\n"
-"Last-Translator: Norbert V <norbert@vassy.com>\n"
+"PO-Revision-Date: 2026-08-08 11:51+0000\n"
+"Last-Translator: Florian <flo.site@zaclys.net>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fr/>\n"
 "Language: fr\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.17-dev\n"
+"X-Generator: Weblate 2026.9.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -265,7 +265,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 msgid "Gray out values that equal zero in the Apps view"
-msgstr ""
+msgstr "Afficher en gris les valeurs égales à zéro dans la vue Applications"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The column name by which the Apps page view is sorted"
@@ -354,10 +354,14 @@ msgstr "Afficher les informations réseaux par défaut"
 #: data/io.missioncenter.MissionCenter.gschema.xml:238
 msgid "Show virtual network devices (Docker, Multipass, Bridge) by default"
 msgstr ""
+"Afficher les périphériques réseau virtuels (Docker, Multipass, Bridge) par "
+"défaut"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:243
 msgid "Show other network devices (Bluetooth, InfiniBand, WWAN) by default"
 msgstr ""
+"Afficher d'autres périphériques réseau (Bluetooth, InfiniBand, WWAN) par "
+"défaut"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:248
 #: resources/ui/preferences/performance_page.blp:103
@@ -487,7 +491,6 @@ msgstr "Changer le _graphe pour"
 #: resources/ui/performance_page/cpu.blp:194
 #: resources/ui/performance_page/gpu.blp:219
 #: resources/ui/performance_page/gpu.blp:253
-#, fuzzy
 msgid "_Power Draw"
 msgstr "Consommation électrique"
 
@@ -507,7 +510,7 @@ msgstr "Vitesse d’horloge"
 #: resources/ui/performance_page/gpu.blp:234
 #: resources/ui/performance_page/gpu.blp:268
 msgid "_None"
-msgstr ""
+msgstr "_Aucun"
 
 #: resources/ui/performance_page/cpu.blp:215
 msgid "Show Kernel Times"
@@ -592,7 +595,7 @@ msgstr "_Ventilateur"
 #: resources/ui/performance_page/memory.blp:244
 #: resources/ui/performance_page/network.blp:142
 msgid "_Battery"
-msgstr ""
+msgstr "_Batterie"
 
 #: resources/ui/performance_page/cpu.blp:268
 #: resources/ui/performance_page/disk.blp:226
@@ -989,7 +992,7 @@ msgstr "WWN :"
 
 #: resources/ui/performance_page/disk_details.blp:338
 msgid "Serial:"
-msgstr "Serial :"
+msgstr "N° de série :"
 
 #: resources/ui/performance_page/disk_details.blp:357
 msgid "Rotation Rate"
@@ -997,7 +1000,7 @@ msgstr "Vitesse de rotation"
 
 #: resources/ui/performance_page/disk_details.blp:478
 msgid "Partitions"
-msgstr ""
+msgstr "Partitions"
 
 #: resources/ui/performance_page/cpu_details.blp:72
 msgid "Speed"
@@ -1061,7 +1064,7 @@ msgstr "Governor Cpufreq :"
 
 #: resources/ui/performance_page/cpu_details.blp:401
 msgid "Power preference:"
-msgstr "_Préférences de consommation d'énergie :"
+msgstr "Préférences de consommation d'énergie :"
 
 #: resources/ui/preferences/apps_services_page.blp:25
 #, fuzzy
@@ -1189,15 +1192,15 @@ msgstr "Afficher les informations du réseau"
 
 #: resources/ui/preferences/performance_page.blp:79
 msgid "Wired"
-msgstr ""
+msgstr "Filaire"
 
 #: resources/ui/preferences/performance_page.blp:83
 msgid "Wireless"
-msgstr ""
+msgstr "Sans fil"
 
 #: resources/ui/preferences/performance_page.blp:87
 msgid "VPN"
-msgstr ""
+msgstr "VPN"
 
 #: resources/ui/preferences/performance_page.blp:91
 #, fuzzy
@@ -1214,7 +1217,7 @@ msgstr "Autre"
 
 #: resources/ui/preferences/performance_page.blp:97
 msgid "Bluetooth, InfiniBand, WWAN"
-msgstr ""
+msgstr "Bluetooth, InfiniBand, WWAN"
 
 #: resources/ui/preferences/performance_page.blp:102
 msgid "Show GPU Information"
@@ -1236,7 +1239,7 @@ msgstr "Afficher les informations de la mémoire par défaut"
 
 #: resources/ui/preferences/units_page.blp:25
 msgid "Units"
-msgstr ""
+msgstr "Unités"
 
 #: resources/ui/preferences/units_page.blp:30
 msgid "Memory Usage Unit"
@@ -2182,11 +2185,11 @@ msgstr "{} {}{} o"
 #: src/performance_page/mod.rs:1724 src/performance_page/mod.rs:2626
 #, rust-format
 msgid "Battery {}"
-msgstr ""
+msgstr "Batterie {}"
 
 #: src/performance_page/mod.rs:1726 src/performance_page/mod.rs:2628
 msgid "Battery"
-msgstr ""
+msgstr "Batterie"
 
 #: src/performance_page/mod.rs:2391
 #, rust-format
@@ -2206,11 +2209,11 @@ msgstr "En échec"
 
 #: src/performance_page/network.rs:458
 msgid "Disconnected"
-msgstr ""
+msgstr "Déconnecté"
 
 #: src/performance_page/network.rs:459
 msgid "Disconnecting"
-msgstr ""
+msgstr "Déconnexion"
 
 #: src/performance_page/network.rs:460
 #, fuzzy
@@ -2224,7 +2227,7 @@ msgstr "Type de connection :"
 
 #: src/performance_page/network.rs:462
 msgid "Configuring"
-msgstr ""
+msgstr "Configuration"
 
 #: src/performance_page/network.rs:463
 msgid "Waiting for auth"
@@ -2340,11 +2343,11 @@ msgstr[0] "{} minute"
 msgstr[1] "{} minutes"
 
 #: src/main.rs:126 src/main.rs:205
-#, fuzzy, rust-format
+#, rust-format
 msgid "{} second"
 msgid_plural "{} seconds"
-msgstr[0] "{} seconde{}"
-msgstr[1] "{} seconde{}"
+msgstr[0] "{} seconde"
+msgstr[1] "{} secondes"
 
 #: src/main.rs:163
 #, rust-format

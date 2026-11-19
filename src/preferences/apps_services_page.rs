@@ -21,6 +21,7 @@
 use adw::{prelude::*, subclass::prelude::*, SwitchRow};
 use gtk::{gio, glib};
 
+use crate::i18n::i18n;
 use crate::settings;
 
 use super::connect_switch_to_setting;
@@ -31,6 +32,8 @@ mod imp {
     #[derive(gtk::CompositeTemplate, Default)]
     #[template(resource = "/io/missioncenter/MissionCenter/ui/preferences/apps_services_page.ui")]
     pub struct PreferencesAppsServicesPage {
+        #[template_child]
+        pub tree_view: TemplateChild<SwitchRow>,
         #[template_child]
         pub merged_process_stats: TemplateChild<SwitchRow>,
         #[template_child]
@@ -64,7 +67,29 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
+            settings!()
+                .bind("apps-services-tree-view", &self.tree_view.get(), "active")
+                .build();
             connect_switch_to_setting!(self.merged_process_stats, "apps-page-merged-process-stats");
+
+            self.tree_view
+                .bind_property("active", &*self.merged_process_stats, "sensitive")
+                .sync_create()
+                .build();
+
+            let merged_subtitle = self.merged_process_stats.subtitle().unwrap_or_default();
+            self.tree_view
+                .bind_property("active", &*self.merged_process_stats, "subtitle")
+                .transform_to(move |_, tree_view: bool| {
+                    if tree_view {
+                        Some(merged_subtitle.to_string())
+                    } else {
+                        Some(i18n("Only available in Tree View"))
+                    }
+                })
+                .sync_create()
+                .build();
+
             connect_switch_to_setting!(self.remember_sorting, "apps-page-remember-sorting");
             connect_switch_to_setting!(
                 self.remember_column_order,

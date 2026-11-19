@@ -1,6 +1,6 @@
 /* application.rs
  *
- * Copyright 2024 Romeo Calota
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ use adw::glib::g_warning;
 use adw::{prelude::*, subclass::prelude::*};
 use gtk::{
     gio,
-    glib::{self, g_critical, property::PropertySet},
+    glib::{self, g_critical, property::PropertySet, WeakRef},
     Image,
 };
 
@@ -34,11 +34,13 @@ use magpie_types::apps::icon::Icon;
 
 use crate::about_system_dialog::AboutSystemDialog;
 use crate::first_run_dialog::FirstRunDialog;
-use crate::table_view::cached_icon::CachedIcon;
+use crate::table_view::cached_icon::{decode_icon, CachedIcon, DecodedIcon, IconApply, IconState};
 use crate::{config::VERSION, i18n::i18n, magpie_client::Readings};
 
 pub const INTERVAL_STEP: f64 = 0.05;
 pub const BASE_INTERVAL: f64 = 1f64;
+
+type PendingIcon = (WeakRef<gtk::Widget>, Box<dyn Fn(&gtk::Widget) -> IconApply>);
 
 #[macro_export]
 macro_rules! app {
@@ -67,6 +69,7 @@ mod imp {
         pub window: RefCell<Option<crate::MissionCenterWindow>>,
 
         pub apps_icons_cache: Cell<Option<HashMap<String, CachedIcon>>>,
+        pub pending_icons: RefCell<Vec<PendingIcon>>,
     }
 
     impl Default for MissionCenterApplication {
@@ -76,6 +79,7 @@ mod imp {
                 sys_info: RefCell::new(None),
                 window: RefCell::new(None),
                 apps_icons_cache: Cell::new(None),
+                pending_icons: RefCell::new(Vec::new()),
             }
         }
     }
@@ -236,29 +240,133 @@ glib::wrapper! {
 }
 
 impl MissionCenterApplication {
-    pub fn apply_app_icon(&self, image: &Image, app_id: String, width: i32) -> bool {
+    pub fn apply_app_icon(&self, image: &Image, app_id: String, width: i32) -> IconApply {
         let this = self.imp();
 
-        // if it was default::default, then this has no side effects and we can safely return
         let Some(mut icons) = this.apps_icons_cache.take() else {
-            return false;
-        };
-
-        let retval = if let Some(mut icon) = icons.remove(&app_id) {
-            icon.apply_to_image(image, width);
-
-            icons.insert(app_id, icon);
-
-            true
-        } else {
             CachedIcon::apply_blank(image);
 
-            false
+            return IconApply::Pending;
+        };
+
+        let retval = match icons.get_mut(&app_id) {
+            Some(CachedIcon::CachedData((bytes, caches))) => {
+                let width = width * image.scale_factor().max(1);
+
+                match caches.get(&width) {
+                    Some(IconState::Ready(pixbuf)) => {
+                        #[allow(deprecated)]
+                        image.set_from_pixbuf(Some(pixbuf));
+
+                        IconApply::Applied
+                    }
+                    Some(IconState::Failed) => {
+                        CachedIcon::apply_blank(image);
+
+                        IconApply::Unavailable
+                    }
+                    Some(IconState::Pending) => {
+                        CachedIcon::apply_blank(image);
+
+                        IconApply::Pending
+                    }
+                    None => {
+                        caches.insert(width, IconState::Pending);
+                        self.decode_app_icon(app_id.clone(), width, bytes.clone());
+                        CachedIcon::apply_blank(image);
+
+                        IconApply::Pending
+                    }
+                }
+            }
+            Some(icon) => {
+                if icon.apply_to_image(image, width) {
+                    IconApply::Applied
+                } else {
+                    IconApply::Unavailable
+                }
+            }
+            None => {
+                CachedIcon::apply_blank(image);
+
+                IconApply::Pending
+            }
         };
 
         this.apps_icons_cache.set(Some(icons));
 
         retval
+    }
+
+    fn decode_app_icon(&self, app_id: String, width: i32, bytes: glib::Bytes) {
+        let imp = self.imp().downgrade();
+
+        glib::spawn_future_local(async move {
+            let Some(imp) = imp.upgrade() else {
+                return;
+            };
+
+            let decoded = gio::spawn_blocking(move || decode_icon(&bytes, width))
+                .await
+                .ok()
+                .flatten();
+
+            let state = match decoded.and_then(DecodedIcon::into_pixbuf) {
+                Some(pixbuf) => IconState::Ready(pixbuf),
+                None => IconState::Failed,
+            };
+
+            if let Some(mut icons) = imp.apps_icons_cache.take() {
+                if let Some(CachedIcon::CachedData((_, caches))) = icons.get_mut(&app_id) {
+                    caches.insert(width, state);
+                }
+
+                imp.apps_icons_cache.set(Some(icons));
+            }
+
+            imp.obj().retry_pending_icons();
+        });
+    }
+
+    fn retry_pending_icons(&self) {
+        let mut waiting = self.imp().pending_icons.take();
+        waiting.retain(|(widget, reapply)| {
+            widget
+                .upgrade()
+                .is_some_and(|widget| reapply(&widget) == IconApply::Pending)
+        });
+
+        let mut pending_icons = self.imp().pending_icons.borrow_mut();
+        waiting.retain(|(widget, _)| {
+            let widget = widget.upgrade();
+            !pending_icons
+                .iter()
+                .any(|(pending, _)| pending.upgrade() == widget)
+        });
+        pending_icons.append(&mut waiting);
+    }
+
+    pub fn register_pending_icon<W: IsA<gtk::Widget>>(
+        &self,
+        widget: &W,
+        reapply: fn(&W) -> IconApply,
+    ) {
+        let widget = widget.upcast_ref::<gtk::Widget>();
+        let mut pending_icons = self.imp().pending_icons.borrow_mut();
+
+        if pending_icons
+            .iter()
+            .any(|(pending, _)| pending.upgrade().is_some_and(|pending| &pending == widget))
+        {
+            return;
+        }
+
+        let reapply = move |widget: &gtk::Widget| {
+            widget
+                .downcast_ref::<W>()
+                .map_or(IconApply::Unavailable, reapply)
+        };
+        pending_icons.push((widget.downgrade(), Box::new(reapply)));
     }
 
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
@@ -272,7 +380,7 @@ impl MissionCenterApplication {
         g_message!(
             "MissionCenter::Application",
             "Starting Mission Center v{}",
-            env!("CARGO_PKG_VERSION")
+            VERSION
         );
 
         this
@@ -316,7 +424,9 @@ impl MissionCenterApplication {
     pub fn set_app_icons(&self, icons: HashMap<String, Icon>) {
         self.imp()
             .apps_icons_cache
-            .set(Some(CachedIcon::convert_hash_map(icons)))
+            .set(Some(CachedIcon::convert_hash_map(icons)));
+
+        self.retry_pending_icons();
     }
 
     pub fn merge_app_icons(&self, icons: HashMap<String, Icon>) {
@@ -334,34 +444,8 @@ impl MissionCenterApplication {
         }
 
         self.imp().apps_icons_cache.set(Some(old));
-    }
 
-    pub fn missing_icons(&self, mut appids: Vec<&String>) -> Option<Vec<String>> {
-        let this = self.imp();
-        let icons = this.apps_icons_cache.take();
-
-        this.apps_icons_cache.set(icons.clone());
-
-        let Some(apps) = icons else {
-            return Some(appids.drain(..).map(|app_id| app_id.to_string()).collect());
-        };
-
-        let out: Vec<_> = appids
-            .drain(..)
-            .filter_map(|appid| {
-                if !apps.contains_key(appid) {
-                    Some(appid.clone())
-                } else {
-                    None
-                }
-            })
-            .collect();
-
-        if out.is_empty() {
-            None
-        } else {
-            Some(out)
-        }
+        self.retry_pending_icons();
     }
 
     pub fn setup_animations(&self) {
@@ -537,51 +621,79 @@ impl MissionCenterApplication {
             .website("https://missioncenter.io")
             .release_notes(r#"<p>Noteworthy changes:</p>
 <ul>
-<li>Overhaul Services Page to include viewing child processes, user services, filtering on status, and a more efficient backend</li>
-<li>Add an About System dialog that can be accessed from the context menu</li>
+<li>Add a new Battery page to the Performance tab, with charge graphs and detailed battery information (@jlo62)</li>
+<li>Show per-partition usage details on the disk page, including used and free space (@jojo2357)</li>
+<li>Overhaul the graphing backend: smoother animations and rendering, a new loading shimmer while data loads, and less stuttering on application startup (@jojo2357, @kicsyromy)</li>
+<li>Improve application detection, fixing wrong names and icons, phantom entries for PWAs, and constantly cycling processes (@kicsyromy)</li>
+<li>Improvements to the Snap package, which was upgraded to the core24 snap (@kicsyromy)</li>
+<li>Improvements to the AppImage package which now uses quick-sharun, is smaller and no longer depends on FUSE (@kicsyromy)</li>
 </ul>
 <p>Minor features:</p>
 <ul>
-<li>Update to GNOME 49 Platform</li>
-<li>Show CPU power Draw</li>
-<li>Add ability to send various OS signals to processes</li>
+<li>Add a second CPU graph that can show temperature, power draw or CPU frequency (@jlo62)</li>
+<li>Add memory compression (zRAM/zswap) statistics to the Memory page (@timatgca)</li>
+<li>Refactor and redesign the Preferences dialog (@kicsyromy)</li>
+<li>Allow disabling entire device categories and individual network types (@kicsyromy)</li>
+<li>Update to GNOME 50 Platform (@kicsyromy)</li>
+<li>Pause UI refreshes by holding the CTRL key, just like the Windows Task Manager (@jlo62)</li>
+<li>More accurate per-process memory usage using a hybrid PSS approximation (@kicsyromy)</li>
+<li>Show per-process swap usage instead of shared memory in the Apps page (@jlo62)</li>
+<li>Allow sending process signals that require elevation via `pkexec` (@jojo2357)</li>
+<li>Add an option to select what the middle GPU graph displays (@jlo62)</li>
+<li>Add a first run dialog and setup script for advanced features (@jlo62)</li>
+<li>Add `--app-id`/`-a` command-line flag for setting custom application IDs (@kicsyromy)</li>
+<li>Collapse and expand rows using double-click or the left and right arrow keys (@jojo2357)</li>
+<li>Display the network connection state in the network details sidebar (@jojo2357)</li>
+<li>Show total GPU memory on the graph when GTT is not available (@jlo62)</li>
+<li>Add an option to gray out zero values in the Apps page (@jlo62)</li>
+<li>Enhance the About System dialog with more information and better copy functionality (@jlo62)</li>
+<li>Add and rebind keyboard shortcuts, including Alt+1/2/3 for switching pages and F9 for toggling the sidebar (@jlo62)</li>
+<li>Add a visual indicator when CPU speed falls back to BogoMIPS (@bleys1)</li>
+<li>Move icon extraction to backend to improve portability and remote monitoring (@jojo2357)</li>
 </ul>
 <p>Bug fixes:</p>
 <ul>
-<li>Ignore SMART temps of 0 Kelvin</li>
-<li>Improve fans configuration</li>
-<li>Reduce label formatter overhead</li>
-<li>For GPUs, fix reading of max_link_{width,speed} and make reading current values more robust</li>
-<li>Fix MemoryCompositionWidget tooltip offset</li>
-<li>Reduce CPU usage when fetching and updating data</li>
+<li>Fix pahntom CPU usage spikes when the system is idle (@kicsyromy)</li>
+<li>Fix L3 and L4 cache sizes on CPUs with SNC-like topologies (@kicsyromy)</li>
+<li>Treat ZFS ARC as free memory (@kicsyromy)</li>
+<li>Fix blurry application icons on HiDPI displays (@kicsyromy)</li>
+<li>Fix the SMART dialog so that it properly adapts to narrow widths (@kicsyromy)</li>
+<li>Detect drives becoming ejectable at runtime (@jojo2357)</li>
+<li>Fix a race condition in the Apps page (@jojo2357)</li>
+<li>Fix graphing inconsistency on the disk page (@jojo2357)</li>
+<li>Read CPU temperatures from the hwmon directory used by the SteamDeck (@jlo62)</li>
 </ul>
 <p>Translation updates</p>
 <ul>
-<li>Arabic by jonnysemon</li>
-<li>Basque by Ibai Oihanguren Sala</li>
-<li>Belarusian by Yahor, teacond</li>
-<li>Chinese (Simplified Han script) by flywater</li>
-<li>Czech by Fjuro, erindesu, orangesunny, pavelbo</li>
-<li>Dutch by philip.goto, Klinton_</li>
-<li>Estonian by IndrekHaav</li>
-<li>Finnish by artnay</li>
-<li>French by Norbert V</li>
-<li>Galician by Espasant3</li>
-<li>German by Gian Veronese, Real Tehreal, dbstf</li>
-<li>Hebrew by yarons</li>
-<li>Hungarian by therealmate, KAMI911</li>
-<li>Italian by FrecceNere, Kryotek, amivaleo</li>
-<li>Irish by aindriu80</li>
-<li>Japanese by shryt0206, rainy_sunset</li>
-<li>Norwegian Bokmål by Telaneo</li>
-<li>Polish by keloH, Real_Microwave, Cool guy</li>
-<li>Portuguese by Raphael Campos, SantosSi</li>
-<li>Portuguese (Brazil) by Raphael Campos, danick8989, flyrio</li>
-<li>Russian by teacond</li>
-<li>Spanish by nolddor, BrYellow, maxdesigna7x</li>
-<li>Tamil by tace16</li>
-<li>Turkish by yigitalcks, yakushabb</li>
-<li>Ukrainian by Ethermidate</li>
+<li>Basque Ibai Oihanguren Sala</li>
+<li>Bulgarian Alexander Stoilov</li>
+<li>Catalan Xusi Fons Jaime Muñoz Martín</li>
+<li>Chinese (Traditional Han script) Kisaragi Hiu 默想刃Mokuso YB</li>
+<li>Chinese (Simplified Han script) lumingzh</li>
+<li>Czech Pavel Borecki</li>
+<li>Dutch Luc van der Werf</li>
+<li>Finnish Henri Koivuranta Jiri Grönroos veiskiboi</li>
+<li>French Norbert V Nota Inutilis ziyad arif Christophe Jaillet</li>
+<li>Georgian Temuri Doghonadze</li>
+<li>German Aircraft192 anon</li>
+<li>Indonesian Arif Budiman</li>
+<li>Irish Aindriú Mac Giolla Eoin</li>
+<li>Italian Pierfrancesco Passerini</li>
+<li>Kabyle ButterflyOfFire</li>
+<li>Korean murllock329</li>
+<li>Norwegian Bokmål ovl-1 Telaneo</li>
+<li>Occitan Quentin PAGÈS</li>
+<li>Polish NooB9496</li>
+<li>Portuguese Hugo Carvalho Jonathan Teixeira</li>
+<li>Portuguese (Brazil) Rafael Henrique Rubens Stuginski Jr</li>
+<li>Russian Anatoly Bogomolov Maxim</li>
+<li>Serbian Марко М. Костић</li>
+<li>Spanish Xusi Fons</li>
+<li>Swedish Game Nobz Jonas Viktor Engkvist</li>
+<li>Tamil தமிழ்நேரம்</li>
+<li>Turkish İsmail POLAT Sabri Ünal</li>
+<li>Ukrainian anonymous Димко</li>
+<li>Vietnamese lebao3105 Loc Huynh</li>
 </ul>"#)
             .build();
 

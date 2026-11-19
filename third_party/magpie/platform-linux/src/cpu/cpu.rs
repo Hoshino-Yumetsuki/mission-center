@@ -97,7 +97,7 @@ pub fn temperature() -> Option<f32> {
             Ok(name) => name.trim().to_ascii_lowercase(),
             Err(_) => continue,
         };
-        if !["k10temp", "coretemp", "zenpower", "ath11k_hwmon"].contains(&name.as_str()) {
+        if !["k10temp", "coretemp", "zenpower"].contains(&name.as_str()) {
             continue;
         }
 

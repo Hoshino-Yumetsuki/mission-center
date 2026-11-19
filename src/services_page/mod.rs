@@ -1,6 +1,6 @@
 /* services_page/mod.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -496,16 +496,6 @@ impl ServicesPage {
                         return;
                     }
                     let imp = this.imp();
-
-                    let filter_list_model = imp.table_view.imp().filter_list_model.borrow();
-                    if let Some(flm) = filter_list_model.as_ref() {
-                        flm.set_incremental(false);
-                    }
-
-                    let sort_list_model = imp.table_view.imp().sort_list_model.borrow();
-                    if let Some(slm) = sort_list_model.as_ref() {
-                        slm.set_incremental(false);
-                    }
 
                     imp.content_stack.set_visible_child_name("content");
                 }

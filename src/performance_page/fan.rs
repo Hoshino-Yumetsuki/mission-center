@@ -30,7 +30,8 @@ use magpie_types::fan::Fan;
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
 use crate::performance_page::widgets::{
-    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, ScalingSettings,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, GraphWidgetSettingsExt,
+    ScalingSettings,
 };
 use crate::performance_page::{PageExt, MK_TO_0_C};
 use crate::to_short_human_readable_time;

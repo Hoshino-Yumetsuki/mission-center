@@ -18,7 +18,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use nix::libc::{c_char, c_ulong, c_ulonglong};
+use nix::libc::{c_char, c_uint, c_ulong, c_ulonglong};
 
 #[macro_export]
 macro_rules! gpu_info_valid {
@@ -50,10 +50,10 @@ unsafe impl Sync for ListHead {}
 pub struct GpuVendor {
     pub list: ListHead,
 
-    pub init: Option<fn() -> u8>,
-    pub shutdown: Option<fn()>,
+    pub init: Option<extern "C" fn() -> u8>,
+    pub shutdown: Option<extern "C" fn()>,
 
-    pub last_error_string: Option<extern "C" fn() -> *const i8>,
+    pub last_error_string: Option<extern "C" fn() -> *const c_char>,
 
     pub get_device_handles: Option<extern "C" fn(devices: *mut ListHead, count: *mut u32) -> u8>,
 
@@ -63,13 +63,23 @@ pub struct GpuVendor {
 
     pub refresh_running_processes: Option<extern "C" fn(gpu_info: *mut GpuInfo)>,
 
-    pub name: *mut i8,
+    pub name: *mut c_char,
+    pub processing_unit: GpuProcessingUnit,
+}
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub enum GpuProcessingUnit {
+    Gpu = 0,
+    Npu,
+    Count,
 }
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub enum GpuInfoStaticInfoValid {
     DeviceNameValid = 0,
+    DeviceArchitectureValid,
     MaxPcieGenValid,
     MaxPcieLinkWidthValid,
     TemperatureShutdownThresholdValid,
@@ -78,6 +88,7 @@ pub enum GpuInfoStaticInfoValid {
     L2CacheSizeValid,
     NumberExecEnginesValid,
     NumberEnginesValid,
+    MemoryTypeValid,
     StaticInfoCount,
 }
 
@@ -87,6 +98,7 @@ const GPU_INFO_STATIC_INFO_COUNT: usize = GpuInfoStaticInfoValid::StaticInfoCoun
 #[derive(Debug, Copy, Clone)]
 pub struct GpuInfoStaticInfo {
     pub device_name: [c_char; MAX_DEVICE_NAME],
+    pub device_architecture: [c_char; MAX_DEVICE_NAME],
     pub max_pcie_gen: u32,
     pub max_pcie_link_width: u32,
     pub temperature_shutdown_threshold: u32,
@@ -97,6 +109,8 @@ pub struct GpuInfoStaticInfo {
     pub engine_count: u32,
     pub integrated_graphics: bool,
     pub encode_decode_shared: bool,
+    pub memory_shared_with_host: bool,
+    pub memory_type: [c_char; 8],
     pub valid: [u8; GPU_INFO_STATIC_INFO_COUNT.div_ceil(u8::BITS as _)],
 }
 
@@ -109,6 +123,8 @@ pub enum GpuInfoDynamicInfoValid {
     MemClockSpeedMaxValid,
     GpuUtilRateValid,
     MemUtilRateValid,
+    HvxUtilRateValid,
+    HmxUtilRateValid,
     EncoderRateValid,
     DecoderRateValid,
     TotalMemoryValid,
@@ -125,10 +141,24 @@ pub enum GpuInfoDynamicInfoValid {
     PowerDrawMaxValid,
     EffectiveLoadRateValid,
     MultiInstanceModeValid,
+    EccCorrectedValid,
+    EccUncorrectedValid,
+    ExtraClocksValid,
     DynamicInfoCount,
 }
 
 const GPU_INFO_DYNAMIC_INFO_COUNT: usize = GpuInfoDynamicInfoValid::DynamicInfoCount as usize;
+
+const MAX_EXTRA_CLOCK_DOMAINS: usize = 8;
+const EXTRA_CLOCK_NAME_LEN: usize = 8;
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct GpuInfoExtraClock {
+    pub name: [c_char; EXTRA_CLOCK_NAME_LEN],
+    pub speed: u32,
+    pub secondary: bool,
+}
 
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -139,12 +169,16 @@ pub struct GpuInfoDynamicInfo {
     pub mem_clock_speed_max: u32,
     pub gpu_util_rate: u32,
     pub mem_util_rate: u32,
+    pub hvx_util_rate: u32,
+    pub hmx_util_rate: u32,
     pub effective_load_rate: u32,
     pub encoder_rate: u32,
     pub decoder_rate: u32,
     pub total_memory: u64,
     pub free_memory: u64,
     pub used_memory: u64,
+    pub ecc_corrected: u64,
+    pub ecc_uncorrected: u64,
     pub pcie_link_gen: u32,
     pub pcie_link_width: u32,
     pub pcie_rx: u32,
@@ -155,17 +189,20 @@ pub struct GpuInfoDynamicInfo {
     pub power_draw: u32,
     pub power_draw_max: u32,
     pub multi_instance_mode: bool,
+    pub extra_clock_count: u32,
+    pub extra_clocks: [GpuInfoExtraClock; MAX_EXTRA_CLOCK_DOMAINS],
     pub valid: [u8; GPU_INFO_DYNAMIC_INFO_COUNT.div_ceil(u8::BITS as _)],
 }
 
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub enum GpuProcessType {
-    Unknown = 0,
-    Graphical = 1,
-    Compute = 2,
-    GraphicalCompute = 3,
-    Count,
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct GpuProcessType(pub c_uint);
+
+impl GpuProcessType {
+    pub const UNKNOWN: Self = Self(0);
+    pub const GRAPHICAL: Self = Self(1);
+    pub const COMPUTE: Self = Self(2);
+    pub const GRAPHICAL_COMPUTE: Self = Self(3);
 }
 
 #[repr(C)]

@@ -20,36 +20,63 @@ spec:
       default: ""
       type: string
       description: "Tarball url to use, must be a valid url"
+    VERSION_STRING:
+      default: ""
+      type: string
+      description: "Version string to use. Defaults to commit hash and date"
+    NIGHTLY:
+      default: false
+      type: boolean
+      description: "Build nightly packages; on main, also test and publish them. Needs all BUILD_* inputs set"
 ---
-image: "ubuntu:26.04"
+image: "ubuntu:26.10"
 
 workflow:
   auto_cancel:
     on_new_commit: interruptible
+  rules:
+    - if: "'$[[ inputs.NIGHTLY ]]' != 'true'  || $CI_PIPELINE_SOURCE != 'schedule'"
+    - changes:
+        paths: [ "**/*" ]
+        compare_to: refs/heads/nightly
 
 stages:
   - test
-  - package-build
+  - build
   - package
+  - publish
 
 .shared:
   checkout_submodule:
     - apt-get install -y git
-    - sed -i 's/= ..\/gng.git/= https:\/\/gitlab.com\/mission-center-devs\/gng.git/g' .gitmodules
+    - sed -i 's/= ..\//= https:\/\/gitlab.com\/mission-center-devs\//g' .gitmodules
     - git submodule update --init --recursive
+
+  setup_version:
+    - if [[ -z "$[[ inputs.VERSION_STRING ]]" ]]; then export VERSION_STRING="$(git describe --tags || git rev-parse --short HEAD)"; else export VERSION_STRING="$[[ inputs.VERSION_STRING ]]"; fi
+    - echo "$VERSION_STRING"
+
+  nightly_version:
+    - |
+      if [ "$[[ inputs.NIGHTLY ]]" = "true" ]; then
+        BASE_VERSION=$(sed -n "s/^ *version: '\(.*\)',$/\1/p" meson.build)
+        BUILD_DATE=$(echo "$CI_PIPELINE_CREATED_AT" | cut -c 1-10 | tr -d -)
+        export VERSION_STRING="$BASE_VERSION-nightly.$BUILD_DATE+$(echo "$CI_COMMIT_SHA" | cut -c 1-7)"
+        echo "Nightly version: $VERSION_STRING"
+      fi
 
   setup_apt:
     - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu resolute-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu resolute-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu stonking main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu stonking-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu stonking-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
 
   setup_apt_ports:
     - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports resolute main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports resolute-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports resolute-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports stonking main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports stonking-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports stonking-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
 
   setup_apt_noble:
@@ -67,21 +94,44 @@ stages:
     - apt-get update && apt-get dist-upgrade -y
 
   install_rust:
-    - apt-get install -y build-essential curl cmake git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils mold
+    - apt-get install -y blueprint-compiler build-essential curl cmake git gettext python3-pip libadwaita-1-dev libdbus-1-dev python3-gi libudev-dev libdrm-dev libgbm-dev desktop-file-utils lld
     - ln -sf /usr/bin/python3 /usr/local/bin/python
-    - ln -sf /usr/bin/mold /usr/bin/ld
+    - ln -sf /usr/bin/ld.lld /usr/bin/ld
 
-    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.96.1 -y
+    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.99.1 -y
     - export PATH="$HOME/.cargo/bin:$PATH"
 
   install_flatpak:
     - apt-get install -y build-essential flatpak flatpak-builder
     - flatpak --system remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
-    - flatpak install -y org.freedesktop.Platform//25.08 org.freedesktop.Sdk//25.08 org.gnome.Platform//50 org.gnome.Sdk//50
+    - flatpak install -y org.freedesktop.Platform//26.08 org.freedesktop.Sdk//26.08 org.gnome.Platform//51 org.gnome.Sdk//51
+
+  build_flatpak:
+    - cd flatpak
+    - |
+      if [ "$[[ inputs.NIGHTLY ]]" = "true" ]; then
+        apt-get install -y python3
+        python3 -I ../support/nightly/flatpak-manifest.py io.missioncenter.MissionCenter.json "$VERSION_STRING" io.missioncenter.MissionCenter.nightly.json
+        flatpak-builder --repo=repo --ccache --force-clean --default-branch=nightly build io.missioncenter.MissionCenter.nightly.json
+        flatpak build-bundle --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter nightly
+        flatpak build-bundle --runtime repo missioncenter-locale-$(arch).flatpak io.missioncenter.MissionCenter.Locale nightly
+      else
+        flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
+        flatpak build-bundle repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter
+      fi
+
+  set_nightly_snap_version:
+    - |
+      if [ "$[[ inputs.NIGHTLY ]]" = "true" ]; then
+        sed -i "s/^version: .*/version: '$VERSION_STRING'/; s/^grade: .*/grade: devel/" snap/snapcraft.yaml
+      fi
 
   ready_to_merge:
     - if: "$CI_MERGE_REQUEST_LABELS =~ /CI::Skip Build/"
       when: never
+
+  nightly_on_main:
+    - if: "'$[[ inputs.NIGHTLY ]]' == 'true' && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
 
 check-fmt:
   stage: test
@@ -97,8 +147,8 @@ check-fmt:
     - !reference [ ".shared", "ready_to_merge" ]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-build-job-x86:
-  stage: package-build
+test-job-x86:
+  stage: test
   interruptible: true
   before_script:
     - !reference [ ".shared", "setup_apt" ]
@@ -107,15 +157,21 @@ build-job-x86:
 
     - pip install meson ninja --break-system-packages
   script:
-    - meson setup _build -Dbuildtype=release
-    - ninja -C _build
-    - glib-compile-schemas --strict data/
+    - meson setup _build -Dbuildtype=debug
+    - meson test -C _build --suite missioncenter --print-errorlogs
+  artifacts:
+    when: always
+    paths:
+      - "_build/meson-logs/testlog.txt"
+    reports:
+      junit: "_build/meson-logs/testlog.junit.xml"
   rules:
+    - !reference [ ".shared", "nightly_on_main" ]
     - !reference [ ".shared", "ready_to_merge" ]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-build-job-arm:
-  stage: package-build
+test-job-arm:
+  stage: test
   interruptible: true
   tags:
     - saas-linux-medium-arm64
@@ -126,15 +182,61 @@ build-job-arm:
 
     - pip install meson ninja --break-system-packages
   script:
-    - meson setup _build -Dbuildtype=release
+    - meson setup _build -Dbuildtype=debug
+    - meson test -C _build --suite missioncenter --print-errorlogs
+  artifacts:
+    when: always
+    paths:
+      - "_build/meson-logs/testlog.txt"
+    reports:
+      junit: "_build/meson-logs/testlog.junit.xml"
+  rules:
+    - !reference [ ".shared", "nightly_on_main" ]
+    - !reference [ ".shared", "ready_to_merge" ]
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+build-job-x86:
+  stage: build
+  interruptible: true
+  before_script:
+    - !reference [ ".shared", "setup_apt" ]
+    - !reference [ ".shared", "install_rust" ]
+    - !reference [ ".shared", "checkout_submodule" ]
+    - !reference [ ".shared", "setup_version" ]
+
+    - pip install meson ninja --break-system-packages
+  script:
+    - meson setup _build -Dbuildtype=release -Dversion=$VERSION_STRING
     - ninja -C _build
     - glib-compile-schemas --strict data/
+  needs: [ ]
+  rules:
+    - !reference [ ".shared", "ready_to_merge" ]
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+build-job-arm:
+  stage: build
+  interruptible: true
+  tags:
+    - saas-linux-medium-arm64
+  before_script:
+    - !reference [ ".shared", "setup_apt_ports" ]
+    - !reference [ ".shared", "install_rust" ]
+    - !reference [ ".shared", "checkout_submodule" ]
+    - !reference [ ".shared", "setup_version" ]
+
+    - pip install meson ninja --break-system-packages
+  script:
+    - meson setup _build -Dbuildtype=release -Dversion=$VERSION_STRING
+    - ninja -C _build
+    - glib-compile-schemas --strict data/
+  needs: [ ]
   rules:
     - !reference [ ".shared", "ready_to_merge" ]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 flatpak-job-x86:
-  stage: package-build
+  stage: build
   interruptible: true
   tags:
     - saas-linux-large-amd64
@@ -142,19 +244,21 @@ flatpak-job-x86:
     - !reference [ ".shared", "setup_apt" ]
     - !reference [ ".shared", "install_flatpak" ]
     - !reference [ ".shared", "checkout_submodule" ]
+    - !reference [ ".shared", "nightly_version" ]
   script:
-    - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
-    - flatpak build-bundle repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter
+    - !reference [ ".shared", "build_flatpak" ]
+  needs: [ ]
   artifacts:
     paths:
       - flatpak/missioncenter-x86_64.flatpak
+      - flatpak/missioncenter-locale-x86_64.flatpak
   rules:
     - if: "'true' == '$[[ inputs.BUILD_FLATPAK ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 flatpak-job-arm:
-  stage: package-build
+  stage: build
   interruptible: true
   tags:
     - saas-linux-large-arm64
@@ -162,19 +266,21 @@ flatpak-job-arm:
     - !reference [ ".shared", "setup_apt_ports" ]
     - !reference [ ".shared", "install_flatpak" ]
     - !reference [ ".shared", "checkout_submodule" ]
+    - !reference [ ".shared", "nightly_version" ]
   script:
-    - cd flatpak && flatpak-builder --repo=repo --ccache --force-clean build io.missioncenter.MissionCenter.json
-    - flatpak build-bundle repo missioncenter-$(arch).flatpak io.missioncenter.MissionCenter
+    - !reference [ ".shared", "build_flatpak" ]
+  needs: [ ]
   artifacts:
     paths:
       - flatpak/missioncenter-aarch64.flatpak
+      - flatpak/missioncenter-locale-aarch64.flatpak
   rules:
     - if: "'true' == '$[[ inputs.BUILD_ARM ]]' && 'true' == '$[[ inputs.BUILD_FLATPAK ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 package-build-job-x86:
-  stage: package-build
+  stage: build
   interruptible: true
   image: ubuntu:24.04
   tags:
@@ -182,9 +288,12 @@ package-build-job-x86:
   before_script:
     - !reference [ ".shared", "setup_apt_noble" ]
     - !reference [ ".shared", "checkout_submodule" ]
+    - !reference [ ".shared", "setup_version" ]
+    - !reference [ ".shared", "nightly_version" ]
   script:
     - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
     - cd portable && tar zcf ../portable-x86_64.tar.gz *
+  needs: [ ]
 
   artifacts:
     when: always
@@ -197,7 +306,7 @@ package-build-job-x86:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
 package-build-job-arm:
-  stage: package-build
+  stage: build
   interruptible: true
   image: ubuntu:24.04
   tags:
@@ -205,9 +314,12 @@ package-build-job-arm:
   before_script:
     - !reference [ ".shared", "setup_apt_noble_ports" ]
     - !reference [ ".shared", "checkout_submodule" ]
+    - !reference [ ".shared", "setup_version" ]
+    - !reference [ ".shared", "nightly_version" ]
   script:
     - SRC_PATH=$PWD OUT_PATH=$PWD/portable bash support/build-with-gtk-libadwaita.sh &> logs.txt || (tail -n 500 logs.txt && exit 1)
     - cd portable && tar zcf ../portable-aarch64.tar.gz *
+  needs: [ ]
 
   artifacts:
     when: always
@@ -230,6 +342,8 @@ snap-job-x86:
   script:
     - if [[ ! -z '$[[ inputs.PORTABLE_TARBALL ]]' ]]; then curl -LO '$[[ inputs.PORTABLE_TARBALL ]]'; fi
     - mkdir -p snap/local && cd snap/local && tar xf ../../portable-x86_64.tar.gz && cp -r dependencies/* . && cd ../..
+    - !reference [ ".shared", "nightly_version" ]
+    - !reference [ ".shared", "set_nightly_snap_version" ]
 
     - docker run --rm -v $PWD:/project registry.gitlab.com/mission-center-devs/build-tools/snapcraft:x86-latest
 
@@ -256,6 +370,8 @@ snap-job-arm:
   script:
     - if [[ ! -z '$[[ inputs.PORTABLE_TARBALL ]]' ]]; then curl -LO '$[[ inputs.PORTABLE_TARBALL ]]'; fi
     - mkdir -p snap/local && cd snap/local && tar xf ../../portable-aarch64.tar.gz && cp -r dependencies/* . && cd ../..
+    - !reference [ ".shared", "nightly_version" ]
+    - !reference [ ".shared", "set_nightly_snap_version" ]
 
     - docker run --rm -v $PWD:/project registry.gitlab.com/mission-center-devs/build-tools/snapcraft:arm-latest
 
@@ -273,12 +389,16 @@ appimage-job-x86:
   stage: package
   interruptible: true
   image: archlinux
+  variables:
+    VERSION_STRING: "$[[ inputs.VERSION_STRING ]]"
+    APPIMAGE_NIGHTLY: "$[[ inputs.NIGHTLY ]]"
   before_script:
     - pacman -Syy && pacman -S --noconfirm curl ca-certificates tar gzip
   script:
     - if [[ ! -z '$[[ inputs.PORTABLE_TARBALL ]]' ]]; then curl -LO '$[[ inputs.PORTABLE_TARBALL ]]'; fi
     - tar -C / -xf portable-x86_64.tar.gz usr
 
+    - !reference [ ".shared", "nightly_version" ]
     - SRC_PATH=$PWD bash support/create-appimage.sh
 
   needs:
@@ -286,6 +406,7 @@ appimage-job-x86:
   artifacts:
     paths:
       - "**/*.AppImage"
+      - "**/*.AppImage.zsync"
   rules:
     - if: "'true' == '$[[ inputs.BUILD_APPIMAGE ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
@@ -297,12 +418,16 @@ appimage-job-arm:
   image: pkgforge/archlinux:latest
   tags:
     - saas-linux-medium-arm64
+  variables:
+    VERSION_STRING: "$[[ inputs.VERSION_STRING ]]"
+    APPIMAGE_NIGHTLY: "$[[ inputs.NIGHTLY ]]"
   before_script:
     - pacman -Syy && pacman -S --noconfirm curl ca-certificates tar gzip
   script:
     - if [[ ! -z '$[[ inputs.PORTABLE_TARBALL ]]' ]]; then curl -LO '$[[ inputs.PORTABLE_TARBALL ]]'; fi
     - tar -C / -xf portable-aarch64.tar.gz usr
 
+    - !reference [ ".shared", "nightly_version" ]
     - SRC_PATH=$PWD bash support/create-appimage.sh
 
   needs:
@@ -310,7 +435,78 @@ appimage-job-arm:
   artifacts:
     paths:
       - "**/*.AppImage"
+      - "**/*.AppImage.zsync"
   rules:
     - if: "'true' == '$[[ inputs.BUILD_ARM ]]' && 'true' == '$[[ inputs.BUILD_APPIMAGE ]]'"
     - !reference [ ".shared", "ready_to_merge" ]
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+nightly-publish:
+  stage: publish
+  image: alpine:latest
+  interruptible: false
+  before_script:
+    - apk add --no-cache curl git
+    - !reference [ ".shared", "nightly_version" ]
+  script:
+    - sh support/nightly/publish.sh
+    - git push --force "https://nightly:${NIGHTLY_PUSH_TOKEN:?is not set}@$CI_SERVER_FQDN/$CI_PROJECT_PATH.git" "$CI_COMMIT_SHA:refs/heads/nightly"
+  needs:
+    - job: test-job-x86
+      artifacts: false
+    - job: test-job-arm
+      artifacts: false
+    - flatpak-job-x86
+    - flatpak-job-arm
+    - appimage-job-x86
+    - appimage-job-arm
+    - snap-job-x86
+    - snap-job-arm
+    - job: nightly-flatpak-repo
+      artifacts: false
+  rules:
+    - !reference [ ".shared", "nightly_on_main" ]
+
+nightly-flatpak-repo:
+  stage: publish
+  image: alpine:latest
+  interruptible: false
+  before_script:
+    - apk add --no-cache flatpak gnupg ostree
+  script:
+    - sh support/nightly/flatpak-repo.sh
+  pages: true
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 week
+  needs:
+    - job: test-job-x86
+      artifacts: false
+    - job: test-job-arm
+      artifacts: false
+    - flatpak-job-x86
+    - flatpak-job-arm
+  rules:
+    - !reference [ ".shared", "nightly_on_main" ]
+
+nightly-snap-edge:
+  stage: publish
+  image: docker:cli
+  services:
+    - docker:dind
+  interruptible: false
+  script:
+    - |
+      for snap in mission-center_*.snap; do
+        docker run --rm -v "$PWD":/project -e SNAPCRAFT_STORE_CREDENTIALS registry.gitlab.com/mission-center-devs/build-tools/snapcraft:x86-latest upload --release=edge "/project/$snap"
+      done
+  needs:
+    - job: test-job-x86
+      artifacts: false
+    - job: test-job-arm
+      artifacts: false
+    - snap-job-x86
+    - snap-job-arm
+  rules:
+    - !reference [ ".shared", "nightly_on_main" ]

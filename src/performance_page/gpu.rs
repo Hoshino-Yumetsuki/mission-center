@@ -36,7 +36,8 @@ use crate::{
 };
 
 use crate::performance_page::widgets::{
-    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, GraphWidgetSettingsExt,
+    RoundingSettings, ScalingSettings,
 };
 
 use crate::performance_page::fan::{TEMPERATURE_HIGH_WATERMARK, TEMPERATURE_LOW_WATERMARK};

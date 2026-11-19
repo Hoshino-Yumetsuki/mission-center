@@ -135,6 +135,11 @@
             <summary>Gray out values that equal zero in the Apps view</summary>
         </key>
 
+        <key name="apps-services-tree-view" type="b">
+            <default>true</default>
+            <summary>Show apps, processes and services as a tree, nesting child processes under their parents</summary>
+        </key>
+
         <key name="apps-page-sorting-column-name" type="s">
             <default>""</default>
             <summary>The column name by which the Apps page view is sorted</summary>

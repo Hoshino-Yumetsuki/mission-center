@@ -6,8 +6,14 @@ if host_machine.system() == 'linux'
   libudev = dependency('libudev', required: true)
 endif
 
+if get_option('version') != ''
+    version = get_option('version')
+else
+    version = meson.project_version()
+endif
+
 conf = configuration_data()
-conf.set_quoted('VERSION', meson.project_version())
+conf.set_quoted('VERSION', version)
 conf.set_quoted('GETTEXT_PACKAGE', 'missioncenter')
 conf.set_quoted('LOCALEDIR', join_paths(get_option('prefix'), get_option('localedir')))
 conf.set_quoted('PKGDATADIR', pkgdatadir)
@@ -73,4 +79,18 @@ cargo_build = custom_target(
     + ' ' + '&&'
     + ' ' + 'cp ' + meson.project_build_root() + '/src/' + rust_target + '/' + meson.project_name() + ' ' + '@OUTPUT@'
   ]
+)
+
+test(
+  'cargo-test',
+  find_program('sh'),
+  args: [
+    '-c', 'env '
+    + ' env '.join(cargo_env)
+    + ' ' + cargo_bin.full_path() + ' test ' + ' '.join(cargo_opt)
+  ],
+  suite: 'rust',
+  timeout: 0,
+  is_parallel: false,
+  verbose: true,
 )

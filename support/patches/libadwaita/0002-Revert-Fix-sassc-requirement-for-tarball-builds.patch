@@ -1,0 +1,23 @@
+From: Daniel van Vugt <daniel.van.vugt@canonical.com>
+Date: Wed, 16 Sep 2026 16:46:13 +0800
+Subject: Revert "Fix sassc requirement for tarball builds"
+
+This reverts commit 88b887532c933d5500781b3e3b23a7af59b35dfd, which is
+necessary in Ubuntu to ensure the Yaru accent patches still apply.
+---
+ src/stylesheet/meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/stylesheet/meson.build b/src/stylesheet/meson.build
+index 1acc22e..023ebf7 100644
+--- a/src/stylesheet/meson.build
++++ b/src/stylesheet/meson.build
+@@ -3,7 +3,7 @@ fs = import('fs')
+ stylesheet_deps = []
+ 
+ # For git checkouts, but not for tarballs...
+-if not fs.exists('gtk.css')
++if not fs.exists('base.css')
+   sassc = find_program('sassc', required: false)
+   if not sassc.found()
+     subproject('sassc', default_options: ['warning_level=0', 'werror=false'])

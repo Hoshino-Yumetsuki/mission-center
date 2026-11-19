@@ -96,7 +96,7 @@ impl PowerDraw {
                 Err(e) => {
                     log::warn!(
                         "Failed to parse power draw from `{}`: {e}",
-                        &self.path.display()
+                        self.path.display()
                     );
                     return None;
                 }
@@ -104,7 +104,7 @@ impl PowerDraw {
             Err(e) => {
                 log::warn!(
                     "Failed to read power drawn from `{}`: {e}",
-                    &self.path.display()
+                    self.path.display()
                 );
                 return None;
             }

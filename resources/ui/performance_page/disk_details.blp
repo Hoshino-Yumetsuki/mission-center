@@ -60,6 +60,9 @@ template $DiskDetails: Box {
 
         halign: start;
         label: _("Read speed");
+
+        wrap: true;
+        wrap-mode: word_char;
       }
 
       Label read_speed {
@@ -99,6 +102,9 @@ template $DiskDetails: Box {
 
         halign: start;
         label: _("Write speed");
+
+        wrap: true;
+        wrap-mode: word_char;
       }
 
       Label write_speed {
@@ -129,6 +135,9 @@ template $DiskDetails: Box {
 
         halign: start;
         label: _("Total Read");
+
+        wrap: true;
+        wrap-mode: word_char;
       }
 
       Label total_read {
@@ -159,6 +168,9 @@ template $DiskDetails: Box {
 
         halign: start;
         label: _("Total Written");
+
+        wrap: true;
+        wrap-mode: word_char;
       }
 
       Label total_write {
@@ -189,6 +201,9 @@ template $DiskDetails: Box {
 
         halign: start;
         label: _("Active time");
+
+        wrap: true;
+        wrap-mode: word_char;
       }
 
       Label active_time {
@@ -219,6 +234,9 @@ template $DiskDetails: Box {
 
         halign: start;
         label: _("Avg. response time");
+
+        wrap: true;
+        wrap-mode: word_char;
       }
 
       Label avg_response_time {
@@ -471,7 +489,7 @@ template $DiskDetails: Box {
     }
   }
 
-  Box {
+  Box partitions_section {
     orientation: vertical;
 
     Label {

@@ -34,9 +34,9 @@ use gtk::{
 
 use magpie_types::memory::Memory;
 
-use super::GRAPH_RADIUS;
 use crate::i18n::i18n_f;
 
+const GRAPH_RADIUS: f32 = 7.;
 const FILL_ALPHA: f32 = 50. / 255.;
 
 mod imp {
@@ -188,6 +188,7 @@ mod imp {
         }
 
         fn render(&self, snapshot: &Snapshot, width: f32, height: f32, scale_factor: f64) {
+            #[allow(deprecated)]
             let texture = gdk::Texture::for_pixbuf(
                 &self.generate_pattern(scale_factor as f32, self.base_color.get()),
             );

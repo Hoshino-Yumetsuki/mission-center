@@ -51,8 +51,12 @@ fn download_file(
     let file_name = url.split('/').next_back().unwrap();
     let output_path = format!("{}/{}", path, file_name);
 
-    if std::path::Path::new(&output_path).exists() {
-        return Ok(output_path);
+    if let Ok(content) = std::fs::read(&output_path) {
+        let mut sha256 = cargo_util::Sha256::new();
+        sha256.update(&content);
+        if checksum.is_none_or(|c| sha256.finish_hex() == c) {
+            return Ok(output_path);
+        }
     }
 
     let mut response = ureq::get(url).call()?;
@@ -87,8 +91,6 @@ fn download_file(
     file.write_all(content.as_slice())?;
     file.flush()?;
 
-    println!("cargo:rerun-if-changed={}", output_path);
-
     Ok(output_path)
 }
 
@@ -113,12 +115,32 @@ fn patch_program() -> &'static str {
         .as_str()
 }
 
+const PATCHES_STAMP: &str = ".magpie-patches-sha256";
+
+fn patches_fingerprint(
+    package_dir: &std::path::Path,
+    manifest: &str,
+    patches: &[String],
+) -> Result<String, Box<dyn std::error::Error>> {
+    let mut sha256 = cargo_util::Sha256::new();
+    sha256.update(manifest.as_bytes());
+    for patch in patches {
+        let content = std::fs::read(package_dir.join(patch))?;
+        sha256.update(&(content.len() as u64).to_le_bytes());
+        sha256.update(&content);
+    }
+
+    Ok(sha256.finish_hex())
+}
+
 fn prepare_third_party_sources(
 ) -> Result<HashMap<String, std::path::PathBuf>, Box<dyn std::error::Error>> {
     let third_party_path = std::path::PathBuf::from(&format!(
         "{}/3rdparty",
         std::env::var("CARGO_MANIFEST_DIR")?
     ));
+    println!("cargo:rerun-if-changed={}", third_party_path.display());
+
     let mut out_dir = std::env::var("OUT_DIR")?;
     out_dir.push_str("/../../native");
     std::fs::create_dir_all(&out_dir)?;
@@ -135,13 +157,21 @@ fn prepare_third_party_sources(
             let file_name = entry.file_name();
             let entry_name = file_name.to_string_lossy();
             if entry_name.ends_with(".json") {
-                let mut package: Package =
-                    serde_json::from_str(&std::fs::read_to_string(entry.path())?)?;
+                let manifest = std::fs::read_to_string(entry.path())?;
+                let mut package: Package = serde_json::from_str(&manifest)?;
 
                 let extracted_path = out_dir.join(&package.directory);
                 result.insert(std::mem::take(&mut package.name), extracted_path.clone());
+
+                let fingerprint = patches_fingerprint(&dir.path(), &manifest, &package.patches)?;
                 if extracted_path.exists() {
-                    break;
+                    match std::fs::read_to_string(extracted_path.join(PATCHES_STAMP)) {
+                        Ok(stamp) if stamp == fingerprint => break,
+                        Ok(_) => {}
+                        // Sources prepared outside of this script, e.g. by the Flatpak manifest
+                        Err(e) if e.kind() == std::io::ErrorKind::NotFound => break,
+                        Err(e) => return Err(e.into()),
+                    }
                 }
 
                 let output_path = download_file(
@@ -150,19 +180,41 @@ fn prepare_third_party_sources(
                     Some(&package.source_hash),
                 )?;
 
+                let staging_dir = out_dir.join(format!("{}.staging", package.directory));
+                if staging_dir.exists() {
+                    std::fs::remove_dir_all(&staging_dir)?;
+                }
+                std::fs::create_dir_all(&staging_dir)?;
+
                 let mut archive = std::fs::File::open(&output_path)?;
                 let tar = flate2::read::GzDecoder::new(&mut archive);
                 let mut archive = tar::Archive::new(tar);
-                archive.unpack(&out_dir)?;
+                archive.unpack(&staging_dir)?;
 
+                let staged_path = staging_dir.join(&package.directory);
                 for patch in package.patches.iter().map(|p| p.as_str()) {
                     let mut cmd = std::process::Command::new(patch_program());
                     cmd.args(["-p1", "-i", &format!("{}/{}", dir.path().display(), patch)]);
-                    cmd.current_dir(&extracted_path);
+                    cmd.current_dir(&staged_path);
                     cmd.stdout(std::process::Stdio::inherit())
                         .stderr(std::process::Stdio::inherit());
-                    cmd.spawn()?.wait()?;
+                    let status = cmd.status()?;
+                    if !status.success() {
+                        let _ = std::fs::remove_dir_all(&staging_dir);
+                        return Err(format!(
+                            "Failed to apply {} to {}: {}",
+                            patch, package.directory, status
+                        )
+                        .into());
+                    }
                 }
+
+                std::fs::write(staged_path.join(PATCHES_STAMP), &fingerprint)?;
+                if extracted_path.exists() {
+                    std::fs::rename(&extracted_path, staging_dir.join("stale"))?;
+                }
+                std::fs::rename(&staged_path, &extracted_path)?;
+                let _ = std::fs::remove_dir_all(&staging_dir);
 
                 break;
             }

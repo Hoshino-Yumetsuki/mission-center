@@ -1,6 +1,6 @@
 /* table_view/process_details_dialog.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,8 +25,12 @@ use adw::PreferencesRow;
 use gtk::glib::{self};
 use gtk::prelude::{StaticTypeExt, WidgetExt};
 
+use crate::app;
+use crate::table_view::cached_icon::IconApply;
 use crate::table_view::columns::*;
 use crate::table_view::row_model::{ContentType, RowModel};
+
+const ICON_SIZE: i32 = 48;
 
 mod imp {
     use super::*;
@@ -114,10 +118,7 @@ mod imp {
                 _ => {} // should never happen
             }
 
-            model
-                .imp()
-                .light_icon()
-                .apply_to_image_custom_size(&self.icon, 48);
+            self.apply_icon();
 
             self.title.set_label(&model.name());
 
@@ -156,6 +157,23 @@ mod imp {
             gpu_memory_label_formatter(&*self.gpu_memory, model.gpu_memory_usage().into());
             self.gpu_memory
                 .bind(&*model, "gpu-memory-usage", gpu_memory_label_formatter);
+        }
+
+        pub fn apply_icon(&self) -> IconApply {
+            let apply_result = self
+                .model
+                .borrow()
+                .imp()
+                .light_icon()
+                .apply(&self.icon, Some(ICON_SIZE));
+
+            if apply_result == IconApply::Pending {
+                app!().register_pending_icon(&*self.obj(), |this| this.imp().apply_icon());
+
+                return IconApply::Pending;
+            }
+
+            apply_result
         }
 
         fn unbind(&self) {

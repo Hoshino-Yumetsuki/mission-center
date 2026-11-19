@@ -56,6 +56,9 @@ Grid root {
 
       halign: start;
       label: _("In use");
+
+      wrap: true;
+      wrap-mode: word_char;
     }
 
     Label in_use {
@@ -86,6 +89,9 @@ Grid root {
 
       halign: start;
       label: _("Available");
+
+      wrap: true;
+      wrap-mode: word_char;
     }
 
     Label available {
@@ -129,6 +135,9 @@ Grid root {
 
       halign: start;
       label: _("Committed");
+
+      wrap: true;
+      wrap-mode: word_char;
     }
 
     Label committed {
@@ -160,6 +169,9 @@ Grid root {
 
       halign: start;
       label: _("Cached");
+
+      wrap: true;
+      wrap-mode: word_char;
     }
 
     Label cached {
@@ -192,6 +204,9 @@ Grid root {
       visible: bind swap_used.visible;
       halign: start;
       label: _("Swap used");
+
+      wrap: true;
+      wrap-mode: word_char;
     }
 
     Label swap_used {
@@ -224,6 +239,9 @@ Grid root {
       visible: bind swap_available.visible;
       halign: start;
       label: _("Swap available");
+
+      wrap: true;
+      wrap-mode: word_char;
     }
 
     Label swap_available {

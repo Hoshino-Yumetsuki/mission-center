@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-25 09:06+0300\n"
-"PO-Revision-Date: 2026-02-06 14:01+0000\n"
-"Last-Translator: ovl-1 <ovl-002@mailinator.com>\n"
+"PO-Revision-Date: 2026-10-24 01:45+0000\n"
+"Last-Translator: Telaneo <telaneo@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Norwegian Bokmål <https://hosted.weblate.org/projects/mission-"
-"center/mission-center/nb_NO/>\n"
+"center/mission-center/nb/>\n"
 "Language: nb_NO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16-dev\n"
+"X-Generator: Weblate 2026.11.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -25,12 +25,12 @@ msgid "Mission Center"
 msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:9
-#, fuzzy
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Service;Services;Service "
 "Manager;Service List;System Services;User Services;systemd;systemctl"
-msgstr "Oppgavehåndterer;ressursoversikt;systemoversikt;prosessor;prosesser;ytelsesoversikt;prosessor;grafikk;disk,Minne;nettverk;bruk;anvendelse"
+msgstr ""
+"Oppgavehåndterer;Ressursoversikt;Systemoversikt;Prosessor;Prosesser;Ytelsesoversikt;Prosessor;Grafikk;Disk,Minne;Nettverk;Bruk;Bruk;Tjeneste;Tjenester;Tjenesteånderer;Tjenesteliste;Systemtjenester;Brukertjenester;systemd;systemctl"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"
@@ -246,7 +246,7 @@ msgstr "Vis et skilletegn mellom kolonnene i programvisningen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 msgid "Gray out values that equal zero in the Apps view"
-msgstr ""
+msgstr "Ton ned verdier som er lik null i appvisningen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The column name by which the Apps page view is sorted"
@@ -277,9 +277,8 @@ msgid "Which graph is shown on the CPU performance page"
 msgstr "Hvilken graf vises på CPU-ytelsessiden"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:177
-#, fuzzy
 msgid "Which graph is shown on the bottom graph of the CPU performance page"
-msgstr "Hvilken graf vises på CPU-ytelsessiden"
+msgstr "Hvilken graf som vises på den nederste grafen på CPU-ytelsessiden"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:182
 msgid "Show kernel times in the CPU graphs"
@@ -316,27 +315,24 @@ msgid "Show network information by default"
 msgstr "Vis nettverksinformasjon som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
-#, fuzzy
 msgid "Show wired network devices by default"
-msgstr "Vis nettverksinformasjon som standard"
+msgstr "Vis kablet nettverksinformasjon som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:228
-#, fuzzy
 msgid "Show wireless network devices by default"
-msgstr "Vis nettverksinformasjon som standard"
+msgstr "Vis trådløs nettverksinformasjon som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:233
-#, fuzzy
 msgid "Show VPN network devices by default"
-msgstr "Vis nettverksinformasjon som standard"
+msgstr "Vis VPN-nettverksinformasjon som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:238
 msgid "Show virtual network devices (Docker, Multipass, Bridge) by default"
-msgstr ""
+msgstr "Vis virituelle nettverksenheter (Docker, Multipass, broer) som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:243
 msgid "Show other network devices (Bluetooth, InfiniBand, WWAN) by default"
-msgstr ""
+msgstr "Vis andre nettverksenheter (Bluetooth, Infiniband, WWAN) som standard"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:248
 #: resources/ui/preferences/performance_page.blp:103
@@ -359,11 +355,11 @@ msgstr "Vis grafen for swapfilen"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:274
 msgid "Middle Graph's Content and visibility"
-msgstr ""
+msgstr "Midtgrafens innhold og synlighet"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:280
 msgid "Bottom Graph's Content and visibility"
-msgstr ""
+msgstr "Bunngrafens innhold og synlighet"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:286
 msgid "The ordering of entries in the application sidebar"
@@ -378,10 +374,12 @@ msgid ""
 "Per-device visibility overrides (semicolon-separated name:show or name:hide "
 "entries)"
 msgstr ""
+"Synlighetsoverstyring per enhet (listen bruker semikolon som skilletegn og "
+"bruker formatet navn:show eller navn:hide)"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:302
 msgid "If it's your first time running Mission Center"
-msgstr ""
+msgstr "Hvis dette er første gangen du starter Mission Center"
 
 #: resources/ui/apps_page/page.blp:87
 msgid "Collapse all apps and processes"
@@ -436,9 +434,8 @@ msgid "100%"
 msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:167
-#, fuzzy
 msgid "Change _Top Graph To"
-msgstr "Endre _diagram til"
+msgstr "Endre _toppgrafen til"
 
 #: resources/ui/performance_page/cpu.blp:170
 msgid "Overall U_tilization"
@@ -449,43 +446,38 @@ msgid "Logical _Processors"
 msgstr "Logiske _prosessorer"
 
 #: resources/ui/performance_page/cpu.blp:180
-#, fuzzy
 msgid "_All Threads"
-msgstr "Tråder"
+msgstr "_Alle tråder"
 
 #: resources/ui/performance_page/cpu.blp:185
 msgid "All Threads _Stacked"
-msgstr ""
+msgstr "Alle tråder stablet"
 
 #: resources/ui/performance_page/cpu.blp:191
-#, fuzzy
 msgid "Change B_ottom Graph To"
-msgstr "Endre _diagram til"
+msgstr "Endre _bunngrafen til"
 
 #: resources/ui/performance_page/cpu.blp:194
 #: resources/ui/performance_page/gpu.blp:219
 #: resources/ui/performance_page/gpu.blp:253
-#, fuzzy
 msgid "_Power Draw"
-msgstr "Strømforbruk"
+msgstr "_Strømforbruk"
 
 #: resources/ui/performance_page/cpu.blp:199
 #: resources/ui/performance_page/gpu.blp:229
 #: resources/ui/performance_page/gpu.blp:263
-#, fuzzy
 msgid "_Temperature"
-msgstr "Temperatur"
+msgstr "_Temperatur"
 
 #: resources/ui/performance_page/cpu.blp:204
-#, fuzzy
 msgid "_Clock Speed"
-msgstr "Klokkehastighet"
+msgstr "_Klokkehastighet"
 
 #: resources/ui/performance_page/cpu.blp:209
 #: resources/ui/performance_page/gpu.blp:234
 #: resources/ui/performance_page/gpu.blp:268
 msgid "_None"
-msgstr ""
+msgstr "_Ingen"
 
 #: resources/ui/performance_page/cpu.blp:215
 msgid "Show Kernel Times"
@@ -570,7 +562,7 @@ msgstr "_Vifte"
 #: resources/ui/performance_page/memory.blp:244
 #: resources/ui/performance_page/network.blp:142
 msgid "_Battery"
-msgstr ""
+msgstr "_Batteri"
 
 #: resources/ui/performance_page/cpu.blp:268
 #: resources/ui/performance_page/disk.blp:226
@@ -629,32 +621,27 @@ msgid "Memory usage over "
 msgstr "Minnebruk over "
 
 #: resources/ui/performance_page/gpu.blp:206
-#, fuzzy
 msgid "Change Middle Graph To"
-msgstr "Endre _diagram til"
+msgstr "Endre midtgrafen til"
 
 #: resources/ui/performance_page/gpu.blp:209
 #: resources/ui/performance_page/gpu.blp:243
-#, fuzzy
 msgid "_Encode/_Decode"
-msgstr "Vis bruk av koding/dekoding"
+msgstr "_Koding/_Dekoding"
 
 #: resources/ui/performance_page/gpu.blp:214
 #: resources/ui/performance_page/gpu.blp:248
-#, fuzzy
 msgid "_Memory Usage"
-msgstr "Minnebruk"
+msgstr "_Minnebruk"
 
 #: resources/ui/performance_page/gpu.blp:224
 #: resources/ui/performance_page/gpu.blp:258
-#, fuzzy
 msgid "_Clock Speeds"
-msgstr "Klokkehastighet"
+msgstr "_Klokkehastigheter"
 
 #: resources/ui/performance_page/gpu.blp:240
-#, fuzzy
 msgid "Change Bottom Graph To"
-msgstr "Endre _diagram til"
+msgstr "_Endre bunngrafen til"
 
 #: resources/ui/performance_page/memory.blp:41
 #: resources/ui/table_view/table_view.blp:59
@@ -705,11 +692,11 @@ msgstr "Tilgjengelig swap"
 
 #: resources/ui/performance_page/memory_details.blp:258
 msgid "Compressed"
-msgstr ""
+msgstr "Komprimert"
 
 #: resources/ui/performance_page/memory_details.blp:290
 msgid "Savings"
-msgstr ""
+msgstr "Spart"
 
 #: resources/ui/performance_page/memory_details.blp:317
 msgid "Speed:"
@@ -757,9 +744,8 @@ msgid "Connection type:"
 msgstr "Tilkoblingstype:"
 
 #: resources/ui/performance_page/network_details.blp:222
-#, fuzzy
 msgid "Connection status:"
-msgstr "Tilkoblingstype:"
+msgstr "Tilkoblingsstatus:"
 
 #: resources/ui/performance_page/network_details.blp:240
 msgid "SSID:"
@@ -794,24 +780,20 @@ msgid "Smart Data"
 msgstr "S.M.A.R.T.-data"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:57
-#, fuzzy
 msgid "Last Updated:"
-msgstr "Sist oppdatert"
+msgstr "Sist oppdatert:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:69
-#, fuzzy
 msgid "Powered On:"
-msgstr "Skrudd på"
+msgstr "Skrudd på:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:81
-#, fuzzy
 msgid "Drive Health:"
-msgstr "Disktilstand"
+msgstr "Disktilstand:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:93
-#, fuzzy
 msgid "SMART Test Status:"
-msgstr "S.M.A.R.T.-teststatus"
+msgstr "S.M.A.R.T.-teststatus:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:108
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:133
@@ -975,7 +957,7 @@ msgstr "Rotasjonshastighet"
 
 #: resources/ui/performance_page/disk_details.blp:478
 msgid "Partitions"
-msgstr ""
+msgstr "Partisjoner"
 
 #: resources/ui/performance_page/cpu_details.blp:72
 msgid "Speed"
@@ -1042,9 +1024,8 @@ msgid "Power preference:"
 msgstr "Strømpreferanse:"
 
 #: resources/ui/preferences/apps_services_page.blp:25
-#, fuzzy
 msgid "Apps & Services"
-msgstr "App &amp; Tjenestesider"
+msgstr "Apper og tjenester"
 
 #: resources/ui/preferences/apps_services_page.blp:30
 msgid "Merge Process Stats"
@@ -1084,11 +1065,11 @@ msgstr "Vis et skilletegn mellom kolonnene"
 
 #: resources/ui/preferences/apps_services_page.blp:55
 msgid "Grey Out Zeroes"
-msgstr ""
+msgstr "Ton ned nullverdier"
 
 #: resources/ui/preferences/apps_services_page.blp:56
 msgid "Gray out values that equal zero"
-msgstr ""
+msgstr "Ton ned verdier som er lik null"
 
 #: resources/ui/preferences/general_page.blp:25
 msgid "General"
@@ -1108,14 +1089,12 @@ msgid "Performance Page"
 msgstr "Ytelsesside"
 
 #: resources/ui/preferences/performance_page.blp:29
-#, fuzzy
 msgid "Graph Settings"
-msgstr "Nettverks_innstillinger"
+msgstr "Grafinnstillinger"
 
 #: resources/ui/preferences/performance_page.blp:32
-#, fuzzy
 msgid "Data Points"
-msgstr "Diagramdatapunkter"
+msgstr "Datapunkter"
 
 #: resources/ui/preferences/performance_page.blp:50
 msgid "Smooth Graphs"
@@ -1159,24 +1138,23 @@ msgstr "Vis nettverksinformasjon"
 
 #: resources/ui/preferences/performance_page.blp:79
 msgid "Wired"
-msgstr ""
+msgstr "Kablet"
 
 #: resources/ui/preferences/performance_page.blp:83
 msgid "Wireless"
-msgstr ""
+msgstr "Trådløs"
 
 #: resources/ui/preferences/performance_page.blp:87
 msgid "VPN"
-msgstr ""
+msgstr "VPN"
 
 #: resources/ui/preferences/performance_page.blp:91
-#, fuzzy
 msgid "Virtual"
-msgstr "Virtualisering:"
+msgstr "Virituell"
 
 #: resources/ui/preferences/performance_page.blp:92
 msgid "Docker, Multipass, Bridge"
-msgstr ""
+msgstr "Docker, Multipass, broer"
 
 #: resources/ui/preferences/performance_page.blp:96
 msgid "Other"
@@ -1184,7 +1162,7 @@ msgstr "Annet"
 
 #: resources/ui/preferences/performance_page.blp:97
 msgid "Bluetooth, InfiniBand, WWAN"
-msgstr ""
+msgstr "Bluetooth, Infiniband, WWAN"
 
 #: resources/ui/preferences/performance_page.blp:102
 msgid "Show GPU Information"
@@ -1195,18 +1173,16 @@ msgid "Show Fan Information"
 msgstr "Vis vifteinformasjon"
 
 #: resources/ui/preferences/performance_page.blp:112
-#, fuzzy
 msgid "Show Battery Information"
-msgstr "Vis minneinformasjon"
+msgstr "Vis batteriinformasjon"
 
 #: resources/ui/preferences/performance_page.blp:113
-#, fuzzy
 msgid "Show battery information by default"
-msgstr "Vis minneinformasjon som standard"
+msgstr "Vis batteriinformasjon som standard"
 
 #: resources/ui/preferences/units_page.blp:25
 msgid "Units"
-msgstr ""
+msgstr "Enheter"
 
 #: resources/ui/preferences/units_page.blp:30
 msgid "Memory Usage Unit"
@@ -1455,9 +1431,8 @@ msgstr "PID"
 #: resources/ui/table_view/table_view.blp:65
 #: resources/ui/table_view/process_details_dialog.blp:227
 #: src/table_view/mod.rs:903 src/table_view/mod.rs:908
-#, fuzzy
 msgid "Swap"
-msgstr "Swap i bruk"
+msgstr "Swap"
 
 #: resources/ui/table_view/table_view.blp:71 src/performance_page/mod.rs:1264
 #: src/table_view/mod.rs:886 src/table_view/mod.rs:894
@@ -1780,18 +1755,16 @@ msgid "_Keyboard Shortcuts"
 msgstr "_Tastatursnarveier"
 
 #: resources/ui/window.blp:237
-#, fuzzy
 msgid "_System Information"
-msgstr "Informasjon om operativsystemet"
+msgstr "_Systeminformasjon"
 
 #: resources/ui/window.blp:244
 msgid "Open _Wiki"
-msgstr ""
+msgstr "Åpne _wikien"
 
 #: resources/ui/window.blp:250
-#, fuzzy
 msgid "Show _First Run Dialog"
-msgstr "Vis detaljer-dialogboksen"
+msgstr "Vis innføringsdialogen"
 
 #: resources/ui/window.blp:257
 msgid "_About Mission Center"
@@ -2000,6 +1973,9 @@ msgid ""
 "instances). Displaying BogoMIPS value as a fallback. BogoMIPS is a delay "
 "loop calibration metric, not a true frequency measurement."
 msgstr ""
+"Virkelige data om prosessorfrekvensene er utilgjengelig (dette er vanlig i "
+"VM-er, konteinere og skyinstanser). Viser BogoMIPS-verdi istedenfor. "
+"BogoMIPS er en kalibereringsenhet, og viser ikke faktiske frekvenser."
 
 #: src/performance_page/cpu.rs:556 src/performance_page/fan.rs:297
 #: src/performance_page/gpu.rs:592
@@ -2015,14 +1991,12 @@ msgid "No"
 msgstr "Nei"
 
 #: src/performance_page/cpu.rs:1034 src/performance_page/gpu.rs:1122
-#, fuzzy
 msgid "Power draw over "
-msgstr "Strømforbruk"
+msgstr "Strømforbruk i løpet av "
 
 #: src/performance_page/cpu.rs:1037 src/performance_page/gpu.rs:1125
-#, fuzzy
 msgid "Clock speed over "
-msgstr "Viftehastighet over "
+msgstr "Viftehastighet i løpet av "
 
 #: src/performance_page/disk.rs:179
 #, rust-format
@@ -2136,11 +2110,11 @@ msgstr "{} {} ({})"
 #: src/performance_page/mod.rs:1724 src/performance_page/mod.rs:2626
 #, rust-format
 msgid "Battery {}"
-msgstr ""
+msgstr "Batteri {}"
 
 #: src/performance_page/mod.rs:1726 src/performance_page/mod.rs:2628
 msgid "Battery"
-msgstr ""
+msgstr "Batteri"
 
 #: src/performance_page/mod.rs:2391
 #, rust-format
@@ -2160,39 +2134,35 @@ msgstr "Mislykket"
 
 #: src/performance_page/network.rs:458
 msgid "Disconnected"
-msgstr ""
+msgstr "Frakoblet"
 
 #: src/performance_page/network.rs:459
 msgid "Disconnecting"
-msgstr ""
+msgstr "Kobler fra"
 
 #: src/performance_page/network.rs:460
-#, fuzzy
 msgid "Connected"
-msgstr "Tilkoblingstype:"
+msgstr "Tilkoblet"
 
 #: src/performance_page/network.rs:461
-#, fuzzy
 msgid "Connecting"
-msgstr "Tilkoblingstype:"
+msgstr "Kobler til"
 
 #: src/performance_page/network.rs:462
 msgid "Configuring"
-msgstr ""
+msgstr "Konfigurerer"
 
 #: src/performance_page/network.rs:463
 msgid "Waiting for auth"
-msgstr ""
+msgstr "Venter på autentisering"
 
 #: src/performance_page/network.rs:464
-#, fuzzy
 msgid "Unavailable"
-msgstr "Tilgjengelig"
+msgstr "Utilgjengelig"
 
 #: src/performance_page/network.rs:465
-#, fuzzy
 msgid "Loading"
-msgstr "Laster..."
+msgstr "Laster inn"
 
 #: src/services_page/mod.rs:99
 #, rust-format

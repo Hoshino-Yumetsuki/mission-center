@@ -1,8 +1,8 @@
 {
   "package-name": "nvtop",
-  "directory": "nvtop-3d4a953da02bc18886734613bb9f60ff80669de7",
-  "source-url": "https://github.com/Syllo/nvtop/archive/3d4a953da02bc18886734613bb9f60ff80669de7.tar.gz",
-  "source-hash": "e1c8651d299cab61f3e178b9fa97dcf4651f9cc526a51818fca1a47f7838cbd3",
+  "directory": "nvtop-71094a9f7dfbfe7cbe9faebfdf055e580a034283",
+  "source-url": "https://github.com/Syllo/nvtop/archive/71094a9f7dfbfe7cbe9faebfdf055e580a034283.tar.gz",
+  "source-hash": "a6f3df5615aa69853bb13b5b9641d6620944f05827d092eb16395c04377f88de",
   "patches": [
     "patches/nvtop-amdgpu-h.patch",
     "patches/nvtop-amdgpu_drm-h.patch",
@@ -14,6 +14,7 @@
     "patches/nvtop-msm_drm-h.patch",
     "patches/nvtop-no-drmGetDevices2.patch",
     "patches/nvtop-xf86drm-h.patch",
-    "patches/nvtop-msm-utils-array-size.patch"
+    "patches/nvtop-msm-utils-array-size.patch",
+    "patches/nvtop-intel-unref-bridge-device.patch"
   ]
 }

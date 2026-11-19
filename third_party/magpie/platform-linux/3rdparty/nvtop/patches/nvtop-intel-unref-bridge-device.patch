@@ -1,0 +1,13 @@
+diff --git a/src/extract_gpuinfo_intel.c b/src/extract_gpuinfo_intel.c
+index a59ce57..5a569b4 100644
+--- a/src/extract_gpuinfo_intel.c
++++ b/src/extract_gpuinfo_intel.c
+@@ -467,6 +467,8 @@ void gpuinfo_intel_refresh_dynamic_info(struct gpu_info *_gpu_info) {
+   nvtop_device_unref(driver_dev_noncached);
+   if (hwmon_dev_noncached)
+     nvtop_device_unref(hwmon_dev_noncached);
++  if (bridge_dev_noncached != driver_dev_noncached)
++    nvtop_device_unref(bridge_dev_noncached);
+ }
+ 
+ static void swap_process_cache_for_next_update(struct gpu_info_intel *gpu_info) {

@@ -1,4 +1,4 @@
-image: "ubuntu:26.04"
+image: "ubuntu:26.10"
 
 workflow:
   auto_cancel:
@@ -16,22 +16,22 @@ stages:
 
   setup_apt:
     - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://archive.ubuntu.com/ubuntu resolute main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu resolute-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://archive.ubuntu.com/ubuntu resolute-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu stonking main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu stonking-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://archive.ubuntu.com/ubuntu stonking-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
 
   setup_apt_ports:
     - rm -rf /etc/apt/sources.list.d
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports resolute main restricted universe multiverse' > /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports resolute-updates main restricted universe multiverse' >> /etc/apt/sources.list
-    - echo 'deb http://ports.ubuntu.com/ubuntu-ports resolute-security main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports stonking main restricted universe multiverse' > /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports stonking-updates main restricted universe multiverse' >> /etc/apt/sources.list
+    - echo 'deb http://ports.ubuntu.com/ubuntu-ports stonking-security main restricted universe multiverse' >> /etc/apt/sources.list
     - apt-get update && apt-get dist-upgrade -y
 
   install_deps:
     - apt-get install -y build-essential curl cmake meson ninja-build git libdrm-dev libgbm-dev libudev-dev pkg-config
 
-    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.96.1 -y
+    - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=1.99.1 -y
     - export PATH="$HOME/.cargo/bin:$PATH"
 
 build-job-x86:

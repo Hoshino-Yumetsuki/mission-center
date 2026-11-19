@@ -1,6 +1,6 @@
 /* table_view/columns/name_cell.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ use gdk::pango::EllipsizeMode;
 use gtk::{gdk, glib, prelude::*, subclass::prelude::*};
 
 use crate::app;
-use crate::table_view::cached_icon::{CachedIcon, LightCachedIcon};
+use crate::table_view::cached_icon::IconApply;
 use crate::table_view::row_model::{ContentType, RowModel};
 use crate::widgets::ListCell;
 
@@ -93,12 +93,12 @@ mod imp {
                     };
                     let this = this.imp();
 
-                    model.imp().light_icon().apply_to_image(&this.icon);
+                    this.apply_icon(model);
                 }
             });
             self.sig_light_icon.set(Some(sig_icon));
 
-            model.imp().light_icon().apply_to_image(&self.icon);
+            self.apply_icon(model);
 
             // Re-decode the icon when the device scale factor changes so raster icons stay sharp.
             // The image may not be realized yet at bind time (reporting a scale factor of 1), and
@@ -114,7 +114,7 @@ mod imp {
                     let Some(model) = this.model.take().upgrade() else {
                         return;
                     };
-                    model.imp().light_icon().apply_to_image(&this.icon);
+                    this.apply_icon(&model);
                     this.model.set(model.downgrade());
                 }
             });
@@ -157,6 +157,29 @@ mod imp {
             });
             self.sig_children_changed.set(Some(sig_children_changed));
             expander.set_hide_expander(model.children().n_items() == 0);
+        }
+
+        fn apply_icon(&self, model: &RowModel) -> IconApply {
+            let apply_result = model.imp().light_icon().apply(&self.icon, None);
+
+            if apply_result == IconApply::Pending {
+                app!().register_pending_icon(&*self.obj(), |this| this.imp().reapply_icon());
+
+                return IconApply::Pending;
+            }
+
+            apply_result
+        }
+
+        fn reapply_icon(&self) -> IconApply {
+            let Some(model) = self.model.take().upgrade() else {
+                return IconApply::Unavailable;
+            };
+
+            let result = self.apply_icon(&model);
+            self.model.set(model.downgrade());
+
+            result
         }
 
         pub fn unbind(&self) {
@@ -280,20 +303,6 @@ mod imp {
                     };
                 }
             };
-        }
-
-        pub fn apply_light_icon(icon: &gtk::Image, cached_icon: LightCachedIcon) {
-            match cached_icon {
-                LightCachedIcon::Empty => {
-                    CachedIcon::apply_blank(icon);
-                }
-                LightCachedIcon::StringPayload(p) => {
-                    CachedIcon::set_icon_from_stringlike(icon, &p);
-                }
-                LightCachedIcon::AppCachedKey(k, w) => {
-                    app!().apply_app_icon(icon, k, w);
-                }
-            }
         }
     }
 

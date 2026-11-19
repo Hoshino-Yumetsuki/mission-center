@@ -14,7 +14,7 @@ Subject: style: Add wartybrown accent support
  8 files changed, 36 insertions(+), 13 deletions(-)
 
 diff --git a/src/adw-accent-color.c b/src/adw-accent-color.c
-index 0ce6fbd..79a98ff 100644
+index 6149ea1..c8f5fc0 100644
 --- a/src/adw-accent-color.c
 +++ b/src/adw-accent-color.c
 @@ -48,7 +48,7 @@ adw_accent_color_to_rgba (AdwAccentColor  self,
@@ -55,7 +55,7 @@ index 0ce6fbd..79a98ff 100644
    g_return_if_fail (rgba != NULL);
  
    dark = !!dark;
-@@ -226,6 +232,9 @@ adw_accent_color_nearest_from_rgba (GdkRGBA *original_color)
+@@ -226,6 +232,9 @@ adw_accent_color_nearest_from_rgba (const GdkRGBA *original_color)
    if (h > 115)
      return ADW_ACCENT_COLOR_GREEN;
  
@@ -79,12 +79,12 @@ index c6251ac..35fbb92 100644
  
  ADW_AVAILABLE_IN_1_6
 diff --git a/src/adw-inspector-page.c b/src/adw-inspector-page.c
-index 6642e3a..9bf51ea 100644
+index b74e643..e108284 100644
 --- a/src/adw-inspector-page.c
 +++ b/src/adw-inspector-page.c
-@@ -162,6 +162,8 @@ get_accent_color_name (AdwEnumListItem *item,
-     return g_strdup (_("Purple"));
+@@ -179,6 +179,8 @@ get_accent_color_name (GtkEnumListItem *item,
    case ADW_ACCENT_COLOR_SLATE:
+     /* Translators: one of the accent color dropdown options in inspector */
      return g_strdup (_("Slate"));
 +  case ADW_ACCENT_COLOR_BROWN:
 +    return g_strdup (_("Brown"));
@@ -92,7 +92,7 @@ index 6642e3a..9bf51ea 100644
      g_assert_not_reached ();
    }
 diff --git a/src/adw-settings.c b/src/adw-settings.c
-index 7d7224a..07f247d 100644
+index 242e0df..4913152 100644
 --- a/src/adw-settings.c
 +++ b/src/adw-settings.c
 @@ -192,9 +192,11 @@ init_debug (AdwSettings *self,
@@ -127,10 +127,10 @@ index 7d7224a..07f247d 100644
        g_return_val_if_reached (NULL);
    }
 diff --git a/src/stylesheet/_colors.scss b/src/stylesheet/_colors.scss
-index 0f44972..87f8cf3 100644
+index a89ab66..03e2329 100644
 --- a/src/stylesheet/_colors.scss
 +++ b/src/stylesheet/_colors.scss
-@@ -168,6 +168,7 @@
+@@ -162,6 +162,7 @@
    --accent-pink: #d56199;
    --accent-purple: #9141ac;
    --accent-slate: #6f8396;
@@ -139,17 +139,17 @@ index 0f44972..87f8cf3 100644
    --accent-bg-color: @accent_bg_color;
    --accent-fg-color: @accent_fg_color;
 diff --git a/src/stylesheet/meson.build b/src/stylesheet/meson.build
-index cd738f8..5db6ee8 100644
+index d776052..68cb6b5 100644
 --- a/src/stylesheet/meson.build
 +++ b/src/stylesheet/meson.build
-@@ -24,6 +24,7 @@ if sassc.found()
-         'magenta',
-         'red',
-         'yellow',
-+        'wartybrown',
-     ]
+@@ -26,6 +26,7 @@ if not fs.exists('base.css')
+           'magenta',
+           'red',
+           'yellow',
++          'wartybrown',
+       ]
  
-     base_sheets = ['palette', 'colors']
+       base_sheets = ['palette', 'colors']
 diff --git a/src/stylesheet/yaru_accent_colors.scss b/src/stylesheet/yaru_accent_colors.scss
 index 06db5d4..366c6cb 100644
 --- a/src/stylesheet/yaru_accent_colors.scss

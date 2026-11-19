@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-25 09:06+0300\n"
-"PO-Revision-Date: 2026-07-12 16:44+0000\n"
+"PO-Revision-Date: 2026-10-10 14:51+0000\n"
 "Last-Translator: Pavel Borecki <pavel.borecki@gmail.com>\n"
 "Language-Team: Czech <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/cs/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2);\n"
-"X-Generator: Weblate 2026.7.1.dev0\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -692,7 +692,7 @@ msgstr "Použitý odkl. prostor"
 
 #: resources/ui/performance_page/memory_details.blp:226
 msgid "Swap available"
-msgstr "Dostupný odkladací prostor"
+msgstr "Dostupný odkl. prostor"
 
 #: resources/ui/performance_page/memory_details.blp:258
 msgid "Compressed"
@@ -1029,7 +1029,7 @@ msgstr "Profil výkonu:"
 
 #: resources/ui/preferences/apps_services_page.blp:25
 msgid "Apps & Services"
-msgstr "Služby a Aplikace"
+msgstr "Aplikace a služby"
 
 #: resources/ui/preferences/apps_services_page.blp:30
 msgid "Merge Process Stats"
@@ -1090,7 +1090,7 @@ msgstr "V sekundách"
 #: resources/ui/preferences/performance_page.blp:25
 #: resources/ui/keyboard_shortcuts.blp:57
 msgid "Performance Page"
-msgstr "Stránka ohledně výkonu"
+msgstr "Stránka výkonu"
 
 #: resources/ui/preferences/performance_page.blp:29
 msgid "Graph Settings"
@@ -1190,11 +1190,11 @@ msgstr "Jednotky"
 
 #: resources/ui/preferences/units_page.blp:30
 msgid "Memory Usage Unit"
-msgstr "Jednotka využití paměti"
+msgstr "Jednotka pro využití paměti"
 
 #: resources/ui/preferences/units_page.blp:37
 msgid "Use Bytes as a Unit of Measurement for Memory"
-msgstr "Používat bajty coby jednotku měření paměti"
+msgstr "Používat bajty jako jednotku měření paměti"
 
 #: resources/ui/preferences/units_page.blp:38
 #: resources/ui/preferences/units_page.blp:76
@@ -1238,7 +1238,7 @@ msgstr "Dvojkový (IETF)"
 
 #: resources/ui/preferences/units_page.blp:68
 msgid "Drive Usage Unit"
-msgstr "Jednotka využití úložiště"
+msgstr "Jednotka pro využití úložiště"
 
 #: resources/ui/preferences/units_page.blp:75
 msgid "Use Bytes as a Unit of Measurement for Disk Drives"
@@ -1250,7 +1250,7 @@ msgstr "Používat bity jako jednotku měření využití jednotek úložiště"
 
 #: resources/ui/preferences/units_page.blp:87
 msgid "Drive Usage Base"
-msgstr "Řády jednotek pro využití jednotek úložiště"
+msgstr "Řád jednotek pro využití jednotek úložiště"
 
 #: resources/ui/preferences/units_page.blp:94
 msgid "Use Base 10 for Disk Drives"
@@ -1274,7 +1274,7 @@ msgstr "Používat bity jako jednotku měření pro síťová rozhraní"
 
 #: resources/ui/preferences/units_page.blp:125
 msgid "Network Usage Base"
-msgstr "Řád jednotek pro využívání sítě"
+msgstr "Řád jednotek pro využití sítě"
 
 #: resources/ui/preferences/units_page.blp:132
 msgid "Use Base 10 for Network Interfaces"
@@ -1404,7 +1404,7 @@ msgstr "Zobrazit dialog s podrobnostmi"
 
 #: resources/ui/keyboard_shortcuts.blp:105
 msgid "Services Page"
-msgstr "Stránka ohledně služeb"
+msgstr "Stránka služeb"
 
 #: resources/ui/keyboard_shortcuts.blp:118
 msgid "Start Service"

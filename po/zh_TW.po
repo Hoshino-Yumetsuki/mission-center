@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-25 09:06+0300\n"
-"PO-Revision-Date: 2026-07-06 21:01+0000\n"
+"PO-Revision-Date: 2026-09-15 13:51+0000\n"
 "Last-Translator: Kisaragi Hiu <mail@kisaragi-hiu.com>\n"
 "Language-Team: Chinese (Traditional Han script) <https://hosted.weblate.org/"
 "projects/mission-center/mission-center/zh_Hant/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 2026.7.1.dev0\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -25,14 +25,14 @@ msgid "Mission Center"
 msgstr "任務中心"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:9
-#, fuzzy
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Service;Services;Service "
 "Manager;Service List;System Services;User Services;systemd;systemctl"
 msgstr ""
 "工作管理員;資源監控器;系統監控器;處理器;處理程序;效能監控器;CPU;GPU;磁碟;磁"
-"碟;記憶體;網路;使用率;使用率"
+"碟;記憶體;網路;使用率;使用量;磁碟;硬碟;服務;服務管理器;服務列表;系統服務;使用"
+"者服務"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"
@@ -230,7 +230,7 @@ msgstr "於應用程式頁面中的每列之間顯示分隔線"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 msgid "Gray out values that equal zero in the Apps view"
-msgstr ""
+msgstr "在應用程式檢視當中虛化顯示等於 0 的值"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The column name by which the Apps page view is sorted"
@@ -261,9 +261,8 @@ msgid "Which graph is shown on the CPU performance page"
 msgstr "在 CPU 效能頁面上顯示哪個圖表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:177
-#, fuzzy
 msgid "Which graph is shown on the bottom graph of the CPU performance page"
-msgstr "在 CPU 效能頁面上顯示哪個圖表"
+msgstr "在 CPU 效能頁面底部的圖表要顯示哪個圖表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:182
 msgid "Show kernel times in the CPU graphs"
@@ -300,27 +299,24 @@ msgid "Show network information by default"
 msgstr "預設顯示網路資訊"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
-#, fuzzy
 msgid "Show wired network devices by default"
-msgstr "預設顯示網路資訊"
+msgstr "預設顯示有線網路裝置"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:228
-#, fuzzy
 msgid "Show wireless network devices by default"
-msgstr "預設顯示網路資訊"
+msgstr "預設顯示無線網路裝置"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:233
-#, fuzzy
 msgid "Show VPN network devices by default"
-msgstr "預設顯示網路資訊"
+msgstr "預設顯示 VPN 網路裝置"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:238
 msgid "Show virtual network devices (Docker, Multipass, Bridge) by default"
-msgstr ""
+msgstr "預設顯示虛擬網路裝置（Docker、Multipass、橋接）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:243
 msgid "Show other network devices (Bluetooth, InfiniBand, WWAN) by default"
-msgstr ""
+msgstr "預設顯示其他網路裝置（藍牙、InfiniBand、WWAN）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:248
 #: resources/ui/preferences/performance_page.blp:103
@@ -343,11 +339,11 @@ msgstr "顯示交換空間圖表"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:274
 msgid "Middle Graph's Content and visibility"
-msgstr ""
+msgstr "中央圖表的內容與可見度"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:280
 msgid "Bottom Graph's Content and visibility"
-msgstr ""
+msgstr "底部圖表的內容與可見度"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:286
 msgid "The ordering of entries in the application sidebar"
@@ -362,10 +358,12 @@ msgid ""
 "Per-device visibility overrides (semicolon-separated name:show or name:hide "
 "entries)"
 msgstr ""
+"各裝置的可見度覆蓋設定（各條目以 名稱:show 來顯示， 名稱:hide 來隱藏；條目間"
+"以分號分隔）"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:302
 msgid "If it's your first time running Mission Center"
-msgstr ""
+msgstr "如果這是您第一次使用《任務中心》"
 
 #: resources/ui/apps_page/page.blp:87
 msgid "Collapse all apps and processes"
@@ -420,9 +418,8 @@ msgid "100%"
 msgstr "100%"
 
 #: resources/ui/performance_page/cpu.blp:167
-#, fuzzy
 msgid "Change _Top Graph To"
-msgstr "更改圖表為(_R)"
+msgstr "更改頂部圖表為(_T)"
 
 #: resources/ui/performance_page/cpu.blp:170
 msgid "Overall U_tilization"
@@ -433,43 +430,38 @@ msgid "Logical _Processors"
 msgstr "邏輯處理器(_P)"
 
 #: resources/ui/performance_page/cpu.blp:180
-#, fuzzy
 msgid "_All Threads"
-msgstr "執行緒"
+msgstr "所有執行緒(_A)"
 
 #: resources/ui/performance_page/cpu.blp:185
 msgid "All Threads _Stacked"
-msgstr ""
+msgstr "所有執行緒，堆疊式(_S)"
 
 #: resources/ui/performance_page/cpu.blp:191
-#, fuzzy
 msgid "Change B_ottom Graph To"
-msgstr "更改圖表為(_R)"
+msgstr "更改底部圖表為(_B)"
 
 #: resources/ui/performance_page/cpu.blp:194
 #: resources/ui/performance_page/gpu.blp:219
 #: resources/ui/performance_page/gpu.blp:253
-#, fuzzy
 msgid "_Power Draw"
-msgstr "功率消耗"
+msgstr "功率消耗(_P)"
 
 #: resources/ui/performance_page/cpu.blp:199
 #: resources/ui/performance_page/gpu.blp:229
 #: resources/ui/performance_page/gpu.blp:263
-#, fuzzy
 msgid "_Temperature"
-msgstr "溫度"
+msgstr "溫度(_T)"
 
 #: resources/ui/performance_page/cpu.blp:204
-#, fuzzy
 msgid "_Clock Speed"
-msgstr "時脈速度"
+msgstr "時脈速度(_C)"
 
 #: resources/ui/performance_page/cpu.blp:209
 #: resources/ui/performance_page/gpu.blp:234
 #: resources/ui/performance_page/gpu.blp:268
 msgid "_None"
-msgstr ""
+msgstr "無(_N)"
 
 #: resources/ui/performance_page/cpu.blp:215
 msgid "Show Kernel Times"
@@ -554,7 +546,7 @@ msgstr "風扇(_F)"
 #: resources/ui/performance_page/memory.blp:244
 #: resources/ui/performance_page/network.blp:142
 msgid "_Battery"
-msgstr ""
+msgstr "電池(_B)"
 
 #: resources/ui/performance_page/cpu.blp:268
 #: resources/ui/performance_page/disk.blp:226
@@ -613,32 +605,27 @@ msgid "Memory usage over "
 msgstr "此期間內的記憶體使用率： "
 
 #: resources/ui/performance_page/gpu.blp:206
-#, fuzzy
 msgid "Change Middle Graph To"
-msgstr "更改圖表為(_R)"
+msgstr "更改中央圖表為"
 
 #: resources/ui/performance_page/gpu.blp:209
 #: resources/ui/performance_page/gpu.blp:243
-#, fuzzy
 msgid "_Encode/_Decode"
-msgstr "顯示編解碼使用率"
+msgstr "編碼/解碼(_E)"
 
 #: resources/ui/performance_page/gpu.blp:214
 #: resources/ui/performance_page/gpu.blp:248
-#, fuzzy
 msgid "_Memory Usage"
-msgstr "記憶體使用率"
+msgstr "記憶體使用率(_M)"
 
 #: resources/ui/performance_page/gpu.blp:224
 #: resources/ui/performance_page/gpu.blp:258
-#, fuzzy
 msgid "_Clock Speeds"
-msgstr "時脈速度"
+msgstr "時脈速度(_C)"
 
 #: resources/ui/performance_page/gpu.blp:240
-#, fuzzy
 msgid "Change Bottom Graph To"
-msgstr "更改圖表為(_R)"
+msgstr "更改底部圖表為"
 
 #: resources/ui/performance_page/memory.blp:41
 #: resources/ui/table_view/table_view.blp:59
@@ -689,11 +676,11 @@ msgstr "可用交換空間"
 
 #: resources/ui/performance_page/memory_details.blp:258
 msgid "Compressed"
-msgstr ""
+msgstr "已壓縮"
 
 #: resources/ui/performance_page/memory_details.blp:290
 msgid "Savings"
-msgstr ""
+msgstr "節省"
 
 #: resources/ui/performance_page/memory_details.blp:317
 msgid "Speed:"
@@ -741,9 +728,8 @@ msgid "Connection type:"
 msgstr "連線類型："
 
 #: resources/ui/performance_page/network_details.blp:222
-#, fuzzy
 msgid "Connection status:"
-msgstr "連線類型："
+msgstr "連線狀態："
 
 #: resources/ui/performance_page/network_details.blp:240
 msgid "SSID:"
@@ -778,24 +764,20 @@ msgid "Smart Data"
 msgstr "S.M.A.R.T. 資料"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:57
-#, fuzzy
 msgid "Last Updated:"
-msgstr "上次更新"
+msgstr "上次更新："
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:69
-#, fuzzy
 msgid "Powered On:"
-msgstr "開機時間"
+msgstr "開機時間："
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:81
-#, fuzzy
 msgid "Drive Health:"
-msgstr "硬碟健康狀態"
+msgstr "硬碟健康狀態："
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:93
-#, fuzzy
 msgid "SMART Test Status:"
-msgstr "S.M.A.R.T. 測試狀態"
+msgstr "S.M.A.R.T. 測試狀態："
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:108
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:133
@@ -957,7 +939,7 @@ msgstr "轉速："
 
 #: resources/ui/performance_page/disk_details.blp:478
 msgid "Partitions"
-msgstr ""
+msgstr "分割區"
 
 #: resources/ui/performance_page/cpu_details.blp:72
 msgid "Speed"
@@ -1024,9 +1006,8 @@ msgid "Power preference:"
 msgstr "電源偏好:"
 
 #: resources/ui/preferences/apps_services_page.blp:25
-#, fuzzy
 msgid "Apps & Services"
-msgstr "服務"
+msgstr "應用程式與服務"
 
 #: resources/ui/preferences/apps_services_page.blp:30
 msgid "Merge Process Stats"
@@ -1066,11 +1047,11 @@ msgstr "於欄位之間顯示分隔線"
 
 #: resources/ui/preferences/apps_services_page.blp:55
 msgid "Grey Out Zeroes"
-msgstr ""
+msgstr "虛化顯示 0 值"
 
 #: resources/ui/preferences/apps_services_page.blp:56
 msgid "Gray out values that equal zero"
-msgstr ""
+msgstr "將等於 0 的數值虛化顯示"
 
 #: resources/ui/preferences/general_page.blp:25
 msgid "General"
@@ -1090,14 +1071,12 @@ msgid "Performance Page"
 msgstr "效能頁面"
 
 #: resources/ui/preferences/performance_page.blp:29
-#, fuzzy
 msgid "Graph Settings"
-msgstr "網路設定(_T)"
+msgstr "圖表設定"
 
 #: resources/ui/preferences/performance_page.blp:32
-#, fuzzy
 msgid "Data Points"
-msgstr "圖表數據樣點"
+msgstr "資料樣點數"
 
 #: resources/ui/preferences/performance_page.blp:50
 msgid "Smooth Graphs"
@@ -1139,24 +1118,23 @@ msgstr "顯示網路資訊"
 
 #: resources/ui/preferences/performance_page.blp:79
 msgid "Wired"
-msgstr ""
+msgstr "有線"
 
 #: resources/ui/preferences/performance_page.blp:83
 msgid "Wireless"
-msgstr ""
+msgstr "無線"
 
 #: resources/ui/preferences/performance_page.blp:87
 msgid "VPN"
-msgstr ""
+msgstr "VPN"
 
 #: resources/ui/preferences/performance_page.blp:91
-#, fuzzy
 msgid "Virtual"
-msgstr "虛擬化："
+msgstr "虛擬"
 
 #: resources/ui/preferences/performance_page.blp:92
 msgid "Docker, Multipass, Bridge"
-msgstr ""
+msgstr "Docker、Multipass、橋接"
 
 #: resources/ui/preferences/performance_page.blp:96
 msgid "Other"
@@ -1164,7 +1142,7 @@ msgstr "其他"
 
 #: resources/ui/preferences/performance_page.blp:97
 msgid "Bluetooth, InfiniBand, WWAN"
-msgstr ""
+msgstr "藍牙、InfiniBand、WWAN"
 
 #: resources/ui/preferences/performance_page.blp:102
 msgid "Show GPU Information"
@@ -1175,18 +1153,16 @@ msgid "Show Fan Information"
 msgstr "顯示風扇資訊"
 
 #: resources/ui/preferences/performance_page.blp:112
-#, fuzzy
 msgid "Show Battery Information"
-msgstr "顯示記憶體資訊"
+msgstr "顯示電池資訊"
 
 #: resources/ui/preferences/performance_page.blp:113
-#, fuzzy
 msgid "Show battery information by default"
-msgstr "預設顯示記憶體資訊"
+msgstr "預設顯示電池資訊"
 
 #: resources/ui/preferences/units_page.blp:25
 msgid "Units"
-msgstr ""
+msgstr "單位"
 
 #: resources/ui/preferences/units_page.blp:30
 msgid "Memory Usage Unit"
@@ -1435,9 +1411,8 @@ msgstr "PID"
 #: resources/ui/table_view/table_view.blp:65
 #: resources/ui/table_view/process_details_dialog.blp:227
 #: src/table_view/mod.rs:903 src/table_view/mod.rs:908
-#, fuzzy
 msgid "Swap"
-msgstr "已使用交換空間"
+msgstr "交換空間"
 
 #: resources/ui/table_view/table_view.blp:71 src/performance_page/mod.rs:1264
 #: src/table_view/mod.rs:886 src/table_view/mod.rs:894
@@ -1760,18 +1735,16 @@ msgid "_Keyboard Shortcuts"
 msgstr "鍵盤快捷鍵(_K)"
 
 #: resources/ui/window.blp:237
-#, fuzzy
 msgid "_System Information"
-msgstr "作業系統資訊"
+msgstr "系統資訊(_S)"
 
 #: resources/ui/window.blp:244
 msgid "Open _Wiki"
-msgstr ""
+msgstr "開啟 _Wiki"
 
 #: resources/ui/window.blp:250
-#, fuzzy
 msgid "Show _First Run Dialog"
-msgstr "顯示詳細資訊彈出式視窗"
+msgstr "顯示初次啟動的對話框"
 
 #: resources/ui/window.blp:257
 msgid "_About Mission Center"
@@ -1792,16 +1765,15 @@ msgstr[0] "{} 個執行中的處理程序"
 #: src/performance_page/widgets/eject_failure_dialog.rs:157
 #: src/performance_page/widgets/smart_failure_dialog.rs:67
 msgid "Close"
-msgstr ""
+msgstr "關閉"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:158
 msgid "Retry"
-msgstr ""
+msgstr "重試"
 
 #: src/performance_page/widgets/eject_failure_dialog.rs:159
-#, fuzzy
 msgid "Kill All"
-msgstr "全部停用"
+msgstr "終止全部"
 
 #: src/performance_page/widgets/smart_data_dialog.rs:95
 #, rust-format
@@ -1977,6 +1949,9 @@ msgid ""
 "instances). Displaying BogoMIPS value as a fallback. BogoMIPS is a delay "
 "loop calibration metric, not a true frequency measurement."
 msgstr ""
+"真實 CPU 頻率資料目前無法使用（這在虛擬機、容器或雲端實體中常見）。目前改為使"
+"用 BogoMIPS 數值。BogoMIPS 的值是校準延遲迴圈 (delay loop) 用的參考值，不是真"
+"正的頻率量測值。"
 
 #: src/performance_page/cpu.rs:556 src/performance_page/fan.rs:297
 #: src/performance_page/gpu.rs:592
@@ -1992,14 +1967,12 @@ msgid "No"
 msgstr "否"
 
 #: src/performance_page/cpu.rs:1034 src/performance_page/gpu.rs:1122
-#, fuzzy
 msgid "Power draw over "
-msgstr "功率消耗"
+msgstr "此期間內的功率消耗： "
 
 #: src/performance_page/cpu.rs:1037 src/performance_page/gpu.rs:1125
-#, fuzzy
 msgid "Clock speed over "
-msgstr "此期間內的風扇速度： "
+msgstr "此期間內的時脈速度： "
 
 #: src/performance_page/disk.rs:179
 #, rust-format
@@ -2113,11 +2086,11 @@ msgstr "{} {}（{}）"
 #: src/performance_page/mod.rs:1724 src/performance_page/mod.rs:2626
 #, rust-format
 msgid "Battery {}"
-msgstr ""
+msgstr "電池 {}"
 
 #: src/performance_page/mod.rs:1726 src/performance_page/mod.rs:2628
 msgid "Battery"
-msgstr ""
+msgstr "電池"
 
 #: src/performance_page/mod.rs:2391
 #, rust-format
@@ -2137,39 +2110,35 @@ msgstr "失敗"
 
 #: src/performance_page/network.rs:458
 msgid "Disconnected"
-msgstr ""
+msgstr "已斷線"
 
 #: src/performance_page/network.rs:459
 msgid "Disconnecting"
-msgstr ""
+msgstr "正在斷線"
 
 #: src/performance_page/network.rs:460
-#, fuzzy
 msgid "Connected"
-msgstr "連線類型："
+msgstr "已連線"
 
 #: src/performance_page/network.rs:461
-#, fuzzy
 msgid "Connecting"
-msgstr "連線類型："
+msgstr "正在連線"
 
 #: src/performance_page/network.rs:462
 msgid "Configuring"
-msgstr ""
+msgstr "正在設定"
 
 #: src/performance_page/network.rs:463
 msgid "Waiting for auth"
-msgstr ""
+msgstr "正在等待認證"
 
 #: src/performance_page/network.rs:464
-#, fuzzy
 msgid "Unavailable"
-msgstr "可用"
+msgstr "無法使用"
 
 #: src/performance_page/network.rs:465
-#, fuzzy
 msgid "Loading"
-msgstr "載入中..."
+msgstr "載入中"
 
 #: src/services_page/mod.rs:99
 #, rust-format

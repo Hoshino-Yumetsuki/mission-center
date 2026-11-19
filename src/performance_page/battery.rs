@@ -29,7 +29,9 @@ use magpie_types::battery::Battery;
 use super::widgets::{AnimationFrame, FillingSettings, GraphWidget};
 use crate::application::INTERVAL_STEP;
 use crate::i18n::*;
-use crate::performance_page::widgets::{DatasetGroup, RoundingSettings, ScalingSettings};
+use crate::performance_page::widgets::{
+    DatasetGroup, GraphWidgetSettingsExt, RoundingSettings, ScalingSettings,
+};
 use crate::performance_page::PageExt;
 use crate::to_long_human_readable_time;
 use crate::to_short_human_readable_time;

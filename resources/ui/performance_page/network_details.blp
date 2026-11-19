@@ -61,6 +61,9 @@ Box root {
 
         halign: start;
         label: _("Receive");
+
+        wrap: true;
+        wrap-mode: word_char;
       }
 
       Label speed_recv {
@@ -100,6 +103,9 @@ Box root {
 
         halign: start;
         label: _("Send");
+
+        wrap: true;
+        wrap-mode: word_char;
       }
 
       Label speed_send {
@@ -130,6 +136,9 @@ Box root {
 
         halign: start;
         label: _("Total Received");
+
+        wrap: true;
+        wrap-mode: word_char;
       }
 
       Label total_recv {
@@ -160,6 +169,9 @@ Box root {
 
         halign: start;
         label: _("Total Sent");
+
+        wrap: true;
+        wrap-mode: word_char;
       }
 
       Label total_sent {
@@ -311,6 +323,25 @@ Box root {
       halign: start;
       margin-end: 5;
 
+      visible: bind temperature.visible;
+
+      label: _("Temperature:");
+      ellipsize: end;
+    }
+
+    Label {
+      layout {
+        column: '1';
+        row: '10';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      margin-end: 5;
+
       label: _("Hardware address:");
       ellipsize: end;
     }
@@ -423,10 +454,26 @@ Box root {
       selectable: true;
     }
 
-    Label hw_address {
+    Label temperature {
       layout {
         column: '3';
         row: '9';
+      }
+
+      styles [
+        "caption",
+      ]
+
+      halign: start;
+      visible: false;
+
+      selectable: true;
+    }
+
+    Label hw_address {
+      layout {
+        column: '3';
+        row: '10';
       }
 
       styles [

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-25 09:06+0300\n"
-"PO-Revision-Date: 2026-04-24 18:06+0000\n"
+"PO-Revision-Date: 2026-10-05 02:01+0000\n"
 "Last-Translator: \"Марко М. Костић\" <marko.m.kostic@gmail.com>\n"
 "Language-Team: Serbian <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/sr/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Weblate 5.17.1-dev\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -389,7 +389,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:302
 msgid "If it's your first time running Mission Center"
-msgstr "Ако први пут покрећете Мисиони центар"
+msgstr "Ако први пут покрећете Осматрачницу"
 
 #: resources/ui/apps_page/page.blp:87
 msgid "Collapse all apps and processes"
@@ -1196,7 +1196,7 @@ msgstr "Прикажи информације о графичкој картиц
 
 #: resources/ui/preferences/performance_page.blp:107
 msgid "Show Fan Information"
-msgstr "Прикажи информације о вентилатору"
+msgstr "Прикажи податке о вентилатору"
 
 #: resources/ui/preferences/performance_page.blp:112
 msgid "Show Battery Information"
@@ -1794,7 +1794,7 @@ msgstr "Прикажи прозорче за _прво покретање"
 
 #: resources/ui/window.blp:257
 msgid "_About Mission Center"
-msgstr "_О Мисијон Центру"
+msgstr "_О Осматрачници"
 
 #: src/apps_page/mod.rs:303
 #, rust-format

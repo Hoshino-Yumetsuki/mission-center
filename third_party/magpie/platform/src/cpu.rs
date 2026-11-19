@@ -1,6 +1,6 @@
 /* src/cpu.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,9 +62,12 @@ where
     CC: CpuCache + Send,
 {
     pub fn new() -> Self {
+        let cpu = CC::new();
+        let local_cache = Mutex::new(cpu.cached().clone());
+
         Self {
-            cpu: Mutex::new(CC::new()),
-            local_cache: Mutex::new(Cpu::default()),
+            cpu: Mutex::new(cpu),
+            local_cache,
             refreshing: AtomicBool::new(false),
         }
     }
@@ -88,5 +91,34 @@ where
 
             log::debug!("PERF: Refreshed CPU information in {:?}", start.elapsed());
         });
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct FakeCache(Cpu);
+
+    impl CpuCache for FakeCache {
+        fn new() -> Self {
+            let mut cpu = Cpu::default();
+            cpu.core_usage_percent.resize(8, 0.0);
+            Self(cpu)
+        }
+
+        fn refresh(&mut self) {}
+
+        fn cached(&self) -> &Cpu {
+            &self.0
+        }
+    }
+
+    /// mission-center#542
+    #[test]
+    fn a_fresh_handler_is_seeded_from_its_cache() {
+        let handler = CpuHandler::<FakeCache>::new();
+
+        assert_eq!(handler.local_cache.lock().core_usage_percent.len(), 8);
     }
 }

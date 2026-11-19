@@ -31,6 +31,7 @@ use libc::{c_longlong, c_ulonglong};
 
 // do not run with interactive command line
 pub const ELEVATION_COMMAND: [&str; 2] = ["pkexec", "--disable-internal-agent"];
+pub const MK_TO_0_C: i64 = 273150;
 
 #[macro_export]
 macro_rules! sync {
@@ -312,14 +313,14 @@ pub fn xdg_data_dirs() -> &'static Vec<String> {
         match std::env::var("XDG_DATA_DIRS") {
             Ok(dir) => out.append(&mut dir.split(':').map(String::from).collect()),
             Err(e) => {
-                log::error!("Failed to get XDG_DATA_DIRS: {e}. Falling back to `/usr/share`");
+                log::info!("Failed to get XDG_DATA_DIRS: {e}. Falling back to `/usr/share`");
                 out.push("/usr/share".into())
             }
         };
         let xdg_data_home = match std::env::var("XDG_DATA_HOME") {
             Ok(dir) => dir.to_string(),
             Err(e) => {
-                log::error!(
+                log::info!(
                     "Failed to get XDG_DATA_HOME: {e}. Falling back to `$HOME/.local/share`",
                 );
                 format!("{}/.local/share", home_dir())

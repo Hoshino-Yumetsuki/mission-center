@@ -69,6 +69,8 @@ mod imp {
         pub serial_number: TemplateChild<gtk::Label>,
 
         #[template_child]
+        pub partitions_section: TemplateChild<gtk::Box>,
+        #[template_child]
         pub partitions_stack: TemplateChild<gtk::ListBox>,
 
         pub partitions_map: RefCell<HashMap<String, PartitionUsageItem>>,
@@ -99,6 +101,7 @@ mod imp {
                 disk_type: Default::default(),
                 wwn: Default::default(),
                 serial_number: Default::default(),
+                partitions_section: Default::default(),
                 partitions_stack: Default::default(),
                 partitions_map: Default::default(),
                 rotation_visible: Cell::new(false),
@@ -232,6 +235,10 @@ impl DiskDetails {
 
     pub fn wwn(&self) -> &gtk::Label {
         &self.imp().wwn
+    }
+
+    pub fn partitions_section(&self) -> &gtk::Box {
+        &self.imp().partitions_section
     }
 
     pub fn partitions_stack(&self) -> &gtk::ListBox {

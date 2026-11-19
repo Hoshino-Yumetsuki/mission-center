@@ -73,6 +73,8 @@ message Connection {
   optional string ipv6_address = 12;
 
   required ConnectionState state = 13;
+
+  optional uint32 temperature_milli_k = 14;
 }
 
 message ConnectionsRequest {}

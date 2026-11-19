@@ -19,12 +19,10 @@
  */
 
 pub use eject_failure_dialog::EjectFailureDialog;
-pub use graph_widget::GraphWidget;
-pub use graph_widget_utils::AnimationFrame;
-pub use graph_widget_utils::DatasetGroup;
-pub use graph_widget_utils::FillingSettings;
-pub use graph_widget_utils::RoundingSettings;
-pub use graph_widget_utils::ScalingSettings;
+pub use graph_widget_settings::GraphWidgetSettingsExt;
+pub use mc_graph_widget::{
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
+};
 pub use mem_composition_widget::MemoryCompositionWidget;
 pub use partition_usage_item::PartitionUsageItem;
 pub use sidebar_drop_hint::SidebarDropHint;
@@ -33,12 +31,9 @@ pub use smart_failure_dialog::SmartFailureDialog;
 pub use smart_nvme_dialog_row::SmartNvmeDialogRow;
 pub use smart_sata_dialog_row::SmartSataDialogRow;
 
-const GRAPH_RADIUS: f32 = 7.;
-
 mod eject_failure_dialog;
 mod eject_failure_row;
-mod graph_widget;
-mod graph_widget_utils;
+mod graph_widget_settings;
 mod mem_composition_widget;
 mod partition_usage_item;
 mod sidebar_drop_hint;

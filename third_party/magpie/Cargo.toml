@@ -1,6 +1,6 @@
 [package]
 name = "magpie"
-version = "1.1.0"
+version = "1.2.0"
 authors = [
     "Jan Luca <janluca.oster@proton.me>",
     "jojo2357",
@@ -37,7 +37,7 @@ path = "platform-linux"
 path = "platform-macos"
 
 [dependencies.nng-c-sys]
-version = "1.11"
+version = "1.12"
 default-features = false
 
 [profile.release]

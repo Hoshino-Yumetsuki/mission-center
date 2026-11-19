@@ -32,6 +32,7 @@ mod memory;
 mod network;
 mod processes;
 mod services;
+pub mod smbios;
 
 pub mod setup_script;
 mod util;

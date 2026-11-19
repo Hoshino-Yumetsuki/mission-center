@@ -12,8 +12,8 @@ export HOME=/root
 export TERM=xterm
 export PATH="$HOME/llvm-tooling/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:"
 
-SCRIPT_RUST_VESION=1.96.1
-SCRIPT_CLANG_VERSION=22.1.8
+SCRIPT_RUST_VESION=1.99.1
+SCRIPT_CLANG_VERSION=23.1.4
 
 apt-get update
 
@@ -32,7 +32,7 @@ mkdir -p "$OUT_PATH" && cd "$OUT_PATH"
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/glib2.html
 # --------------------------------------------------------------------
-GLIB_VER=2.87.5
+GLIB_VER=2.90.1
 GLIB_VER_MM=$(echo $GLIB_VER | cut -f1-2 -d'.')
 # --------------------------------------------------------------------
 rm -rf /usr/include/glib-2.0/
@@ -83,7 +83,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/freetype2.html
 # -------------------------------------------------------------------
-FREETYPE_VER=2.14.3
+FREETYPE_VER=2.15.0
 # -------------------------------------------------------------------
 curl -LO https://downloads.sourceforge.net/freetype/freetype-$FREETYPE_VER.tar.xz
 tar xvf freetype-$FREETYPE_VER.tar.xz
@@ -102,7 +102,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/cairo.html
 # --------------------------------------------------------------
-CAIRO_VER=1.18.4
+CAIRO_VER=1.18.6
 # --------------------------------------------------------------
 curl -LO https://gitlab.freedesktop.org/cairo/cairo/-/archive/$CAIRO_VER/cairo-$CAIRO_VER.tar.bz2
 tar xvf cairo-$CAIRO_VER.tar.bz2
@@ -125,11 +125,11 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/wayland.html
 # ----------------------------------------------------------------------
-WAYLAND_VER_REL=1.24.0-1
+WAYLAND_VER_REL=1.26.0-1
 WAYLAND_VER=$(echo $WAYLAND_VER_REL | cut -f1 -d'-')
 # ----------------------------------------------------------------------
-curl -LO https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/wayland/$WAYLAND_VER_REL/wayland_$WAYLAND_VER.orig.tar.gz
-tar xvf wayland_$WAYLAND_VER.orig.tar.gz
+curl -LO https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/wayland/$WAYLAND_VER_REL/wayland_$WAYLAND_VER.orig.tar.xz
+tar xvf wayland_$WAYLAND_VER.orig.tar.xz
 cd wayland-$WAYLAND_VER
 mkdir build && cd build
 meson setup --prefix=/usr --libdir=/usr/lib/$(arch)-linux-gnu --buildtype=release -Ddocumentation=false ..
@@ -139,7 +139,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/wayland-protocols.html
 # --------------------------------------------------------------------------------
-WAYLAND_PROTO_VER_REL=1.47-1
+WAYLAND_PROTO_VER_REL=1.49-1
 WAYLAND_PROTO_VER=$(echo $WAYLAND_PROTO_VER_REL | cut -f1 -d'-')
 # ----------------------------------------------------------------------
 curl -LO https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/wayland-protocols/$WAYLAND_PROTO_VER_REL/wayland-protocols_$WAYLAND_PROTO_VER.orig.tar.xz
@@ -153,7 +153,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/adwaita-icon-theme.html
 # ---------------------------------------------------------------------------
-ADW_ICONS_VER=50.0
+ADW_ICONS_VER=51.0
 ADW_ICONS_VER_MM=$(echo $ADW_ICONS_VER | cut -f1 -d'.')
 # ---------------------------------------------------------------------------
 rm -rf /usr/share/icons/Adwaita
@@ -171,7 +171,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/harfbuzz.html
 # -----------------------------------------------------------------------
-HARFBUZZ_VER=14.1.0
+HARFBUZZ_VER=15.0.0
 # -----------------------------------------------------------------------
 curl -LO https://github.com/harfbuzz/harfbuzz/releases/download/$HARFBUZZ_VER/harfbuzz-$HARFBUZZ_VER.tar.xz
 tar xvf harfbuzz-$HARFBUZZ_VER.tar.xz
@@ -201,7 +201,7 @@ cd $OUT_PATH
 
 # Fontconfig
 # ------------------------------------------------------------------
-FONTCONFIG_VER=2.17.1
+FONTCONFIG_VER=2.18.3
 # ------------------------------------------------------------------
 curl -LO https://gitlab.freedesktop.org/fontconfig/fontconfig/-/archive/$FONTCONFIG_VER/fontconfig-$FONTCONFIG_VER.tar.bz2
 tar xvf fontconfig-$FONTCONFIG_VER.tar.bz2
@@ -220,7 +220,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/pango.html
 # ------------------------------------------------------------------
-PANGO_VER=1.57.1
+PANGO_VER=1.58.2
 PANGO_VER_MM=$(echo $PANGO_VER | cut -f1-2 -d'.')
 # ------------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/pango/$PANGO_VER_MM/pango-$PANGO_VER.tar.xz
@@ -240,7 +240,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/gtk4.html
 # -------------------------------------------------------------
-GTK_VER=4.22.4
+GTK_VER=4.24.1
 GTK_VER_MM=$(echo $GTK_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/gtk/$GTK_VER_MM/gtk-$GTK_VER.tar.xz
@@ -266,7 +266,7 @@ cd "$OUT_PATH"
 
 # https://www.linuxfromscratch.org/blfs/view/stable/general/vala.html
 # -------------------------------------------------------------------
-VALA_VER=0.56.18
+VALA_VER=0.56.19
 VALA_VER_MM=$(echo $VALA_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/vala/$VALA_VER_MM/vala-$VALA_VER.tar.xz
@@ -279,7 +279,7 @@ cd $OUT_PATH
 
 # https://www.linuxfromscratch.org/blfs/view/stable/x/libadwaita.html
 # -------------------------------------------------------------------
-LIBADW_VER=1.9.1
+LIBADW_VER=1.10.0
 LIBADW_VER_MM=$(echo $LIBADW_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------------
 curl -LO https://download.gnome.org/sources/libadwaita/$LIBADW_VER_MM/libadwaita-$LIBADW_VER.tar.xz
@@ -303,10 +303,11 @@ cd "$OUT_PATH"
 
 # Blueprint Compiler
 # -------------------------------------------------------------------
-BP_CMP_VER=0.18.0
+BP_CMP_VER=0.22.2
+BP_CMP_VER_MM=$(echo $BP_CMP_VER | cut -f1-2 -d'.')
 # -------------------------------------------------------------------
-curl -L https://github.com/GNOME/blueprint-compiler/archive/refs/tags/$BP_CMP_VER.tar.gz --output blueprint-compiler-$BP_CMP_VER.tar.gz
-tar xvf blueprint-compiler-*.tar.gz && rm blueprint-compiler-*.tar.gz
+curl -LO https://download.gnome.org/sources/blueprint-compiler/$BP_CMP_VER_MM/blueprint-compiler-$BP_CMP_VER.tar.xz
+tar xvf blueprint-compiler-$BP_CMP_VER.tar.xz && rm blueprint-compiler-$BP_CMP_VER.tar.xz
 cd blueprint-compiler-$BP_CMP_VER
 mkdir build && cd build
 meson setup ..                          \
@@ -348,7 +349,7 @@ export LDFLAGS=-lgcc
 
 cd "$SRC_PATH"
 BUILD_DIR="_build-$(arch)"
-rm -rf "$BUILD_DIR" && meson setup "$BUILD_DIR" -Dbuildtype=release -Db_lto=true -Dprefix=/usr
+rm -rf "$BUILD_DIR" && meson setup "$BUILD_DIR" -Dbuildtype=release -Db_lto=true -Dprefix=/usr -Dversion="$VERSION_STRING"
 ninja -C "$BUILD_DIR" && env DESTDIR="$OUT_PATH" ninja -C "$BUILD_DIR" install
 
 cp "$OUT_PATH/usr/share/glib-2.0/schemas/io.missioncenter.MissionCenter.gschema.xml" "$DEPS_PATH/usr/share/glib-2.0/schemas/"

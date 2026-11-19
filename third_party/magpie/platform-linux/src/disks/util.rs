@@ -30,8 +30,6 @@ use udisks2::drive::{DriveProxy, MediaCompatibility, RotationRate};
 use udisks2::nvme::controller::ControllerProxy;
 use udisks2::Object;
 
-pub(crate) const MK_TO_0_C: i64 = 273150;
-
 pub fn model(disk_id: &str) -> Option<String> {
     let mut model_dir = ArrayString::<256>::new();
 

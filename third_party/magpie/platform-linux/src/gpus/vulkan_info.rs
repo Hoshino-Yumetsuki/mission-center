@@ -1,6 +1,6 @@
 /* src/gpus/vulkan_info.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,25 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+use std::ffi::CStr;
+
 use ash::vk;
+use serde::{Deserialize, Serialize};
 
 use magpie_platform::gpus::ApiVersion;
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct VulkanDevice {
+    pub ids_key: u32,
+    pub primary_node: Option<(u32, u32)>,
+    pub render_node: Option<(u32, u32)>,
+    pub version: ApiVersion,
+}
+
 pub struct VulkanInfo {
-    _entry: ash::Entry,
+    entry: ash::Entry,
     vk_instance: ash::Instance,
+    has_properties2: bool,
 }
 
 impl Drop for VulkanInfo {
@@ -37,7 +49,7 @@ impl Drop for VulkanInfo {
 
 impl VulkanInfo {
     pub fn new() -> Option<Self> {
-        let _entry = match unsafe { ash::Entry::load() } {
+        let entry = match unsafe { ash::Entry::load() } {
             Ok(e) => e,
             Err(e) => {
                 log::error!(
@@ -49,16 +61,35 @@ impl VulkanInfo {
         };
         log::debug!("Loaded Vulkan library");
 
+        let has_properties2 = unsafe { entry.enumerate_instance_extension_properties(None) }
+            .map(|extensions| {
+                has_extension(&extensions, ash::khr::get_physical_device_properties2::NAME)
+            })
+            .unwrap_or(false);
+        if !has_properties2 {
+            log::debug!(
+                "VK_KHR_get_physical_device_properties2 is unavailable, Vulkan devices can only be matched by PCI IDs"
+            );
+        }
+
+        let enabled_extensions = if has_properties2 {
+            vec![ash::khr::get_physical_device_properties2::NAME.as_ptr()]
+        } else {
+            vec![]
+        };
+
         let app_info = vk::ApplicationInfo {
             api_version: vk::make_api_version(0, 1, 0, 0),
             ..Default::default()
         };
         let create_info = vk::InstanceCreateInfo {
             p_application_info: &app_info,
+            enabled_extension_count: enabled_extensions.len() as u32,
+            pp_enabled_extension_names: enabled_extensions.as_ptr(),
             ..Default::default()
         };
 
-        let instance = match unsafe { _entry.create_instance(&create_info, None) } {
+        let instance = match unsafe { entry.create_instance(&create_info, None) } {
             Ok(i) => i,
             Err(e) => {
                 log::error!(
@@ -71,14 +102,13 @@ impl VulkanInfo {
         log::debug!("Created Vulkan instance");
 
         Some(Self {
-            _entry,
+            entry,
             vk_instance: instance,
+            has_properties2,
         })
     }
 
-    pub unsafe fn supported_vulkan_versions(
-        &self,
-    ) -> Option<std::collections::HashMap<u32, ApiVersion>> {
+    pub unsafe fn devices(&self) -> Vec<VulkanDevice> {
         let physical_devices = self
             .vk_instance
             .enumerate_physical_devices()
@@ -90,33 +120,60 @@ impl VulkanInfo {
                 vec![]
             });
 
-        let mut supported_versions = std::collections::HashMap::new();
+        let properties2 = self.has_properties2.then(|| {
+            ash::khr::get_physical_device_properties2::Instance::new(&self.entry, &self.vk_instance)
+        });
 
+        let mut devices = Vec::with_capacity(physical_devices.len());
         for device in physical_devices {
             let properties = self.vk_instance.get_physical_device_properties(device);
-            log::debug!(
-                "Found Vulkan device: {:?}",
-                std::ffi::CStr::from_ptr(properties.device_name.as_ptr())
-            );
+
+            let mut drm = vk::PhysicalDeviceDrmPropertiesEXT::default();
+            if let Some(properties2) = properties2.as_ref() {
+                if self.supports_drm_properties(device) {
+                    let mut chain = vk::PhysicalDeviceProperties2::default().push_next(&mut drm);
+                    properties2.get_physical_device_properties2(device, &mut chain);
+                }
+            }
 
             let version = properties.api_version;
-            let major = (version >> 22) as u16;
-            let minor = ((version >> 12) & 0x3ff) as u16;
-            let patch = (version & 0xfff) as u16;
-
-            let vendor_id = properties.vendor_id & 0xffff;
-            let device_id = properties.device_id & 0xffff;
-
-            supported_versions.insert(
-                (vendor_id << 16) | device_id,
-                ApiVersion {
-                    major: major as u32,
-                    minor: minor as u32,
-                    patch: Some(patch as u32),
+            let device = VulkanDevice {
+                ids_key: ((properties.vendor_id & 0xffff) << 16) | (properties.device_id & 0xffff),
+                primary_node: (drm.has_primary == vk::TRUE)
+                    .then_some((drm.primary_major as u32, drm.primary_minor as u32)),
+                render_node: (drm.has_render == vk::TRUE)
+                    .then_some((drm.render_major as u32, drm.render_minor as u32)),
+                version: ApiVersion {
+                    major: (version >> 22) & 0x7f,
+                    minor: (version >> 12) & 0x3ff,
+                    patch: Some(version & 0xfff),
                 },
+            };
+
+            log::debug!(
+                "Found Vulkan device: {:?} {:?}",
+                properties.device_name_as_c_str().unwrap_or(c"<unknown>"),
+                device
             );
+            devices.push(device);
         }
 
-        Some(supported_versions)
+        devices
     }
+
+    unsafe fn supports_drm_properties(&self, device: vk::PhysicalDevice) -> bool {
+        match self
+            .vk_instance
+            .enumerate_device_extension_properties(device)
+        {
+            Ok(extensions) => has_extension(&extensions, ash::ext::physical_device_drm::NAME),
+            Err(_) => false,
+        }
+    }
+}
+
+fn has_extension(extensions: &[vk::ExtensionProperties], name: &CStr) -> bool {
+    extensions
+        .iter()
+        .any(|extension| extension.extension_name_as_c_str().is_ok_and(|e| e == name))
 }

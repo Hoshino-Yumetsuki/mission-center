@@ -1,6 +1,6 @@
 /* src/cpu/mod.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,8 +124,6 @@ impl CpuCache {
 impl magpie_platform::cpu::CpuCache for CpuCache {
     fn new() -> Self {
         let cpu_count = cpu_count();
-        let mut cpu_store_old = Vec::with_capacity(cpu_count + 1);
-        cpu_store_old.resize(cpu_count + 1, Ticks::default());
 
         let mut info = Cpu::default();
         info.core_usage_percent.resize(cpu_count, 0.0);
@@ -149,5 +147,21 @@ impl magpie_platform::cpu::CpuCache for CpuCache {
 
     fn cached(&self) -> &Cpu {
         &self.info
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use magpie_platform::cpu::CpuCache as _;
+
+    use super::*;
+
+    /// mission-center#542
+    #[test]
+    fn a_fresh_cache_is_sized_for_the_real_core_count() {
+        let cpu = CpuCache::new();
+
+        assert_eq!(cpu.cached().core_usage_percent.len(), cpu_count());
+        assert_eq!(cpu.cached().core_kernel_usage_percent.len(), cpu_count());
     }
 }

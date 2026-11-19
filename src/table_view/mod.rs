@@ -40,6 +40,7 @@ pub use process_details_dialog::ProcessDetailsDialog;
 pub use row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 pub use service_action_bar::ServiceActionBar;
 pub use service_details_dialog::ServiceDetailsDialog;
+pub use settings::is_tree_view;
 
 pub mod cached_icon;
 pub mod columns;
@@ -716,7 +717,6 @@ mod imp {
             self.filter.replace(filter.clone());
 
             let model = gtk::FilterListModel::new(Some(tree_list_model), Some(filter));
-            model.set_incremental(true);
             model
         }
 
@@ -765,7 +765,6 @@ mod imp {
             let tree_list_sorter = gtk::TreeListRowSorter::new(column_view_sorter);
             let model =
                 gtk::SortListModel::new(Some(filter_list_model), Some(tree_list_sorter.clone()));
-            model.set_incremental(true);
             (model, tree_list_sorter)
         }
 

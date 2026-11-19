@@ -33,7 +33,7 @@ pub(crate) fn xdg_data_dirs() -> &'static [String] {
         let xdg_data_home = match std::env::var("XDG_DATA_HOME") {
             Ok(dir) => dir.to_string(),
             Err(e) => {
-                log::error!(
+                log::info!(
                     "Failed to get XDG_DATA_HOME: {e}. Falling back to `$HOME/.local/share`",
                 );
                 format!("{}/.local/share", home_dir())
@@ -43,7 +43,7 @@ pub(crate) fn xdg_data_dirs() -> &'static [String] {
         match std::env::var("XDG_DATA_DIRS") {
             Ok(dir) => out.append(&mut dir.split(':').map(String::from).collect()),
             Err(e) => {
-                log::error!("Failed to get XDG_DATA_DIRS: {e}. Falling back to `/usr/share`");
+                log::info!("Failed to get XDG_DATA_DIRS: {e}. Falling back to `/usr/share`");
                 out.push("/usr/share".into())
             }
         };

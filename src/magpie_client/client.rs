@@ -1,6 +1,6 @@
 /* magpie_client/client.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -649,8 +649,10 @@ impl Client {
             CpuResponse::Error,
             |cpu: Cpu| cpu
         );
-        self.core_count
-            .store(cpu.core_usage_percent.len() as u32, Ordering::Relaxed);
+        self.core_count.store(
+            cpu.core_usage_percent.len().max(1) as u32,
+            Ordering::Relaxed,
+        );
 
         cpu
     }

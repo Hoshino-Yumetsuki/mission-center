@@ -1,6 +1,6 @@
 /* src/network/interface_iter.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,11 @@
  */
 
 use std::borrow::Cow;
+
+pub struct Interface {
+    pub index: u32,
+    pub name: Cow<'static, str>,
+}
 
 pub struct InterfaceIter {
     if_list: *mut libc::if_nameindex,
@@ -43,7 +48,7 @@ impl InterfaceIter {
 }
 
 impl Iterator for InterfaceIter {
-    type Item = Cow<'static, str>;
+    type Item = Interface;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.if_list.is_null() {
@@ -64,6 +69,9 @@ impl Iterator for InterfaceIter {
         self.current += 1;
 
         let if_name = unsafe { std::ffi::CStr::from_ptr::<'static>(entry.if_name) };
-        Some(if_name.to_string_lossy())
+        Some(Interface {
+            index: entry.if_index,
+            name: if_name.to_string_lossy(),
+        })
     }
 }

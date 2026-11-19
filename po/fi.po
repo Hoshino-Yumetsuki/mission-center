@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-25 09:06+0300\n"
-"PO-Revision-Date: 2026-04-26 19:09+0000\n"
-"Last-Translator: Henri Koivuranta <hkoivuranta12@gmail.com>\n"
+"PO-Revision-Date: 2026-10-06 13:51+0000\n"
+"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/fi/>\n"
 "Language: fi\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.17.1-dev\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -451,13 +451,12 @@ msgid "Logical _Processors"
 msgstr "_Loogiset suorittimet"
 
 #: resources/ui/performance_page/cpu.blp:180
-#, fuzzy
 msgid "_All Threads"
-msgstr "Säikeet"
+msgstr "_Kaikki säikeet"
 
 #: resources/ui/performance_page/cpu.blp:185
 msgid "All Threads _Stacked"
-msgstr ""
+msgstr "Kaikki säikeet _pinottuna"
 
 #: resources/ui/performance_page/cpu.blp:191
 #, fuzzy
@@ -467,27 +466,24 @@ msgstr "Vaih_da kaavioksi"
 #: resources/ui/performance_page/cpu.blp:194
 #: resources/ui/performance_page/gpu.blp:219
 #: resources/ui/performance_page/gpu.blp:253
-#, fuzzy
 msgid "_Power Draw"
-msgstr "Virrankäyttö"
+msgstr "_Virrankäyttö"
 
 #: resources/ui/performance_page/cpu.blp:199
 #: resources/ui/performance_page/gpu.blp:229
 #: resources/ui/performance_page/gpu.blp:263
-#, fuzzy
 msgid "_Temperature"
-msgstr "Lämpötila"
+msgstr "_Lämpötila"
 
 #: resources/ui/performance_page/cpu.blp:204
-#, fuzzy
 msgid "_Clock Speed"
-msgstr "Kellotaajuus"
+msgstr "_Kellotaajuus"
 
 #: resources/ui/performance_page/cpu.blp:209
 #: resources/ui/performance_page/gpu.blp:234
 #: resources/ui/performance_page/gpu.blp:268
 msgid "_None"
-msgstr ""
+msgstr "_Ei mitään"
 
 #: resources/ui/performance_page/cpu.blp:215
 msgid "Show Kernel Times"
@@ -572,7 +568,7 @@ msgstr "_Tuuletin"
 #: resources/ui/performance_page/memory.blp:244
 #: resources/ui/performance_page/network.blp:142
 msgid "_Battery"
-msgstr ""
+msgstr "_Akku"
 
 #: resources/ui/performance_page/cpu.blp:268
 #: resources/ui/performance_page/disk.blp:226
@@ -637,21 +633,18 @@ msgstr "Vaih_da kaavioksi"
 
 #: resources/ui/performance_page/gpu.blp:209
 #: resources/ui/performance_page/gpu.blp:243
-#, fuzzy
 msgid "_Encode/_Decode"
-msgstr "Näytä pakkaus/purku"
+msgstr "_Pakkaus/p_urku"
 
 #: resources/ui/performance_page/gpu.blp:214
 #: resources/ui/performance_page/gpu.blp:248
-#, fuzzy
 msgid "_Memory Usage"
-msgstr "Muistinkäyttö"
+msgstr "Mu_istinkäyttö"
 
 #: resources/ui/performance_page/gpu.blp:224
 #: resources/ui/performance_page/gpu.blp:258
-#, fuzzy
 msgid "_Clock Speeds"
-msgstr "Kellotaajuus"
+msgstr "Kellotaajuu_det"
 
 #: resources/ui/performance_page/gpu.blp:240
 #, fuzzy
@@ -759,9 +752,8 @@ msgid "Connection type:"
 msgstr "Yhteyden tyyppi:"
 
 #: resources/ui/performance_page/network_details.blp:222
-#, fuzzy
 msgid "Connection status:"
-msgstr "Yhteyden tyyppi:"
+msgstr "Yhteyden tila:"
 
 #: resources/ui/performance_page/network_details.blp:240
 msgid "SSID:"
@@ -796,24 +788,20 @@ msgid "Smart Data"
 msgstr "Smart-data"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:57
-#, fuzzy
 msgid "Last Updated:"
-msgstr "Viimeksi päivitetty"
+msgstr "Viimeksi päivitetty:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:69
-#, fuzzy
 msgid "Powered On:"
-msgstr "Käynnistettynä"
+msgstr "Käynnistettynä:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:81
-#, fuzzy
 msgid "Drive Health:"
-msgstr "Aseman kunto"
+msgstr "Aseman kunto:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:93
-#, fuzzy
 msgid "SMART Test Status:"
-msgstr "SMART-testin tila"
+msgstr "SMART-testin tila:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:108
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:133
@@ -977,7 +965,7 @@ msgstr "Pyörimisnopeus"
 
 #: resources/ui/performance_page/disk_details.blp:478
 msgid "Partitions"
-msgstr ""
+msgstr "Osiot"
 
 #: resources/ui/performance_page/cpu_details.blp:72
 msgid "Speed"
@@ -1044,9 +1032,8 @@ msgid "Power preference:"
 msgstr "Tehoetusija:"
 
 #: resources/ui/preferences/apps_services_page.blp:25
-#, fuzzy
 msgid "Apps & Services"
-msgstr "Sovellus- ja palvelusivut"
+msgstr "Sovellukset ja palvelut"
 
 #: resources/ui/preferences/apps_services_page.blp:30
 msgid "Merge Process Stats"
@@ -1112,14 +1099,12 @@ msgid "Performance Page"
 msgstr "Suorituskykysivu"
 
 #: resources/ui/preferences/performance_page.blp:29
-#, fuzzy
 msgid "Graph Settings"
-msgstr "_Verkkoasetukset"
+msgstr "Kuvaajan asetukset"
 
 #: resources/ui/preferences/performance_page.blp:32
-#, fuzzy
 msgid "Data Points"
-msgstr "Kaavion datapisteet"
+msgstr "Datapisteet"
 
 #: resources/ui/preferences/performance_page.blp:50
 msgid "Smooth Graphs"
@@ -1163,20 +1148,19 @@ msgstr "Näytä verkon tiedot"
 
 #: resources/ui/preferences/performance_page.blp:79
 msgid "Wired"
-msgstr ""
+msgstr "Langallinen"
 
 #: resources/ui/preferences/performance_page.blp:83
 msgid "Wireless"
-msgstr ""
+msgstr "Langaton"
 
 #: resources/ui/preferences/performance_page.blp:87
 msgid "VPN"
-msgstr ""
+msgstr "VPN"
 
 #: resources/ui/preferences/performance_page.blp:91
-#, fuzzy
 msgid "Virtual"
-msgstr "Virtualisointi:"
+msgstr "Virtuaalinen"
 
 #: resources/ui/preferences/performance_page.blp:92
 msgid "Docker, Multipass, Bridge"
@@ -1199,18 +1183,16 @@ msgid "Show Fan Information"
 msgstr "Näytä tuuletintiedot"
 
 #: resources/ui/preferences/performance_page.blp:112
-#, fuzzy
 msgid "Show Battery Information"
-msgstr "Näytä muistin tiedot"
+msgstr "Näytä akun tiedot"
 
 #: resources/ui/preferences/performance_page.blp:113
-#, fuzzy
 msgid "Show battery information by default"
-msgstr "Näytä muistin tiedot oletuksena"
+msgstr "Näytä akun tiedot oletusarvoisesti"
 
 #: resources/ui/preferences/units_page.blp:25
 msgid "Units"
-msgstr ""
+msgstr "Yksiköt"
 
 #: resources/ui/preferences/units_page.blp:30
 msgid "Memory Usage Unit"
@@ -1784,18 +1766,16 @@ msgid "_Keyboard Shortcuts"
 msgstr "_Pikanäppäimet"
 
 #: resources/ui/window.blp:237
-#, fuzzy
 msgid "_System Information"
-msgstr "Käyttöjärjestelmän tiedot"
+msgstr "_Järjestelmätiedot"
 
 #: resources/ui/window.blp:244
 msgid "Open _Wiki"
-msgstr ""
+msgstr "Avaa _wiki"
 
 #: resources/ui/window.blp:250
-#, fuzzy
 msgid "Show _First Run Dialog"
-msgstr "Näytä tietoikkuna"
+msgstr "Näytä _ensikäynnistyksen ikkuna"
 
 #: resources/ui/window.blp:257
 msgid "_About Mission Center"
@@ -2143,11 +2123,11 @@ msgstr "{} {} ({})"
 #: src/performance_page/mod.rs:1724 src/performance_page/mod.rs:2626
 #, rust-format
 msgid "Battery {}"
-msgstr ""
+msgstr "Akku {}"
 
 #: src/performance_page/mod.rs:1726 src/performance_page/mod.rs:2628
 msgid "Battery"
-msgstr ""
+msgstr "Akku"
 
 #: src/performance_page/mod.rs:2391
 #, rust-format
@@ -2167,39 +2147,35 @@ msgstr "Epäonnistui"
 
 #: src/performance_page/network.rs:458
 msgid "Disconnected"
-msgstr ""
+msgstr "Yhteys katkaistu"
 
 #: src/performance_page/network.rs:459
 msgid "Disconnecting"
-msgstr ""
+msgstr "Katkaistaan yhteyttä"
 
 #: src/performance_page/network.rs:460
-#, fuzzy
 msgid "Connected"
-msgstr "Yhteyden tyyppi:"
+msgstr "Yhdistetty"
 
 #: src/performance_page/network.rs:461
-#, fuzzy
 msgid "Connecting"
-msgstr "Yhteyden tyyppi:"
+msgstr "Yhdistetään"
 
 #: src/performance_page/network.rs:462
 msgid "Configuring"
-msgstr ""
+msgstr "Määritetään"
 
 #: src/performance_page/network.rs:463
 msgid "Waiting for auth"
 msgstr ""
 
 #: src/performance_page/network.rs:464
-#, fuzzy
 msgid "Unavailable"
-msgstr "Saatavilla"
+msgstr "Ei saatavilla"
 
 #: src/performance_page/network.rs:465
-#, fuzzy
 msgid "Loading"
-msgstr "Ladataan..."
+msgstr "Ladataan"
 
 #: src/services_page/mod.rs:99
 #, rust-format

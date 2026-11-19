@@ -98,43 +98,53 @@ fn os_signals_listen(flag: Arc<AtomicBool>) {
 }
 
 fn handle_request(request_data: &[u8], socket: nng::nng_socket) {
-    let req = match Request::decode(request_data) {
-        Ok(req) => req,
+    let response = match Request::decode(request_data) {
+        Ok(req) => {
+            if let Some(body) = req.body {
+                match body {
+                    RequestBody::GetAbout(_) => about::handle_request(),
+                    RequestBody::GetApps(_) => apps::handle_request(),
+                    RequestBody::GetAppsIcons(req) => apps::handle_icons_request(req.app_ids),
+                    RequestBody::GetBattery(_) => battery::handle_request(),
+                    RequestBody::GetCpu(_) => cpu::handle_request(),
+                    RequestBody::GetDisks(req) => disks::handle_request(req.request),
+                    RequestBody::GetFans(_) => fan::handle_request(),
+                    RequestBody::GetGpus(_) => gpus::handle_request(),
+                    RequestBody::GetMemory(req) => memory::handle_request(req.kind()),
+                    RequestBody::GetConnections(_) => network::handle_request(),
+                    RequestBody::GetProcesses(req) => processes::handle_request(req.request),
+                    RequestBody::GetServices(req) => services::handle_request(req.request),
+                    RequestBody::GetScript(req) => setup_script::handle_request(req.request),
+                }
+            } else {
+                log::error!("Empty request");
+
+                let response = Response {
+                    body: Some(ResponseBody::Error(ResponseError {
+                        message: "Empty request".to_string(),
+                    })),
+                };
+
+                let mut buffer = nng::Buffer::new(response.encoded_len());
+                response.encode_raw(&mut buffer);
+
+                buffer
+            }
+        }
         Err(e) => {
             log::error!("{:?}", e);
-            return;
+
+            let response = Response {
+                body: Some(ResponseBody::Error(ResponseError {
+                    message: format!("Error: {:?}", e),
+                })),
+            };
+
+            let mut buffer = nng::Buffer::new(response.encoded_len());
+            response.encode_raw(&mut buffer);
+
+            buffer
         }
-    };
-
-    let response = if let Some(body) = req.body {
-        match body {
-            RequestBody::GetAbout(_) => about::handle_request(),
-            RequestBody::GetApps(_) => apps::handle_request(),
-            RequestBody::GetAppsIcons(req) => apps::handle_icons_request(req.app_ids),
-            RequestBody::GetBattery(_) => battery::handle_request(),
-            RequestBody::GetCpu(_) => cpu::handle_request(),
-            RequestBody::GetDisks(req) => disks::handle_request(req.request),
-            RequestBody::GetFans(_) => fan::handle_request(),
-            RequestBody::GetGpus(_) => gpus::handle_request(),
-            RequestBody::GetMemory(req) => memory::handle_request(req.kind()),
-            RequestBody::GetConnections(_) => network::handle_request(),
-            RequestBody::GetProcesses(req) => processes::handle_request(req.request),
-            RequestBody::GetServices(req) => services::handle_request(req.request),
-            RequestBody::GetScript(req) => setup_script::handle_request(req.request),
-        }
-    } else {
-        log::error!("Empty request");
-
-        let response = Response {
-            body: Some(ResponseBody::Error(ResponseError {
-                message: "Empty request".to_string(),
-            })),
-        };
-
-        let mut buffer = nng::Buffer::new(response.encoded_len());
-        response.encode_raw(&mut buffer);
-
-        buffer
     };
 
     let (response, response_len) = response.leak();
@@ -178,7 +188,7 @@ fn handle_request(request_data: &[u8], socket: nng::nng_socket) {
     }
 }
 
-fn listen(socket_addr: &str, stop_requested: Arc<AtomicBool>) -> magpie_platform::Result<()> {
+fn bind(socket_addr: &str) -> magpie_platform::Result<nng::nng_socket> {
     let mut socket = nng::nng_socket { id: 0 };
     let res = unsafe { nng::nng_rep0_open(&mut socket) };
     match res {
@@ -278,6 +288,10 @@ fn listen(socket_addr: &str, stop_requested: Arc<AtomicBool>) -> magpie_platform
 
     log::info!("Listening on {}...", socket_addr);
 
+    Ok(socket)
+}
+
+fn serve(socket: nng::nng_socket, stop_requested: Arc<AtomicBool>) -> magpie_platform::Result<()> {
     std::thread::spawn({
         let stop_requested = stop_requested.clone();
         move || os_signals_listen(stop_requested)
@@ -372,7 +386,7 @@ fn main() -> magpie_platform::Result<()> {
 
     #[cfg(target_os = "linux")]
     unsafe {
-        libc::prctl(libc::PR_SET_PDEATHSIG, libc::SIGKILL);
+        libc::prctl(libc::PR_SET_PDEATHSIG, SIGKILL);
     }
 
     env_logger::init();
@@ -410,14 +424,45 @@ fn main() -> magpie_platform::Result<()> {
         }
     };
 
-    // Kick off initial refresh in the background so the IPC socket can listen
-    // immediately. macOS collectors (and cold Linux starts) can take >1s; the
-    // UI client only retries ~15s and would otherwise fail to dial.
+    let socket = bind(&addr)?;
+
+    const WARM_UP_DEADLINE: Duration = Duration::from_secs(3);
     {
-        let data_cache = data_cache();
-        data_cache.refresh_async();
+        let now = std::time::Instant::now();
+        let (done_tx, done_rx) = std::sync::mpsc::channel::<()>();
+
+        std::thread::spawn(move || {
+            let data_cache = data_cache();
+
+            // Refresh the synchronous data sets before signaling completion.
+            std::thread::scope(|s| {
+                s.spawn(|| data_cache.refresh_cpu());
+                s.spawn(|| data_cache.refresh_memory());
+                s.spawn(|| data_cache.refresh_processes());
+                s.spawn(|| data_cache.refresh_batteries());
+                s.spawn(|| data_cache.refresh_disks());
+                s.spawn(|| data_cache.refresh_network());
+                s.spawn(|| data_cache.refresh_fans());
+            });
+
+            // These have a tendency to take a long time, just start the refresh and let it
+            // run in the background.
+            data_cache.refresh_apps_async();
+            data_cache.refresh_gpus_async();
+            data_cache.refresh_services_async();
+
+            let _ = done_tx.send(());
+        });
+
+        match done_rx.recv_timeout(WARM_UP_DEADLINE) {
+            Ok(()) => log::info!("PERF: Initial data cache refresh took {:?}", now.elapsed()),
+            Err(_) => log::warn!(
+                "Initial data cache refresh did not finish within {WARM_UP_DEADLINE:?}; \
+                 serving with partial data (it will keep populating in the background)"
+            ),
+        }
     }
 
     let stop_requested = Arc::new(AtomicBool::new(false));
-    listen(&addr, stop_requested)
+    serve(socket, stop_requested)
 }

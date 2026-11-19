@@ -26,7 +26,8 @@ use gtk::glib::g_critical;
 use gtk::{gio, glib, prelude::*};
 
 use crate::performance_page::widgets::{
-    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, GraphWidgetSettingsExt,
+    RoundingSettings, ScalingSettings,
 };
 use crate::DataType;
 use crate::{application::INTERVAL_STEP, i18n::*, settings, to_short_human_readable_time};
@@ -558,10 +559,6 @@ mod imp {
                 }
             }
 
-            if let Some(virt_proc) = this.virt_proc.get() {
-                virt_proc.set_text(&format!("{}", static_cpu_info.core_usage_percent.len()));
-            }
-
             if let Some(virtualization) = this.virtualization.get() {
                 if let Some(vt) = static_cpu_info.virtualization_technology.as_ref() {
                     virtualization.set_text(vt.as_ref());
@@ -669,13 +666,17 @@ mod imp {
             this: &super::PerformancePageCpu,
             readings: &crate::magpie_client::Readings,
         ) -> bool {
-            let mut graph_widgets = this.imp().graph_widgets.take();
             let this = this.imp();
 
             let dynamic_cpu_info = &readings.cpu;
+            let core_count = dynamic_cpu_info.core_usage_percent.len();
 
-            if graph_widgets.len() == 0 {
-                return false;
+            // Turns out cores can come and go at runtime
+            let mut graph_widgets = this.graph_widgets.take();
+            if graph_widgets.len() != core_count + 2 {
+                this.graph_widgets.set(graph_widgets);
+                this.populate_usage_graphs(core_count);
+                graph_widgets = this.graph_widgets.take();
             }
 
             // Update global CPU graph
@@ -686,12 +687,12 @@ mod imp {
             graph_widgets[1].add_data_point(vec![dynamic_cpu_info.core_usage_percent.clone()]);
 
             // Update per-core graphs
-            for i in 0..dynamic_cpu_info.core_usage_percent.len() {
-                let graph_widget = &mut graph_widgets[i + 2];
-                graph_widget.add_data_point(vec![
-                    vec![dynamic_cpu_info.core_usage_percent[i]],
-                    vec![dynamic_cpu_info.core_kernel_usage_percent[i]],
-                ]);
+            let per_core = dynamic_cpu_info
+                .core_usage_percent
+                .iter()
+                .zip(dynamic_cpu_info.core_kernel_usage_percent.iter());
+            for (graph_widget, (usage, kernel)) in graph_widgets.iter_mut().skip(2).zip(per_core) {
+                graph_widget.add_data_point(vec![vec![*usage], vec![*kernel]]);
             }
 
             this.graph_widgets.set(graph_widgets);
@@ -951,6 +952,14 @@ mod imp {
         fn populate_usage_graphs(&self, cpu_count: usize) {
             let base_color = self.obj().base_color();
 
+            while let Some(child) = self.usage_graphs.first_child() {
+                self.usage_graphs.remove(&child);
+            }
+
+            if let Some(virt_proc) = self.virt_proc.get() {
+                virt_proc.set_text(&format!("{}", cpu_count));
+            }
+
             let col_count = Self::compute_column_count(cpu_count);
 
             let settings = settings!();
@@ -960,7 +969,8 @@ mod imp {
             // Add one for overall CPU utilization
             let mut graph_widgets = vec![];
 
-            let overall = GraphWidget::new(Some(&settings));
+            let overall = GraphWidget::new();
+            overall.connect_to_settings(&settings);
             overall.set_base_color(&base_color);
             overall.set_visible(graph_selection == GRAPH_SELECTION_OVERALL);
 
@@ -979,7 +989,8 @@ mod imp {
 
             graph_widgets.push(overall);
 
-            let thread_wise = GraphWidget::new(Some(&settings));
+            let thread_wise = GraphWidget::new();
+            thread_wise.connect_to_settings(&settings);
             thread_wise.set_base_color(&base_color);
             thread_wise.set_visible(
                 graph_selection == GRAPH_SELECTION_ALL_THREADS
@@ -1008,7 +1019,8 @@ mod imp {
                 let row_idx = i / col_count;
                 let col_idx = i % col_count;
 
-                let new_graph = GraphWidget::new(Some(&settings));
+                let new_graph = GraphWidget::new();
+                new_graph.connect_to_settings(&settings);
                 new_graph.set_base_color(&base_color);
                 new_graph.set_visible(graph_selection == GRAPH_SELECTION_ALL);
 

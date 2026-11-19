@@ -84,6 +84,43 @@ pub enum DeviceOverride {
     Hide,
 }
 
+pub fn encode_device_name(name: &str) -> String {
+    let mut encoded = String::with_capacity(name.len());
+
+    for ch in name.chars() {
+        match ch {
+            '%' => encoded.push_str("%25"),
+            ';' => encoded.push_str("%3B"),
+            ':' => encoded.push_str("%3A"),
+            _ => encoded.push(ch),
+        }
+    }
+
+    encoded
+}
+
+pub fn decode_device_name(encoded: &str) -> String {
+    let mut name = String::with_capacity(encoded.len());
+    let mut rest = encoded;
+
+    while let Some(at) = rest.find('%') {
+        name.push_str(&rest[..at]);
+
+        let (decoded, consumed) = match rest.as_bytes().get(at + 1..at + 3) {
+            Some(b"25") => ('%', 3),
+            Some(b"3B") => (';', 3),
+            Some(b"3A") => (':', 3),
+            _ => ('%', 1),
+        };
+
+        name.push(decoded);
+        rest = &rest[at + consumed..];
+    }
+
+    name.push_str(rest);
+    name
+}
+
 pub fn parse_device_overrides(raw: &str) -> HashMap<String, DeviceOverride> {
     raw.split(';')
         .filter(|s| !s.is_empty())
@@ -94,23 +131,25 @@ pub fn parse_device_overrides(raw: &str) -> HashMap<String, DeviceOverride> {
                 "hide" => DeviceOverride::Hide,
                 _ => return None,
             };
-            Some((name.to_string(), ovr))
+            Some((decode_device_name(name), ovr))
         })
         .collect()
 }
 
 pub fn serialize_device_overrides(overrides: &HashMap<String, DeviceOverride>) -> String {
-    overrides
+    let mut entries = overrides
         .iter()
         .map(|(name, ovr)| {
             let action = match ovr {
                 DeviceOverride::Show => "show",
                 DeviceOverride::Hide => "hide",
             };
-            format!("{}:{}", name, action)
+            format!("{}:{}", encode_device_name(name), action)
         })
-        .collect::<Vec<_>>()
-        .join(";")
+        .collect::<Vec<_>>();
+
+    entries.sort_unstable();
+    entries.join(";")
 }
 
 pub fn resolve_device_visibility(
@@ -151,9 +190,6 @@ mod imp {
         #[template_child]
         pub enabled_switch: TemplateChild<gtk::Switch>,
 
-        #[property(get = Self::is_enabled, set = Self::set_enabled)]
-        is_enabled: PhantomData<bool>,
-
         #[property(get = Self::base_color, set = Self::set_base_color)]
         base_color: PhantomData<gdk::RGBA>,
         #[property(get = Self::heading, set = Self::set_heading)]
@@ -179,8 +215,6 @@ mod imp {
                 label_info2: Default::default(),
                 enabled_switch: Default::default(),
 
-                is_enabled: PhantomData,
-
                 base_color: PhantomData,
                 heading: PhantomData,
                 info1: PhantomData,
@@ -194,14 +228,6 @@ mod imp {
     }
 
     impl SummaryGraph {
-        fn is_enabled(&self) -> bool {
-            self.enabled_switch.is_active()
-        }
-
-        fn set_enabled(&self, enabled: bool) {
-            self.enabled_switch.set_active(enabled);
-        }
-
         fn base_color(&self) -> gdk::RGBA {
             self.graph_widget.base_color()
         }
@@ -310,8 +336,6 @@ mod imp {
                                 "Failed to set performance-sidebar-device-overrides setting"
                             );
                         });
-
-                    this.notify_is_enabled();
                 }
             });
         }
@@ -340,13 +364,7 @@ impl SummaryGraph {
         imp.drag_handle_icon.set_visible(edit_mode);
         imp.enabled_switch.set_visible(edit_mode);
 
-        if edit_mode {
-            self.set_switch_active(switch_enabled);
-        }
-
-        if let Some(parent) = self.parent() {
-            parent.set_visible(edit_mode || switch_enabled);
-        }
+        self.set_switch_active(switch_enabled);
     }
 
     pub fn set_switch_active(&self, active: bool) {
@@ -409,5 +427,116 @@ impl SummaryGraph {
 
     pub fn device_type(&self) -> DeviceType {
         self.imp().device_type.get()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn encode_decode_roundtrip() {
+        for name in [
+            "net-eth0",
+            "net-a;b",
+            "50%",
+            "odd:name",
+            "%3B",
+            "",
+            "net-a;b:hide",
+            "%%%",
+            "üñî;çø∂é",
+        ] {
+            assert_eq!(decode_device_name(&encode_device_name(name)), name);
+        }
+    }
+
+    #[test]
+    fn encoded_names_are_free_of_separators() {
+        let encoded = encode_device_name("net-a;b:c");
+        assert!(!encoded.contains(';'));
+        assert!(!encoded.contains(':'));
+        assert_eq!(encoded, "net-a%3Bb%3Ac");
+    }
+
+    #[test]
+    fn ordinary_names_are_untouched() {
+        for name in [
+            "cpu",
+            "memory",
+            "disk-sda",
+            "net-eth0",
+            "gpu-0",
+            "battery-BAT0",
+        ] {
+            assert_eq!(encode_device_name(name), name);
+            assert_eq!(decode_device_name(name), name);
+        }
+    }
+
+    #[test]
+    fn decode_leaves_legacy_values_unchanged() {
+        for legacy in ["50%", "%", "%zz", "%3", "100%done", "a%b%c"] {
+            assert_eq!(decode_device_name(legacy), legacy);
+        }
+    }
+
+    #[test]
+    fn overrides_roundtrip_through_settings_string() {
+        let mut overrides = HashMap::new();
+        overrides.insert("net-a;b".to_string(), DeviceOverride::Hide);
+        overrides.insert("cpu".to_string(), DeviceOverride::Show);
+        overrides.insert("weird:show".to_string(), DeviceOverride::Show);
+        overrides.insert("50%".to_string(), DeviceOverride::Hide);
+
+        let serialized = serialize_device_overrides(&overrides);
+        assert_eq!(serialized.matches(';').count(), overrides.len() - 1);
+        assert_eq!(parse_device_overrides(&serialized), overrides);
+    }
+
+    #[test]
+    fn overrides_resolve_for_names_holding_separators() {
+        let mut overrides = HashMap::new();
+        overrides.insert("net-a;b".to_string(), DeviceOverride::Hide);
+
+        let parsed = parse_device_overrides(&serialize_device_overrides(&overrides));
+        assert!(!resolve_device_visibility("net-a;b", &parsed, true));
+        assert!(resolve_device_visibility("net-a", &parsed, true));
+        assert!(resolve_device_visibility("b", &parsed, true));
+    }
+
+    #[test]
+    fn legacy_unencoded_overrides_still_parse() {
+        let parsed = parse_device_overrides("cpu:show;disk-sda:hide");
+        assert_eq!(parsed.get("cpu"), Some(&DeviceOverride::Show));
+        assert_eq!(parsed.get("disk-sda"), Some(&DeviceOverride::Hide));
+    }
+
+    #[test]
+    fn serialized_overrides_do_not_depend_on_insertion_order() {
+        let entries = [
+            ("cpu", DeviceOverride::Show),
+            ("disk-sda", DeviceOverride::Hide),
+            ("net-eth0", DeviceOverride::Hide),
+            ("gpu-0", DeviceOverride::Show),
+        ];
+
+        let mut forward = HashMap::new();
+        for (name, ovr) in entries {
+            forward.insert(name.to_string(), ovr);
+        }
+
+        let mut backward = HashMap::new();
+        for (name, ovr) in entries.iter().rev() {
+            backward.insert(name.to_string(), *ovr);
+        }
+
+        let serialized = serialize_device_overrides(&forward);
+        assert_eq!(serialized, serialize_device_overrides(&backward));
+        assert_eq!(
+            serialized,
+            "cpu:show;disk-sda:hide;gpu-0:show;net-eth0:hide"
+        );
+        assert_eq!(parse_device_overrides(&serialized), forward);
     }
 }

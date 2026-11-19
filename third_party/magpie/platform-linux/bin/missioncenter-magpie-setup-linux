@@ -5,7 +5,7 @@ if ! [ "$USER" = "root" ]; then echo "You need to be root to run this script." 1
 powercap_file="/etc/udev/rules.d/99-powercap.rules"
 
 nethogs=$(which nethogs 2>/dev/null) || echo "Nethogs not found! Please install." 1>&2
-which sensors-detect 2>&1 >/dev/null || echo "sensors-detect not found! Please install lm-sensors." 1>&2
+{ which sensors-detect > /dev/null; } 2>&1 || echo "sensors-detect not found! Please install lm-sensors." 1>&2
 
 if ! [ "$1" = "--revert" ]; then
 	setcap "cap_net_admin,cap_net_raw,cap_dac_read_search,cap_sys_ptrace+pe" "$nethogs"

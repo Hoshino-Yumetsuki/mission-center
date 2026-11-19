@@ -1,10 +1,10 @@
 diff --git a/src/extract_gpuinfo_amdgpu.c b/src/extract_gpuinfo_amdgpu.c
-index a548cda..c7b5365 100644
+index 802c692..eb7f05a 100644
 --- a/src/extract_gpuinfo_amdgpu.c
 +++ b/src/extract_gpuinfo_amdgpu.c
-@@ -156,7 +156,7 @@ struct gpu_vendor gpu_vendor_amdgpu = {
- 
- static int readAttributeFromDevice(nvtop_device *dev, const char *sysAttr, const char *format, ...);
+@@ -169,7 +169,7 @@ static int readAttributeFromDevice(nvtop_device *dev, const char *sysAttr, const
+ // Resolve the hwmon input attribute to fall back to when the GPU_TEMP ioctl is unavailable.
+ static bool findHwmonGpuTempAttribute(nvtop_device *hwmon_device, char *input_attribute, size_t size);
  
 -__attribute__((constructor)) static void init_extract_gpuinfo_amdgpu(void) { register_gpu_vendor(&gpu_vendor_amdgpu); }
 +void init_extract_gpuinfo_amdgpu(void) { register_gpu_vendor(&gpu_vendor_amdgpu); }
@@ -12,30 +12,23 @@ index a548cda..c7b5365 100644
  static int wrap_drmGetDevices(drmDevicePtr devices[], int max_devices) {
    assert(_drmGetDevices2 || _drmGetDevices);
 diff --git a/src/extract_gpuinfo_ascend.c b/src/extract_gpuinfo_ascend.c
-index e8b1599..13e0e89 100644
+index 5a650e1..cddf700 100644
 --- a/src/extract_gpuinfo_ascend.c
 +++ b/src/extract_gpuinfo_ascend.c
-@@ -68,7 +68,7 @@ struct gpu_vendor gpu_vendor_ascend = {
+@@ -100,7 +100,7 @@ struct gpu_vendor gpu_vendor_ascend = {
      .name = "Ascend",
  };
  
 -__attribute__((constructor)) static void init_extract_gpuinfo_ascend(void) { register_gpu_vendor(&gpu_vendor_ascend); }
 +void init_extract_gpuinfo_ascend(void) { register_gpu_vendor(&gpu_vendor_ascend); }
  
- static bool gpuinfo_ascend_init(void) {
-   last_dcmi_return_status = dcmi_init();
-@@ -249,4 +249,4 @@ static void gpuinfo_ascend_get_running_processes(struct gpu_info *_gpu_info) {
-     }
-   }
-   free(proc_info);
--}
-\ No newline at end of file
-+}
+ /* ------------------------------------------------------------------ */
+ /* PCIe / device identifier helpers                                    */
 diff --git a/src/extract_gpuinfo_intel.c b/src/extract_gpuinfo_intel.c
-index b80b4f0..6653b5c 100644
+index 02124ec..a59ce57 100644
 --- a/src/extract_gpuinfo_intel.c
 +++ b/src/extract_gpuinfo_intel.c
-@@ -64,7 +64,7 @@ static struct gpu_info_intel *gpu_infos;
+@@ -145,7 +145,7 @@ static struct gpu_info_intel *gpu_infos;
  // Discrete GPU are others
  #define INTEGRATED_I915_GPU_PCI_ID "0000:00:02.0"
  
@@ -84,10 +77,10 @@ index 94efbc8..ca0ede4 100644
  bool gpuinfo_msm_init(void) {
    libdrm_handle = dlopen("libdrm.so", RTLD_LAZY);
 diff --git a/src/extract_gpuinfo_nvidia.c b/src/extract_gpuinfo_nvidia.c
-index 33670a6..79741ec 100644
+index 511a3ef..87959cf 100644
 --- a/src/extract_gpuinfo_nvidia.c
 +++ b/src/extract_gpuinfo_nvidia.c
-@@ -299,7 +299,7 @@ struct gpu_vendor gpu_vendor_nvidia = {
+@@ -695,7 +695,7 @@ struct gpu_vendor gpu_vendor_nvidia = {
      .name = "NVIDIA",
  };
  
@@ -190,7 +183,7 @@ index 21e9897..6e5765d 100644
    // Load dynamic library symbols
    void *handle = dlopen(libname, RTLD_LAZY);
 diff --git a/src/extract_gpuinfo_v3d.c b/src/extract_gpuinfo_v3d.c
-index c92757c..97e70a2 100644
+index cad256d..97c9603 100644
 --- a/src/extract_gpuinfo_v3d.c
 +++ b/src/extract_gpuinfo_v3d.c
 @@ -90,7 +90,7 @@ struct gpu_vendor gpu_vendor_v3d = {
@@ -203,7 +196,7 @@ index c92757c..97e70a2 100644
  bool gpuinfo_v3d_init(void) { return true; }
  void gpuinfo_v3d_shutdown(void) {
 diff --git a/src/extract_npuinfo_rockchip.c b/src/extract_npuinfo_rockchip.c
-index 7e9ba87..8b8155a 100644
+index a6cdcae..013b277 100644
 --- a/src/extract_npuinfo_rockchip.c
 +++ b/src/extract_npuinfo_rockchip.c
 @@ -132,7 +132,7 @@ static int set_gpuinfo_dynamic_memory(struct gpuinfo_dynamic_info *dynamic_info)
@@ -215,7 +208,7 @@ index 7e9ba87..8b8155a 100644
  }
  
  static void gpuinfo_rknpu_refresh_dynamic_info(struct gpu_info *_gpu_info) {
-@@ -142,7 +142,7 @@ static void gpuinfo_rknpu_refresh_dynamic_info(struct gpu_info *_gpu_info) {
+@@ -144,7 +144,7 @@ static void gpuinfo_rknpu_refresh_dynamic_info(struct gpu_info *_gpu_info) {
    int gpu_clock_speed = read_int_from_file("/sys/class/devfreq/fdab0000.npu/cur_freq") / 1000000;
    int gpu_clock_speed_max = read_int_from_file("/sys/class/devfreq/fdab0000.npu/max_freq") / 1000000;
    int gpu_util_rate = read_npu_load("/sys/kernel/debug/rknpu/load");
@@ -224,9 +217,9 @@ index 7e9ba87..8b8155a 100644
      SET_GPUINFO_DYNAMIC(dynamic_info, gpu_util_rate, gpu_util_rate);
  
    SET_GPUINFO_DYNAMIC(dynamic_info, gpu_clock_speed, gpu_clock_speed);
-@@ -169,6 +169,6 @@ struct gpu_vendor gpu_vendor_rknpu = {
-   .name = "RK-NPU"
- };
+@@ -170,6 +170,6 @@ struct gpu_vendor gpu_vendor_rknpu = {.init = gpuinfo_rknpu_init,
+                                       .name = "RK-NPU",
+                                       .processing_unit = gpu_processing_unit_npu};
  
 -__attribute__((constructor)) static void init_extract_gpuinfo_rknpu(void) {
 +void init_extract_gpuinfo_rknpu(void) {

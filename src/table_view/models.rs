@@ -1,6 +1,6 @@
 /* table_view/models.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,15 +32,33 @@ use magpie_types::services::Service;
 use crate::table_view::cached_icon::LightCachedIcon;
 use crate::table_view::row_model::{ContentType, RowModel, RowModelBuilder, SectionType};
 
+use super::settings::is_tree_view;
+
+pub fn update_app_icons(
+    app_map: &HashMap<String, App>,
+    process_map: &HashMap<u32, Process>,
+    app_icons: &mut HashMap<u32, LightCachedIcon>,
+) {
+    app_icons.clear();
+
+    for app in app_map.values() {
+        let icon = LightCachedIcon::AppCachedKey(app.id.clone(), 16);
+        for pid in &app.pids {
+            app_icons.insert(*pid, icon.clone());
+        }
+    }
+
+    if !is_tree_view() {
+        propagate_app_icons(process_map, app_icons);
+    }
+}
+
 pub fn update_apps(
     app_map: &HashMap<String, App>,
     process_map: &HashMap<u32, Process>,
     process_model_map: &HashMap<u32, RowModel>,
-    app_icons: &mut HashMap<u32, LightCachedIcon>,
     list: &gio::ListStore,
 ) {
-    app_icons.clear();
-
     let mut has_died = HashSet::new();
     let mut does_exist = HashSet::new();
 
@@ -48,7 +66,7 @@ pub fn update_apps(
         let app_id = row_model.id();
         let app_id = app_id.to_string();
         if let Some(app) = app_map.get(&app_id) {
-            update_app(app, process_map, process_model_map, app_icons, row_model);
+            update_app(app, process_map, process_model_map, row_model);
 
             does_exist.insert(app_id);
         } else {
@@ -76,7 +94,7 @@ pub fn update_apps(
             .build();
         list.append(&row_model);
 
-        update_app(app, process_map, process_model_map, app_icons, row_model);
+        update_app(app, process_map, process_model_map, row_model);
     }
 }
 
@@ -225,31 +243,37 @@ pub fn update_services(
         !has_died.contains(&object.downcast_ref::<RowModel>().unwrap().service_id())
     });
 
-    for (_, service) in services
-        .iter()
-        .filter(|(_, serv)| !does_exist.contains(&serv.id))
-    {
-        let row_model = RowModelBuilder::new()
-            .id(&service.id.to_string())
-            .content_type(ContentType::Service)
-            .section_type(section_type)
-            .service_id(service.id)
-            .name(&service.name)
-            .file_path(&service.file_path())
-            .user(&service.user.clone().unwrap_or("".to_string()))
-            .group(&service.group.clone().unwrap_or("".to_string()))
-            .light_cached_icon(LightCachedIcon::StringPayload(service_icon(&service)))
-            .build();
-        list.append(&row_model);
+    let new_rows = services
+        .values()
+        .filter(|service| !does_exist.contains(&service.id))
+        .map(|service| {
+            let row_model = RowModelBuilder::new()
+                .id(&service.id.to_string())
+                .content_type(ContentType::Service)
+                .section_type(section_type)
+                .service_id(service.id)
+                .name(&service.name)
+                .file_path(&service.file_path())
+                .user(&service.user.clone().unwrap_or("".to_string()))
+                .group(&service.group.clone().unwrap_or("".to_string()))
+                .light_cached_icon(LightCachedIcon::StringPayload(service_icon(service)))
+                .build();
 
-        update_service(
-            process_map,
-            &row_model,
-            service,
-            app_icons,
-            icon,
-            use_merged_stats,
-        )
+            update_service(
+                process_map,
+                &row_model,
+                service,
+                app_icons,
+                icon,
+                use_merged_stats,
+            );
+
+            row_model
+        })
+        .collect::<Vec<_>>();
+
+    if !new_rows.is_empty() {
+        list.splice(list.n_items(), 0, &new_rows);
     }
 }
 
@@ -257,16 +281,17 @@ fn update_app(
     app: &App,
     process_map: &HashMap<u32, Process>,
     process_model_map: &HashMap<u32, RowModel>,
-    app_icons: &mut HashMap<u32, LightCachedIcon>,
     row_model: RowModel,
 ) {
     let primary_processes = primary_processes(app, process_map);
+
+    row_model.set_app_pids(stoppable_pids(&primary_processes, process_map));
 
     let list = row_model.children();
 
     // nothing to do/clear; it doesnt exist yet
     if primary_processes.is_empty() {
-        list.remove_all();
+        clear_children(&list);
 
         g_critical!(
             "MissionCenter::AppsPage",
@@ -280,23 +305,31 @@ fn update_app(
         .imp()
         .set_light_icon(LightCachedIcon::AppCachedKey(app.id.clone(), 24));
 
-    let mut has_died = HashSet::new();
-    let mut does_exist = HashSet::new();
-
-    list.iter::<RowModel>().flatten().for_each(|row_model| {
-        if primary_processes.contains(&row_model.pid()) {
-            does_exist.insert(row_model.pid());
-        } else {
-            has_died.insert(row_model.pid());
+    let displayed_processes = if !is_tree_view() {
+        let mut pids = HashSet::new();
+        for pid in &primary_processes {
+            collect_process_subtree(process_map, *pid, &mut pids);
         }
-    });
+        pids
+    } else {
+        primary_processes.clone()
+    };
 
-    list.retain(|row_model| {
-        row_model
+    list.retain(|object| {
+        object
             .downcast_ref::<RowModel>()
-            .map(|rm| !has_died.contains(&rm.pid()))
+            .map(|rm| {
+                displayed_processes.contains(&rm.pid())
+                    && process_model_map.get(&rm.pid()) == Some(rm)
+            })
             .unwrap_or(false)
     });
+
+    let does_exist: HashSet<u32> = list
+        .iter::<RowModel>()
+        .flatten()
+        .map(|rm| rm.pid())
+        .collect();
 
     let mut usage_stats = ProcessUsageStats::default();
 
@@ -305,15 +338,14 @@ fn update_app(
         .filter_map(|pid| process_map.get(pid))
     {
         usage_stats.merge(&process.merged_usage_stats(&process_map));
-        app_icons.insert(
-            process.pid,
-            LightCachedIcon::AppCachedKey(app.id.clone(), 16),
-        );
+    }
 
-        if !does_exist.contains(&process.pid) {
-            if let Some(process_model) = process_model_map.get(&process.pid) {
-                list.append(process_model);
-            }
+    for pid in displayed_processes
+        .iter()
+        .filter(|pid| !does_exist.contains(pid))
+    {
+        if let Some(process_model) = process_model_map.get(pid) {
+            list.append(process_model);
         }
     }
 
@@ -350,17 +382,21 @@ fn update_process(
         set_service(&row_model, parent_service);
     }
 
-    update_processes(
-        process_map,
-        process.children.clone().drain(..).collect(),
-        &row_model.children(),
-        app_icons,
-        icon,
-        use_merged_stats,
-        section_type,
-        parent_service,
-        model_map,
-    );
+    if !is_tree_view() {
+        clear_children(&row_model.children());
+    } else {
+        update_processes(
+            process_map,
+            process.children.clone().drain(..).collect(),
+            &row_model.children(),
+            app_icons,
+            icon,
+            use_merged_stats,
+            section_type,
+            parent_service,
+            model_map,
+        );
+    }
 
     model_map.insert(process.pid, row_model);
 }
@@ -392,16 +428,24 @@ fn update_service(
 
         let app_children = row_model.children();
 
+        let process_pids = if !is_tree_view() {
+            let mut pids = HashSet::new();
+            collect_process_subtree(process_map, pid, &mut pids);
+            pids
+        } else {
+            HashSet::from([pid])
+        };
+
         app_children.retain(|child| {
             child
                 .downcast_ref::<RowModel>()
-                .map(|rm| rm.pid() == pid)
+                .map(|rm| process_pids.contains(&rm.pid()))
                 .unwrap_or(false)
         });
 
         update_processes(
             process_map,
-            HashSet::from([pid]),
+            process_pids,
             &app_children,
             app_icons,
             icon,
@@ -411,9 +455,15 @@ fn update_service(
             &mut HashMap::new(),
         );
     } else {
-        row_model.children().remove_all();
+        clear_children(&row_model.children());
 
         set_empty_stats(&row_model);
+    }
+}
+
+fn clear_children(list: &gio::ListStore) {
+    if list.n_items() > 0 {
+        list.remove_all();
     }
 }
 
@@ -484,4 +534,71 @@ fn primary_processes(app: &App, process_map: &HashMap<u32, Process>) -> HashSet<
     }
 
     primary_processes
+}
+
+fn stoppable_pids(
+    primary_processes: &HashSet<u32>,
+    process_map: &HashMap<u32, Process>,
+) -> Vec<u32> {
+    primary_processes
+        .iter()
+        .filter_map(|pid| {
+            process_map
+                .get(pid)
+                .and_then(|process| find_stoppable_process(process, process_map))
+        })
+        .collect()
+}
+
+fn find_stoppable_process(process: &Process, process_map: &HashMap<u32, Process>) -> Option<u32> {
+    if process.name != "bwrap" {
+        return Some(process.pid);
+    }
+
+    for child in &process.children {
+        if let Some(stoppable) = process_map
+            .get(child)
+            .and_then(|process| find_stoppable_process(process, process_map))
+        {
+            return Some(stoppable);
+        }
+    }
+
+    None
+}
+
+pub(crate) fn collect_process_subtree(
+    process_map: &HashMap<u32, Process>,
+    pid: u32,
+    pids: &mut HashSet<u32>,
+) {
+    if !pids.insert(pid) {
+        return;
+    }
+
+    if let Some(process) = process_map.get(&pid) {
+        for child in &process.children {
+            collect_process_subtree(process_map, *child, pids);
+        }
+    }
+}
+
+fn propagate_app_icons(
+    process_map: &HashMap<u32, Process>,
+    app_icons: &mut HashMap<u32, LightCachedIcon>,
+) {
+    let mut stack: Vec<u32> = app_icons.keys().copied().collect();
+    while let Some(pid) = stack.pop() {
+        let (Some(process), Some(icon)) = (process_map.get(&pid), app_icons.get(&pid).cloned())
+        else {
+            continue;
+        };
+
+        for child in &process.children {
+            if !app_icons.contains_key(child) {
+                app_icons.insert(*child, icon.clone());
+                stack.push(*child);
+            }
+        }
+    }
 }

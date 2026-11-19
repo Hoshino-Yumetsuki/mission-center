@@ -44,10 +44,7 @@ fn special_shortcuts(
 
         let result = window.performance_page_active();
         if result {
-            let row = imp.sidebar.row_at_index(index);
-            if row.is_some() {
-                imp.sidebar.select_row(row.as_ref());
-            }
+            imp.performance_page.select_nth_shown_device(index);
         }
         result
     }
@@ -904,6 +901,7 @@ mod imp {
                 if !window.is_active() {
                     window.continue_refreshing();
                 }
+                window.sync_reduced_activity();
             });
 
             self.header_search_entry
@@ -1001,11 +999,11 @@ mod imp {
 
                     if this.performance_page_active.get() {
                         let should_hide_sidebar = this.should_hide_sidebar();
-                        this.split_view.set_show_sidebar(!should_hide_sidebar);
                         this.split_view.set_collapsed(should_hide_sidebar);
+                        this.split_view.set_show_sidebar(!should_hide_sidebar);
                     } else {
-                        this.split_view.set_show_sidebar(false);
                         this.split_view.set_collapsed(true);
+                        this.split_view.set_show_sidebar(false);
                     }
                 }
             });
@@ -1112,6 +1110,12 @@ impl MissionCenterWindow {
             }
         });
 
+        sys_info.set_reduced_activity(this.reduced_activity());
+
+        this.connect_suspended_notify(|window| {
+            window.sync_reduced_activity();
+        });
+
         this
     }
 
@@ -1130,17 +1134,19 @@ impl MissionCenterWindow {
             let this = self.downgrade();
 
             move || {
-                if let Some(this) = this.upgrade() {
-                    this.update_animations(AnimationFrame {
-                        progress: ((Self::get_current_timestamp()
-                            .saturating_sub(this.imp().last_refresh.get())
-                            as f64
-                            / 1_000_000.)
-                            / (this.imp().cached_refresh_ticks.get() as f64 * INTERVAL_STEP))
-                            .clamp(0., 1.) as f32,
-                        grid_offset: this.imp().global_scroll_ticks.get(),
-                    });
-                }
+                let Some(this) = this.upgrade() else {
+                    return ControlFlow::Continue;
+                };
+
+                this.update_animations(AnimationFrame {
+                    progress: ((Self::get_current_timestamp()
+                        .saturating_sub(this.imp().last_refresh.get())
+                        as f64
+                        / 1_000_000.)
+                        / (this.imp().cached_refresh_ticks.get() as f64 * INTERVAL_STEP))
+                        .clamp(0., 1.) as f32,
+                    grid_offset: this.imp().global_scroll_ticks.get(),
+                });
 
                 ControlFlow::Continue
             }
@@ -1244,8 +1250,11 @@ impl MissionCenterWindow {
         }
 
         result &= this.performance_page.update_readings(readings);
-        result &= this.apps_page.update_readings(readings);
-        result &= this.update_services(readings);
+
+        if readings.includes_app_data {
+            result &= this.apps_page.update_readings(readings);
+            result &= this.update_services(readings);
+        }
 
         this.last_refresh.set(Self::get_current_timestamp());
 
@@ -1258,6 +1267,27 @@ impl MissionCenterWindow {
         });
 
         result
+    }
+
+    pub fn reduced_activity(&self) -> bool {
+        self.is_suspended() && !self.is_active()
+    }
+
+    pub fn sync_reduced_activity(&self) {
+        let reduced = self.reduced_activity();
+
+        g_debug!("MissionCenter", "Reduced activity: {}", reduced);
+
+        match app!().sys_info() {
+            Ok(sys_info) => sys_info.set_reduced_activity(reduced),
+            Err(e) => {
+                g_critical!(
+                    "MissionCenter",
+                    "Failed to get sys_info from MissionCenterApplication: {}",
+                    e
+                );
+            }
+        }
     }
 
     pub fn pause_refreshing(&self) {

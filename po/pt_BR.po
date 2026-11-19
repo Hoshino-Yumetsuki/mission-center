@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-25 09:06+0300\n"
-"PO-Revision-Date: 2026-06-17 14:01+0000\n"
+"PO-Revision-Date: 2026-07-21 00:01+0000\n"
 "Last-Translator: Rubens Stuginski Jr <rubens.stuginski@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "mission-center/mission-center/pt_BR/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 2026.7.dev0\n"
+"X-Generator: Weblate 2026.8.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -25,7 +25,6 @@ msgid "Mission Center"
 msgstr "Gerenciador de Tarefas"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:9
-#, fuzzy
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Service;Services;Service "
@@ -33,7 +32,7 @@ msgid ""
 msgstr ""
 "Gerenciador de tarefas;Monitor de recursos;Monitor de "
 "sistema;Processador;Processos;Monitor de "
-"performance;CPU;GPU;Disco;Memória;Rede;Utilização"
+"performance;CPU;GPU;Disco;Memória;Rede;Utilização;Utilização;Serviço;Serviços;Serviço"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"

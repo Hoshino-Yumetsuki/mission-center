@@ -135,7 +135,7 @@ fn extract_de_info(info: &mut AboutDeInfo) {
             "KDE" => get_simple_vers_output!("plasmashell", "KDE"),
             "LXQt" => get_simple_vers_output!("lxqt-about", "LXQt"),
             _ => {
-                log::error!("Unknown DE: {}, please file an issue", &de);
+                log::error!("Unknown DE: {}, please file an issue", de);
                 (None, info.desktop_environment.clone())
             }
         }

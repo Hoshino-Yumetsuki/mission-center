@@ -20,7 +20,7 @@
 
 const PROC_STAT_IGNORE: [usize; 3] = [0, 9, 10];
 const PROC_STAT_IDLE: [usize; 2] = [4, 5];
-const PROC_STAT_KERNEL: [usize; 2] = [6, 7];
+const PROC_STAT_KERNEL: [usize; 3] = [3, 6, 7];
 
 #[derive(Debug, Copy, Clone, Default)]
 pub struct Ticks {

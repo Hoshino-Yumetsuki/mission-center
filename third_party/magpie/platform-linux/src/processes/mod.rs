@@ -1,6 +1,6 @@
 /* src/processes/mod.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 use std::collections::HashMap;
 use std::fmt::Write;
 use std::io::Read;
+use std::num::NonZeroU16;
 use std::time::Instant;
 
 use arrayvec::ArrayString;
@@ -130,7 +131,9 @@ async fn run_nethogs(sender: Sender<NethogsRecord>) {
         .arg("2")
         .arg("-C");
 
-    let mut nethogs_term = vt100::Parser::new(1000, 250, 0);
+    const ROWS: NonZeroU16 = NonZeroU16::new(1000).unwrap();
+    const COLS: NonZeroU16 = NonZeroU16::new(250).unwrap();
+    let mut nethogs_term = vt100::Parser::new(ROWS, COLS, 0);
 
     let out_rx = cmd.out_rx();
     async_runtime().spawn(cmd.run());
@@ -396,7 +399,7 @@ impl magpie_platform::processes::ProcessCache for ProcessCache {
                     let write_speed = io::write_bytes(&io_parsed).saturating_sub(prev_write_bytes)
                         as f32
                         / delta_time.as_secs_f32();
-                    process.usage_stats.disk_usage = (read_speed + write_speed) / 2.;
+                    process.usage_stats.disk_usage = read_speed + write_speed;
 
                     let prev_send_bytes = stats.raw_stats.net_bytes_sent;
                     let prev_recv_bytes = stats.raw_stats.net_bytes_recv;

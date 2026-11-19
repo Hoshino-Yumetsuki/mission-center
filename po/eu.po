@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: missioncenter\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-06-25 09:06+0300\n"
-"PO-Revision-Date: 2026-01-08 16:01+0000\n"
+"PO-Revision-Date: 2026-10-10 14:51+0000\n"
 "Last-Translator: Ibai Oihanguren Sala <ibaios@disroot.org>\n"
 "Language-Team: Basque <https://hosted.weblate.org/projects/mission-center/"
 "mission-center/eu/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.15.1\n"
+"X-Generator: Weblate 2026.10.1.dev0\n"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:2
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:4
@@ -25,7 +25,6 @@ msgid "Mission Center"
 msgstr "Mission Center"
 
 #: data/io.missioncenter.MissionCenter.desktop.in:9
-#, fuzzy
 msgid ""
 "Task manager;Resource monitor;System monitor;Processor;Processes;Performance "
 "monitor;CPU;GPU;Disc;Disk;Memory;Network;Utilisation;Utilization;Service;Services;Service "
@@ -33,7 +32,9 @@ msgid ""
 msgstr ""
 "Ataza kudeatzailea;Baliabideen monitorea;Sistemaren "
 "monitorea;Prozesadorea;Prozesuak;Errendimenduaren "
-"monitorea;PUZ;GPU;Diskoa;Memoria;Sarea;Erabilera"
+"monitorea;PUZ;PUG;Diskoa;Memoria;Sarea;Erabilera;Zerbitzua;Zerbitzuak;Zerbitzu "
+"kudeatzailea;Zerbitzu zerrenda;Sistemako zerbitzuak;Erabiltzaile "
+"zerbitzuak;systemd;systemctl"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:6
 msgid "Mission Center Developers"
@@ -48,7 +49,7 @@ msgid ""
 "Monitor your CPU, Memory, Disk, Network and GPU usage, accompanied by a per "
 "app and process breakdown of these statistics"
 msgstr ""
-"Monitorizatu PUZaren, memoriaren, diskoaren, sarearen eta GPUaren "
+"Monitorizatu PUZaren, memoriaren, diskoaren, sarearen eta PUGaren "
 "erabilerak, estatistika hauek aplikazioka eta prozesuka xehatzeko aukerarekin"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:20
@@ -98,7 +99,7 @@ msgid ""
 "Monitor overall GPU usage, video encoder and decoder usage, memory usage and "
 "power consumption, powered by the popular NVTOP project"
 msgstr ""
-"Monitorizatu GPUaren erabilera orokorra, bideo kodetze/deskodetze erabilera, "
+"Monitorizatu PUGaren erabilera orokorra, bideo kodetze/deskodetze erabilera, "
 "memoriaren erabilera eta energia kontsumoa, NVTOP proiektu ezagunari esker"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:34
@@ -139,7 +140,7 @@ msgid ""
 "Intel GPU monitoring is only supported for Broadwell and later GPUs; and "
 "does not support VRAM, power, or temperature monitoring"
 msgstr ""
-"Intelen GPU monitorizatzeak Broadwell edo GPU berriagoak soilik onartzen "
+"Intelen PUG monitorizatzeak Broadwell edo PUG berriagoak soilik onartzen "
 "ditu; ez du VRAM, energia edo tenperatura monitorizatzeko sostengurik"
 
 #: data/io.missioncenter.MissionCenter.metainfo.xml.in:48
@@ -257,7 +258,7 @@ msgstr "Erakutsi bereizleak Aplikazioak ikuspegiko zutabeen artean"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:135
 msgid "Gray out values that equal zero in the Apps view"
-msgstr ""
+msgstr "Ezgaitu zero balioak Aplikazioak ikuspegian"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:140
 msgid "The column name by which the Apps page view is sorted"
@@ -289,9 +290,8 @@ msgid "Which graph is shown on the CPU performance page"
 msgstr "Zer grafiko erakutsiko den PUZaren errendimendu orrian"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:177
-#, fuzzy
 msgid "Which graph is shown on the bottom graph of the CPU performance page"
-msgstr "Zer grafiko erakutsiko den PUZaren errendimendu orrian"
+msgstr "Zer grafiko erakutsiko den PUZaren errendimendu orriko azpiko grafikoan"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:182
 msgid "Show kernel times in the CPU graphs"
@@ -328,32 +328,30 @@ msgid "Show network information by default"
 msgstr "Erakutsi sarearen informazioa defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:223
-#, fuzzy
 msgid "Show wired network devices by default"
-msgstr "Erakutsi sarearen informazioa defektuz"
+msgstr "Erakutsi sareko gailu haridunak defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:228
-#, fuzzy
 msgid "Show wireless network devices by default"
-msgstr "Erakutsi sarearen informazioa defektuz"
+msgstr "Erakutsi sareko gailu harigabeak defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:233
-#, fuzzy
 msgid "Show VPN network devices by default"
-msgstr "Erakutsi sarearen informazioa defektuz"
+msgstr "Erakutsi VPN sareko gailuak defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:238
 msgid "Show virtual network devices (Docker, Multipass, Bridge) by default"
-msgstr ""
+msgstr "Erakutsi sare birtualeko gailuak (Docker, Multipass, Bridge) defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:243
 msgid "Show other network devices (Bluetooth, InfiniBand, WWAN) by default"
 msgstr ""
+"Erakutsi bestelako sareko gailuak (Bluetooth, InfiniBand, WWAN) defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:248
 #: resources/ui/preferences/performance_page.blp:103
 msgid "Show GPU information by default"
-msgstr "Erakutsi GPUaren informazioa defektuz"
+msgstr "Erakutsi PUGaren informazioa defektuz"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:253
 #: data/io.missioncenter.MissionCenter.gschema.xml:258
@@ -371,11 +369,11 @@ msgstr "Erakutsi trukatze-espazioaren grafikoa"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:274
 msgid "Middle Graph's Content and visibility"
-msgstr ""
+msgstr "Erdiko grafikoaren edukia eta ikusgarritasuna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:280
 msgid "Bottom Graph's Content and visibility"
-msgstr ""
+msgstr "Azpiko grafikoaren edukia eta ikusgarritasuna"
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:286
 msgid "The ordering of entries in the application sidebar"
@@ -393,7 +391,7 @@ msgstr ""
 
 #: data/io.missioncenter.MissionCenter.gschema.xml:302
 msgid "If it's your first time running Mission Center"
-msgstr ""
+msgstr "Mission Center exekutatzen duzun aurreneko aldia bada"
 
 #: resources/ui/apps_page/page.blp:87
 msgid "Collapse all apps and processes"
@@ -448,9 +446,8 @@ msgid "100%"
 msgstr "% 100"
 
 #: resources/ui/performance_page/cpu.blp:167
-#, fuzzy
 msgid "Change _Top Graph To"
-msgstr "Aldatu g_rafikoa hona"
+msgstr "Aldatu _goiko grafikoa hona"
 
 #: resources/ui/performance_page/cpu.blp:170
 msgid "Overall U_tilization"
@@ -458,46 +455,41 @@ msgstr "_Erabilera orokorra"
 
 #: resources/ui/performance_page/cpu.blp:175
 msgid "Logical _Processors"
-msgstr "_Prozesadore logikoak"
+msgstr "Prozesadore _logikoak"
 
 #: resources/ui/performance_page/cpu.blp:180
-#, fuzzy
 msgid "_All Threads"
-msgstr "Hariak"
+msgstr "_Hari guztiak"
 
 #: resources/ui/performance_page/cpu.blp:185
 msgid "All Threads _Stacked"
-msgstr ""
+msgstr "_Pilatutako hari guztiak"
 
 #: resources/ui/performance_page/cpu.blp:191
-#, fuzzy
 msgid "Change B_ottom Graph To"
-msgstr "Aldatu g_rafikoa hona"
+msgstr "Aldatu _azpiko grafikoa hona"
 
 #: resources/ui/performance_page/cpu.blp:194
 #: resources/ui/performance_page/gpu.blp:219
 #: resources/ui/performance_page/gpu.blp:253
-#, fuzzy
 msgid "_Power Draw"
-msgstr "Energia kontsumoa"
+msgstr "_Energia kontsumoa"
 
 #: resources/ui/performance_page/cpu.blp:199
 #: resources/ui/performance_page/gpu.blp:229
 #: resources/ui/performance_page/gpu.blp:263
-#, fuzzy
 msgid "_Temperature"
-msgstr "Tenperatura"
+msgstr "_Tenperatura"
 
 #: resources/ui/performance_page/cpu.blp:204
-#, fuzzy
 msgid "_Clock Speed"
-msgstr "Ordulariaren abiadura"
+msgstr "_Ordulariaren abiadura"
 
 #: resources/ui/performance_page/cpu.blp:209
 #: resources/ui/performance_page/gpu.blp:234
 #: resources/ui/performance_page/gpu.blp:268
 msgid "_None"
-msgstr ""
+msgstr "Bat ere _ez"
 
 #: resources/ui/performance_page/cpu.blp:215
 msgid "Show Kernel Times"
@@ -528,7 +520,7 @@ msgstr "_Ikuspegia"
 #: resources/ui/performance_page/memory.blp:214
 #: resources/ui/performance_page/network.blp:112
 msgid "CP_U"
-msgstr "P_UZa"
+msgstr "PU_Za"
 
 #: resources/ui/performance_page/cpu.blp:235
 #: resources/ui/performance_page/disk.blp:193
@@ -564,7 +556,7 @@ msgstr "_Sarea"
 #: resources/ui/performance_page/memory.blp:234
 #: resources/ui/performance_page/network.blp:132
 msgid "_GPU"
-msgstr "_GPUa"
+msgstr "PU_Ga"
 
 #: resources/ui/performance_page/cpu.blp:255
 #: resources/ui/performance_page/disk.blp:213
@@ -582,7 +574,7 @@ msgstr "_Haizagailua"
 #: resources/ui/performance_page/memory.blp:244
 #: resources/ui/performance_page/network.blp:142
 msgid "_Battery"
-msgstr ""
+msgstr "_Bateria"
 
 #: resources/ui/performance_page/cpu.blp:268
 #: resources/ui/performance_page/disk.blp:226
@@ -641,32 +633,27 @@ msgid "Memory usage over "
 msgstr "Memoriaren erabilera denbora-tarte honetan: "
 
 #: resources/ui/performance_page/gpu.blp:206
-#, fuzzy
 msgid "Change Middle Graph To"
-msgstr "Aldatu g_rafikoa hona"
+msgstr "Aldatu _erdiko grafikoa hona"
 
 #: resources/ui/performance_page/gpu.blp:209
 #: resources/ui/performance_page/gpu.blp:243
-#, fuzzy
 msgid "_Encode/_Decode"
-msgstr "Erakutsi kodetze/deskodetze erabilera"
+msgstr "_Kodetzea/_Deskodetzea"
 
 #: resources/ui/performance_page/gpu.blp:214
 #: resources/ui/performance_page/gpu.blp:248
-#, fuzzy
 msgid "_Memory Usage"
-msgstr "Memoriaren erabilera"
+msgstr "_Memoriaren erabilera"
 
 #: resources/ui/performance_page/gpu.blp:224
 #: resources/ui/performance_page/gpu.blp:258
-#, fuzzy
 msgid "_Clock Speeds"
-msgstr "Ordulariaren abiadura"
+msgstr "_Ordulariaren abiadura"
 
 #: resources/ui/performance_page/gpu.blp:240
-#, fuzzy
 msgid "Change Bottom Graph To"
-msgstr "Aldatu g_rafikoa hona"
+msgstr "Aldatu azpiko grafikoa hona"
 
 #: resources/ui/performance_page/memory.blp:41
 #: resources/ui/table_view/table_view.blp:59
@@ -717,11 +704,11 @@ msgstr "Truk.-esp. erabilgarria"
 
 #: resources/ui/performance_page/memory_details.blp:258
 msgid "Compressed"
-msgstr ""
+msgstr "Konprimatua"
 
 #: resources/ui/performance_page/memory_details.blp:290
 msgid "Savings"
-msgstr ""
+msgstr "Aurrezpena"
 
 #: resources/ui/performance_page/memory_details.blp:317
 msgid "Speed:"
@@ -769,9 +756,8 @@ msgid "Connection type:"
 msgstr "Konexio mota:"
 
 #: resources/ui/performance_page/network_details.blp:222
-#, fuzzy
 msgid "Connection status:"
-msgstr "Konexio mota:"
+msgstr "Konexioaren egoera:"
 
 #: resources/ui/performance_page/network_details.blp:240
 msgid "SSID:"
@@ -806,24 +792,20 @@ msgid "Smart Data"
 msgstr "SMART datuak"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:57
-#, fuzzy
 msgid "Last Updated:"
-msgstr "Azken eguneratzea"
+msgstr "Azken eguneratzea:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:69
-#, fuzzy
 msgid "Powered On:"
-msgstr "Piztuta"
+msgstr "Piztuta:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:81
-#, fuzzy
 msgid "Drive Health:"
-msgstr "Unitatearen osasuna"
+msgstr "Unitatearen osasuna:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:93
-#, fuzzy
 msgid "SMART Test Status:"
-msgstr "SMART probaren egoera"
+msgstr "SMART probaren egoera:"
 
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:108
 #: resources/ui/performance_page/disk_smart_data_dialog.blp:133
@@ -959,7 +941,7 @@ msgstr "Denbora aktiboa"
 
 #: resources/ui/performance_page/disk_details.blp:221
 msgid "Avg. response time"
-msgstr "Batez best. erantzute denb."
+msgstr "Batez best. erantz. denb."
 
 #: resources/ui/performance_page/disk_details.blp:249
 msgid "Capacity:"
@@ -971,7 +953,7 @@ msgstr "Formateatuta:"
 
 #: resources/ui/performance_page/disk_details.blp:283
 msgid "System disk:"
-msgstr "Sistemako diskoa:"
+msgstr "Sistem. diskoa:"
 
 #: resources/ui/performance_page/disk_details.blp:319
 msgid "WWN:"
@@ -987,7 +969,7 @@ msgstr "Biratze-abiadura"
 
 #: resources/ui/performance_page/disk_details.blp:478
 msgid "Partitions"
-msgstr ""
+msgstr "Partizioak"
 
 #: resources/ui/performance_page/cpu_details.blp:72
 msgid "Speed"
@@ -1054,9 +1036,8 @@ msgid "Power preference:"
 msgstr "Energia hobespenak:"
 
 #: resources/ui/preferences/apps_services_page.blp:25
-#, fuzzy
 msgid "Apps & Services"
-msgstr "Aplikazioak eta Zerbitzuak orriak"
+msgstr "Aplikazioak eta Zerbitzuak"
 
 #: resources/ui/preferences/apps_services_page.blp:30
 msgid "Merge Process Stats"
@@ -1098,11 +1079,11 @@ msgstr "Erakutsi bereizle bat zutabe bakoitzaren artean"
 
 #: resources/ui/preferences/apps_services_page.blp:55
 msgid "Grey Out Zeroes"
-msgstr ""
+msgstr "Ezgaitu zeroak"
 
 #: resources/ui/preferences/apps_services_page.blp:56
 msgid "Gray out values that equal zero"
-msgstr ""
+msgstr "Ezgaitu zero balioak"
 
 #: resources/ui/preferences/general_page.blp:25
 msgid "General"
@@ -1122,14 +1103,12 @@ msgid "Performance Page"
 msgstr "Errendimenduaren orria"
 
 #: resources/ui/preferences/performance_page.blp:29
-#, fuzzy
 msgid "Graph Settings"
-msgstr "Sareko e_zarpenak"
+msgstr "Sareko ezarpenak"
 
 #: resources/ui/preferences/performance_page.blp:32
-#, fuzzy
 msgid "Data Points"
-msgstr "Grafikoetako datu-puntuak"
+msgstr "Datu-puntuak"
 
 #: resources/ui/preferences/performance_page.blp:50
 msgid "Smooth Graphs"
@@ -1173,54 +1152,51 @@ msgstr "Erakutsi sarearen informazioa"
 
 #: resources/ui/preferences/performance_page.blp:79
 msgid "Wired"
-msgstr ""
+msgstr "Hariduna"
 
 #: resources/ui/preferences/performance_page.blp:83
 msgid "Wireless"
-msgstr ""
+msgstr "Harigabea"
 
 #: resources/ui/preferences/performance_page.blp:87
 msgid "VPN"
-msgstr ""
+msgstr "VPNa"
 
 #: resources/ui/preferences/performance_page.blp:91
-#, fuzzy
 msgid "Virtual"
-msgstr "Birtualizazioa:"
+msgstr "Birtuala"
 
 #: resources/ui/preferences/performance_page.blp:92
 msgid "Docker, Multipass, Bridge"
-msgstr ""
+msgstr "Docker, Multipass, Bridge"
 
 #: resources/ui/preferences/performance_page.blp:96
 msgid "Other"
-msgstr ""
+msgstr "Bestelakoa"
 
 #: resources/ui/preferences/performance_page.blp:97
 msgid "Bluetooth, InfiniBand, WWAN"
-msgstr ""
+msgstr "Bluetooth, InfiniBand, WWAN"
 
 #: resources/ui/preferences/performance_page.blp:102
 msgid "Show GPU Information"
-msgstr "Erakutsi GPUaren informazioa"
+msgstr "Erakutsi PUGaren informazioa"
 
 #: resources/ui/preferences/performance_page.blp:107
 msgid "Show Fan Information"
 msgstr "Erakutsi haizagailuaren informazioa"
 
 #: resources/ui/preferences/performance_page.blp:112
-#, fuzzy
 msgid "Show Battery Information"
-msgstr "Erakutsi memoriaren informazioa"
+msgstr "Erakutsi bateriaren informazioa"
 
 #: resources/ui/preferences/performance_page.blp:113
-#, fuzzy
 msgid "Show battery information by default"
-msgstr "Erakutsi memoriaren informazioa defektuz"
+msgstr "Erakutsi bateriaren informazioa defektuz"
 
 #: resources/ui/preferences/units_page.blp:25
 msgid "Units"
-msgstr ""
+msgstr "Unitateak"
 
 #: resources/ui/preferences/units_page.blp:30
 msgid "Memory Usage Unit"
@@ -1469,9 +1445,8 @@ msgstr "PIDa"
 #: resources/ui/table_view/table_view.blp:65
 #: resources/ui/table_view/process_details_dialog.blp:227
 #: src/table_view/mod.rs:903 src/table_view/mod.rs:908
-#, fuzzy
 msgid "Swap"
-msgstr "Erabilitako truk.-esp."
+msgstr "Trukatze-esp."
 
 #: resources/ui/table_view/table_view.blp:71 src/performance_page/mod.rs:1264
 #: src/table_view/mod.rs:886 src/table_view/mod.rs:894
@@ -1490,13 +1465,13 @@ msgstr "Sarea"
 #: src/performance_page/mod.rs:2467 src/table_view/mod.rs:929
 #: src/table_view/mod.rs:946
 msgid "GPU"
-msgstr "GPUa"
+msgstr "PUGa"
 
 #: resources/ui/table_view/table_view.blp:89
 #: resources/ui/table_view/process_details_dialog.blp:327
 #: src/table_view/mod.rs:933 src/table_view/mod.rs:952
 msgid "GPU Memory"
-msgstr "GPU memoria"
+msgstr "PUG memoria"
 
 #: resources/ui/table_view/table_view.blp:118
 #: resources/ui/table_view/table_view.blp:188
@@ -1516,7 +1491,7 @@ msgstr "Bidali seinalea"
 
 #: resources/ui/table_view/table_view.blp:131
 msgid "Suspend (STOP)"
-msgstr "Eseki (STOP)"
+msgstr "Gelditu (STOP)"
 
 #: resources/ui/table_view/table_view.blp:136
 msgid "Continue (CONT)"
@@ -1524,7 +1499,7 @@ msgstr "Jarraitu (CONT)"
 
 #: resources/ui/table_view/table_view.blp:141
 msgid "Hangup (HUP)"
-msgstr ""
+msgstr "Eseki (HUP)"
 
 #: resources/ui/table_view/table_view.blp:146
 msgid "Interrupt (INT)"
@@ -1794,18 +1769,16 @@ msgid "_Keyboard Shortcuts"
 msgstr "_Laster-teklak"
 
 #: resources/ui/window.blp:237
-#, fuzzy
 msgid "_System Information"
-msgstr "Sistema eragilearen informazioa"
+msgstr "_Sistemaren informazioa"
 
 #: resources/ui/window.blp:244
 msgid "Open _Wiki"
-msgstr ""
+msgstr "Ireki _wikia"
 
 #: resources/ui/window.blp:250
-#, fuzzy
 msgid "Show _First Run Dialog"
-msgstr "Erakutsi xehetasunen leihoa"
+msgstr "Erakutsi _lehen exekuzioko leihoa"
 
 #: resources/ui/window.blp:257
 msgid "_About Mission Center"
@@ -2031,14 +2004,12 @@ msgid "No"
 msgstr "Ez"
 
 #: src/performance_page/cpu.rs:1034 src/performance_page/gpu.rs:1122
-#, fuzzy
 msgid "Power draw over "
-msgstr "Energia kontsumoa"
+msgstr "Energia kontsumoa denbora-tarte honetan: "
 
 #: src/performance_page/cpu.rs:1037 src/performance_page/gpu.rs:1125
-#, fuzzy
 msgid "Clock speed over "
-msgstr "Haizagailuaren abiadura denbora-tarte honetan: "
+msgstr "Ordulariaren abiadura denbora-tarte honetan: "
 
 #: src/performance_page/disk.rs:179
 #, rust-format
@@ -2121,7 +2092,7 @@ msgstr "Bideo kodetzea/deskodetzea"
 #: src/performance_page/mod.rs:2465
 #, rust-format
 msgid "GPU {}"
-msgstr "GPUa {}"
+msgstr "PUGa {}"
 
 #: src/performance_page/gpu.rs:826
 msgid "Total Memory"
@@ -2152,11 +2123,11 @@ msgstr "{} {} ({})"
 #: src/performance_page/mod.rs:1724 src/performance_page/mod.rs:2626
 #, rust-format
 msgid "Battery {}"
-msgstr ""
+msgstr "Bateria {}"
 
 #: src/performance_page/mod.rs:1726 src/performance_page/mod.rs:2628
 msgid "Battery"
-msgstr ""
+msgstr "Bateria"
 
 #: src/performance_page/mod.rs:2391
 #, rust-format
@@ -2176,39 +2147,35 @@ msgstr "Huts eginda"
 
 #: src/performance_page/network.rs:458
 msgid "Disconnected"
-msgstr ""
+msgstr "Deskonektatua"
 
 #: src/performance_page/network.rs:459
 msgid "Disconnecting"
-msgstr ""
+msgstr "Deskonektatzen"
 
 #: src/performance_page/network.rs:460
-#, fuzzy
 msgid "Connected"
-msgstr "Konexio mota:"
+msgstr "Konektatua"
 
 #: src/performance_page/network.rs:461
-#, fuzzy
 msgid "Connecting"
-msgstr "Konexio mota:"
+msgstr "Konektatzen"
 
 #: src/performance_page/network.rs:462
 msgid "Configuring"
-msgstr ""
+msgstr "Konfiguratzen"
 
 #: src/performance_page/network.rs:463
 msgid "Waiting for auth"
-msgstr ""
+msgstr "Autentikazio zain"
 
 #: src/performance_page/network.rs:464
-#, fuzzy
 msgid "Unavailable"
-msgstr "Erabilgarri"
+msgstr "Ez erabilgarri"
 
 #: src/performance_page/network.rs:465
-#, fuzzy
 msgid "Loading"
-msgstr "Kargatzen..."
+msgstr "Kargatzen"
 
 #: src/services_page/mod.rs:99
 #, rust-format

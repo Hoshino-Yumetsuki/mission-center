@@ -39,7 +39,7 @@ use magpie_platform::disks::{Disk, PartitionInfo};
 
 use crate::disks::stats::Stats;
 use crate::disks::util;
-use crate::util::{read_i64, read_u64, stream_has_contents};
+use crate::util::{read_i64, read_u64, stream_has_contents, MK_TO_0_C};
 
 #[macro_export]
 macro_rules! poll_wrapper {
@@ -708,7 +708,7 @@ impl DiskWrapper {
         if let Some(temperature) = glob
             .filter_map(Result::ok)
             .filter_map(|f| read_i64(f.as_os_str().to_string_lossy().as_ref(), "temperature"))
-            .map(|i| (i + util::MK_TO_0_C) as u32)
+            .map(|i| (i + MK_TO_0_C) as u32)
             .next()
         {
             return Some(temperature);
@@ -721,7 +721,7 @@ impl DiskWrapper {
             smart_temperature
         )
         .map(|f| (f * 1000.) as u32)
-        .and_then(|v| if v == 0 { None } else { Some(v) })
+        .filter(|&v| v != 0)
     }
 
     pub fn create_stats(&self) -> Stats {
@@ -831,15 +831,7 @@ impl DiskWrapper {
             return None;
         }
 
-        read_u64(size_file.as_str(), "disk size").and_then(
-            |cap| {
-                if cap == 0 {
-                    None
-                } else {
-                    Some(cap)
-                }
-            },
-        )
+        read_u64(size_file.as_str(), "disk size").filter(|&cap| cap != 0)
     }
 
     async fn get_ejectable(&mut self) -> bool {

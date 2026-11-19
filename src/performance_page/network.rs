@@ -29,12 +29,13 @@ use magpie_types::network::{Connection, ConnectionKind, ConnectionState};
 
 use crate::i18n::*;
 use crate::performance_page::widgets::{
-    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, RoundingSettings, ScalingSettings,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, GraphWidgetSettingsExt,
+    RoundingSettings, ScalingSettings,
 };
 use crate::{application::INTERVAL_STEP, to_short_human_readable_time};
 use crate::{settings, DataType};
 
-use super::PageExt;
+use super::{PageExt, MK_TO_0_C};
 
 mod imp {
     use super::*;
@@ -82,6 +83,7 @@ mod imp {
         pub signal_strength: OnceCell<gtk::Image>,
         pub max_bitrate: OnceCell<gtk::Label>,
         pub frequency: OnceCell<gtk::Label>,
+        pub temperature: OnceCell<gtk::Label>,
         pub hw_address: OnceCell<gtk::Label>,
         pub ipv4_address: OnceCell<gtk::Label>,
         pub ipv6_address: OnceCell<gtk::Label>,
@@ -123,6 +125,7 @@ mod imp {
                 signal_strength: Default::default(),
                 max_bitrate: Default::default(),
                 frequency: Default::default(),
+                temperature: Default::default(),
                 hw_address: Default::default(),
                 ipv4_address: Default::default(),
                 ipv6_address: Default::default(),
@@ -431,6 +434,18 @@ mod imp {
                 total_recv.set_text(&received);
             }
 
+            if let Some(temperature) = this.temperature.get() {
+                if let Some(temp_mk) = connection.temperature_milli_k {
+                    temperature.set_text(&format!(
+                        "{:.0} °C",
+                        (temp_mk as i32 + MK_TO_0_C) as f64 / 1000.
+                    ));
+                    temperature.set_visible(true);
+                } else {
+                    temperature.set_visible(false);
+                }
+            }
+
             if let Some(hw_address) = this.hw_address.get() {
                 hw_address.set_text(&connection.hw_address)
             }
@@ -492,7 +507,7 @@ mod imp {
     {}
 
     Interface name:   {}
-    Connection type:  {}{}
+    Connection type:  {}{}{}
     Hardware address: {}
     IPv4 address:     {}
     IPv6 address:     {}
@@ -531,6 +546,14 @@ mod imp {
                     )
                 } else {
                     "".to_owned()
+                },
+                match self.temperature.get() {
+                    Some(temperature) if temperature.is_visible() => format!(
+                        r#"
+    Temperature:      {}"#,
+                        temperature.label()
+                    ),
+                    _ => "".to_owned(),
                 },
                 self.hw_address
                     .get()
@@ -682,6 +705,11 @@ mod imp {
                 sidebar_content_builder
                     .object::<gtk::Label>("frequency")
                     .expect("Could not find `frequency` object in details pane"),
+            );
+            let _ = self.temperature.set(
+                sidebar_content_builder
+                    .object::<gtk::Label>("temperature")
+                    .expect("Could not find `temperature` object in details pane"),
             );
             let _ = self.hw_address.set(
                 sidebar_content_builder

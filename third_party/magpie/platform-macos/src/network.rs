@@ -125,6 +125,7 @@ impl magpie_platform::network::NetworkCache for NetworkCache {
                     rx_rate_bytes_ps: rx_rate as f32,
                     rx_total_bytes: rx,
                     max_speed_bytes_ps: None,
+                    temperature_milli_k: None,
                     ipv4_address,
                     ipv6_address,
                     state: state as i32,

@@ -1,8 +1,8 @@
 diff --git a/src/extract_gpuinfo_amdgpu.c b/src/extract_gpuinfo_amdgpu.c
-index d0ff539..65d55c2 100644
+index eb7f05a..597cec1 100644
 --- a/src/extract_gpuinfo_amdgpu.c
 +++ b/src/extract_gpuinfo_amdgpu.c
-@@ -54,7 +54,7 @@ const char *amdgpu_parse_marketing_name(struct amdgpu_gpu_info *info);
+@@ -56,7 +56,7 @@ const char *amdgpu_parse_marketing_name(struct amdgpu_gpu_info *info);
  
  // Local function pointers to DRM interface
  static typeof(drmGetDevices) *_drmGetDevices;
@@ -12,7 +12,7 @@ index d0ff539..65d55c2 100644
  static typeof(drmGetVersion) *_drmGetVersion;
  static typeof(drmFreeVersion) *_drmFreeVersion;
 diff --git a/src/extract_gpuinfo_msm.c b/src/extract_gpuinfo_msm.c
-index f05b7fe..a84f6ca 100644
+index ca0ede4..8e7d4f7 100644
 --- a/src/extract_gpuinfo_msm.c
 +++ b/src/extract_gpuinfo_msm.c
 @@ -103,7 +103,7 @@ static const char *local_error_string = didnt_call_gpuinfo_init;

@@ -58,7 +58,7 @@ pub struct BatteryCache {
 }
 
 fn read_from_sysfs(name: &str, appendix: &str) -> Option<String> {
-    let path = format!("{}{}/{}", BAT_BASE_DIR, name, &appendix);
+    let path = format!("{}{}/{}", BAT_BASE_DIR, name, appendix);
     match read_to_string(path) {
         Ok(c) => Some(c.trim().to_string()),
         Err(e) => {
@@ -147,7 +147,7 @@ macro_rules! get_upower_value {
 }
 
 macro_rules! get_sysfs_value {
-    ($name:ident, $file_name:literal, $typ:ty, $zero:expr, $math:tt) => {
+    ($name:ident, $file_name:expr, $typ:ty, $zero:expr, $math:tt) => {
         read_from_sysfs(&$name, $file_name)
             .and_then(|x| parse_str(x))
             .and_then(|x: $typ| {
@@ -202,7 +202,7 @@ async fn new_battery(
     if sysfs_exists {
         macro_rules! set_sysfs_value {
             ($e:ident, $typ:ty, $math:tt) => {
-                $e = get_sysfs_value!(name, "$e", $typ, true, $math);
+                $e = get_sysfs_value!(name, stringify!($e), $typ, true, $math);
             };
             ($e:ident, $i:literal, $typ:ty, $math:tt) => {
                 $e = get_sysfs_value!(name, $i, $typ, true, $math);
@@ -280,7 +280,7 @@ async fn new_battery(
     } else {
         (None, 0)
     };
-
+    let design_capacity = crate::smbios::design_capacity_mwh();
     let mut battery = Battery {
         name,
         vendor,
@@ -294,7 +294,7 @@ async fn new_battery(
         capacity,
         energy_empty,
         energy_full,
-        energy_full_design,
+        energy_full_design: energy_full_design.or(design_capacity),
         voltage_min_design,
         voltage_max_design,
 
@@ -367,9 +367,9 @@ async fn update_battery(
         let name = &battery.name;
         macro_rules! set_sysfs_value {
             ($e:ident, $typ:ty, $zero:expr, $math:tt) => {
-                set_sysfs_value!($e, "$e", $typ, $zero, $math);
+                set_sysfs_value!($e, stringify!($e), $typ, $zero, $math);
             };
-            ($e:ident, $i:literal, $typ:ty, $zero:expr, $math:tt) => {
+            ($e:ident, $i:expr, $typ:ty, $zero:expr, $math:tt) => {
                 battery.$e = get_sysfs_value!(name, $i, $typ, $zero, $math);
             };
         }
@@ -499,7 +499,7 @@ async fn update_battery(
                     Err(e) => {
                         log::warn!(
                             "Could not get battery history information for battery {}: {}",
-                            &battery.name,
+                            battery.name,
                             e
                         );
                         battery.history_changed = false;
@@ -519,7 +519,13 @@ impl BatteryCache {
         let Some(upower) = &self.upower else {
             log::info!("UPower not available, using sysfs instead");
 
-            let paths = fs::read_dir(BAT_BASE_DIR).unwrap();
+            let paths = match fs::read_dir(BAT_BASE_DIR) {
+                Ok(paths) => paths,
+                Err(e) => {
+                    log::warn!("Could not read /sys/class/power_supply directory: {e}");
+                    return;
+                }
+            };
 
             for path in paths.filter_map(|x| x.ok()).map(|x| x.path()) {
                 if path.is_dir() {
@@ -575,7 +581,7 @@ impl BatteryCache {
             return;
         }
 
-        let sysfs_exists = Path::new(format!("{}{}", BAT_BASE_DIR, &name).as_str()).exists();
+        let sysfs_exists = Path::new(format!("{}{}", BAT_BASE_DIR, name).as_str()).exists();
 
         let stream = device.receive_percentage_changed().await;
         let mut device = Some(UPowerData {

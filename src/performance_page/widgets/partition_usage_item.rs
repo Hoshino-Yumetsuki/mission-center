@@ -121,6 +121,10 @@ impl PartitionUsageItem {
         if cache.mount_points != info.mountpoints {
             let _ = std::mem::replace(&mut cache.mount_points, info.mountpoints.clone());
 
+            while let Some(child) = mount_points_box.first_child() {
+                child.unparent();
+            }
+
             let mut tooltip_text = String::new();
             for (i, mount_point) in info.mountpoints.iter().enumerate() {
                 if i >= 3 {
@@ -146,7 +150,7 @@ impl PartitionUsageItem {
                 row.append(&icon);
                 row.append(&label);
 
-                imp.mount_points_box.append(&row);
+                mount_points_box.append(&row);
             }
 
             if !tooltip_text.is_empty() {
@@ -167,11 +171,11 @@ impl PartitionUsageItem {
         let mut part_usage_changed = false;
 
         if cache.part_used != info.used {
+            let _ = std::mem::replace(&mut cache.part_used, info.used);
+
+            part_usage_changed = true;
+
             if let Some(used) = info.used {
-                let _ = std::mem::replace(&mut cache.part_used, info.used);
-
-                part_usage_changed = true;
-
                 imp.used_amount.set_visible(true);
                 imp.used_amount.set_text(&crate::to_human_readable_nice(
                     used as f32,
@@ -183,11 +187,11 @@ impl PartitionUsageItem {
         }
 
         if cache.part_size != info.size {
+            let _ = std::mem::replace(&mut cache.part_size, info.size);
+
+            part_usage_changed = true;
+
             if let Some(size) = info.size {
-                let _ = std::mem::replace(&mut cache.part_size, info.size);
-
-                part_usage_changed = true;
-
                 imp.total_amount.set_visible(true);
                 imp.total_amount.set_text(&crate::to_human_readable_nice(
                     size as f32,

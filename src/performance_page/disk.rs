@@ -32,7 +32,8 @@ use crate::i18n::*;
 use crate::performance_page::disk_details::DiskDetails;
 use crate::performance_page::widgets::{
     AnimationFrame, DatasetGroup, EjectFailureDialog, FillingSettings, GraphWidget,
-    PartitionUsageItem, RoundingSettings, ScalingSettings, SmartDataDialog, SmartFailureDialog,
+    GraphWidgetSettingsExt, PartitionUsageItem, RoundingSettings, ScalingSettings, SmartDataDialog,
+    SmartFailureDialog,
 };
 use crate::{app, settings, to_short_human_readable_time, DataType};
 
@@ -410,25 +411,32 @@ mod imp {
 
             let mut existing_map = this.infobar_content.imp().partitions_map.borrow_mut();
 
-            for (existing_devname, existing_row) in existing_map.iter() {
-                if let Some(partition) = disk.partitions.get(existing_devname) {
-                    existing_row.update(partition);
-                } else {
-                    stack.remove(existing_row);
+            existing_map.retain(|devname, row| match disk.partitions.get(devname) {
+                Some(partition) => {
+                    row.update(partition);
+                    true
                 }
-            }
+                None => {
+                    stack.remove(row);
+                    false
+                }
+            });
 
             for (devname, partition) in &disk.partitions {
                 if !existing_map.contains_key(devname) {
                     let new_item = PartitionUsageItem::from_part_info(partition);
 
-                    stack.insert(&new_item, existing_map.len() as i32);
+                    stack.append(&new_item);
 
                     existing_map.insert(devname.clone(), new_item);
                 }
             }
 
             stack.invalidate_sort();
+
+            this.infobar_content
+                .partitions_section()
+                .set_visible(!existing_map.is_empty());
 
             if disk.ejectable {
                 this.description.set_margin_top(0);

@@ -1,6 +1,6 @@
 [package]
 name = "magpie-types"
-version = "1.1.0"
+version = "1.2.0"
 edition = "2021"
 
 [dependencies]
@@ -16,4 +16,4 @@ features = ["derive"]
 
 [build-dependencies]
 prost-build = "0.14"
-protox = "0.9"
+protox = "0.10"

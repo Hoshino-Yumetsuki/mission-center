@@ -1,6 +1,6 @@
 /* apps_page/mod.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  */
 
 use std::cell::{Cell, OnceCell, RefCell};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
 
 use adw::glib::g_critical;
@@ -31,8 +31,9 @@ use crate::i18n::{i18n, ni18n_f};
 use crate::magpie_client::App;
 use crate::table_view::cached_icon::LightCachedIcon;
 use crate::table_view::{
-    update_apps, update_processes, ContentType, ProcessActionBar, RowModel, RowModelBuilder,
-    SectionType, SettingsNamespace, TableView,
+    collect_process_subtree, is_tree_view, update_app_icons, update_apps, update_processes,
+    ContentType, ProcessActionBar, RowModel, RowModelBuilder, SectionType, SettingsNamespace,
+    TableView,
 };
 use crate::widgets::Placeholder;
 
@@ -258,16 +259,6 @@ impl AppsPage {
                     };
                     let imp = this.imp();
 
-                    let filter_list_model = imp.table_view.imp().filter_list_model.borrow();
-                    if let Some(flm) = filter_list_model.as_ref() {
-                        flm.set_incremental(false);
-                    }
-
-                    let sort_list_model = imp.table_view.imp().sort_list_model.borrow();
-                    if let Some(slm) = sort_list_model.as_ref() {
-                        slm.set_incremental(false);
-                    }
-
                     imp.content_stack.set_visible_child_name("content");
                 }
             });
@@ -318,16 +309,43 @@ impl AppsPage {
 
         imp.table_view.imp().update_column_titles(readings);
 
+        update_app_icons(
+            &readings.running_apps,
+            &readings.running_processes,
+            &mut imp.app_icons.borrow_mut(),
+        );
+
+        let flat = !is_tree_view();
+        let use_merged_stats = imp.table_view.imp().use_merged_stats.get();
+
         let mut process_model_map = HashMap::new();
         let root_process = readings.running_processes.keys().min().unwrap_or(&1);
-        if let Some(init) = readings.running_processes.get(root_process) {
+        if flat {
+            let mut pids = HashSet::new();
+            if let Some(init) = readings.running_processes.get(root_process) {
+                for child in &init.children {
+                    collect_process_subtree(&readings.running_processes, *child, &mut pids);
+                }
+            }
+            update_processes(
+                &readings.running_processes,
+                pids,
+                &imp.processes_section.children(),
+                &imp.app_icons.borrow(),
+                &Default::default(),
+                use_merged_stats,
+                SectionType::SecondSection,
+                None,
+                &mut process_model_map,
+            );
+        } else if let Some(init) = readings.running_processes.get(root_process) {
             update_processes(
                 &readings.running_processes,
                 init.children.clone().drain(..).collect(),
                 &imp.processes_section.children(),
                 &imp.app_icons.borrow(),
                 &Default::default(),
-                imp.table_view.imp().use_merged_stats.get(),
+                use_merged_stats,
                 SectionType::SecondSection,
                 None,
                 &mut process_model_map,
@@ -339,7 +357,6 @@ impl AppsPage {
             &readings.running_apps,
             &readings.running_processes,
             &process_model_map,
-            &mut imp.app_icons.borrow_mut(),
             &imp.apps_section.children(),
         );
 

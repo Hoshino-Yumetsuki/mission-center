@@ -1,6 +1,6 @@
 /* src/gpus/gl_info.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,36 +18,20 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use std::fmt::Write;
-use std::os::fd::{AsFd, BorrowedFd};
+use std::path::Path;
 use std::sync::OnceLock;
 
-use arrayvec::ArrayString;
 use gbm::AsRaw;
 use nix::libc::c_void;
 
 use magpie_platform::gpus::{ApiVersion, OpenGLVariant};
 
+use super::drm::DrmFile;
+
 const EGL_CONTEXT_MAJOR_VERSION_KHR: egl::Int = 0x3098;
 const EGL_CONTEXT_MINOR_VERSION_KHR: egl::Int = 0x30FB;
 const EGL_PLATFORM_GBM_KHR: egl::Enum = 0x31D7;
 const EGL_OPENGL_ES3_BIT: egl::Int = 0x0040;
-
-struct DrmDevice(std::fs::File);
-
-impl AsFd for DrmDevice {
-    fn as_fd(&self) -> BorrowedFd<'_> {
-        self.0.as_fd()
-    }
-}
-
-impl From<std::fs::File> for DrmDevice {
-    fn from(file: std::fs::File) -> Self {
-        Self(file)
-    }
-}
-
-impl drm::Device for DrmDevice {}
 
 fn egl() -> Option<&'static egl::DynamicInstance<egl::EGL1_2>> {
     static EGL: OnceLock<Option<egl::DynamicInstance<egl::EGL1_2>>> = OnceLock::new();
@@ -73,7 +57,7 @@ fn egl() -> Option<&'static egl::DynamicInstance<egl::EGL1_2>> {
 
 #[allow(non_snake_case)]
 fn egl_display(
-    dev: &gbm::Device<DrmDevice>,
+    dev: &gbm::Device<DrmFile>,
     egl: &'static egl::DynamicInstance<egl::EGL1_2>,
 ) -> Option<egl::Display> {
     static EGL_GET_PLATFORM_DISPLAY_FN: OnceLock<
@@ -108,66 +92,30 @@ fn egl_display(
     }
 }
 
-pub unsafe fn supported_opengl_version(pci_id: &str) -> Option<(OpenGLVariant, ApiVersion)> {
-    const DRI_PATH_LEN: usize = "/dev/dri/by-path/pci-".len() + 16 + "card".len();
-
+pub unsafe fn supported_opengl_version(nodes: &[&Path]) -> Option<(OpenGLVariant, ApiVersion)> {
     let egl = egl()?;
 
-    let pci_id = match ArrayString::<16>::from(pci_id) {
-        Ok(id) => id,
-        Err(_) => {
-            log::warn!("PCI ID exceeds 16 characters: {}", pci_id);
-            return None;
-        }
-    };
-
-    let mut dri_path = ArrayString::<DRI_PATH_LEN>::new();
-    let _ = write!(&mut dri_path, "/dev/dri/by-path/pci-{pci_id}-card");
-
-    let dri_file = match std::fs::OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(dri_path)
-        .or({
-            let mut pci_id_lower = pci_id;
-            for c in unsafe { pci_id_lower.as_bytes_mut() } {
-                c.make_ascii_lowercase();
+    let mut dri_file = None;
+    for node in nodes {
+        match std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(node)
+        {
+            Ok(file) => {
+                dri_file = Some(file);
+                break;
             }
-
-            dri_path.clear();
-            let _ = write!(&mut dri_path, "/dev/dri/by-path/pci-{pci_id_lower}-card");
-
-            std::fs::OpenOptions::new()
-                .read(true)
-                .write(true)
-                .open(dri_path)
-        })
-        .or({
-            let mut pci_id_upper = pci_id;
-            for c in unsafe { pci_id_upper.as_bytes_mut() } {
-                c.make_ascii_uppercase();
-            }
-
-            dri_path.clear();
-            let _ = write!(&mut dri_path, "/dev/dri/by-path/pci-{pci_id_upper}-card");
-
-            std::fs::OpenOptions::new()
-                .read(true)
-                .write(true)
-                .open(dri_path)
-        }) {
-        Ok(f) => f,
-        Err(e) => {
-            log::debug!(
+            Err(e) => log::debug!(
                 "Failed to get OpenGL information: Failed to open {}: {}",
-                dri_path,
+                node.display(),
                 e
-            );
-            return None;
+            ),
         }
-    };
+    }
+    let dri_file = dri_file?;
 
-    let gbm_device = match gbm::Device::new(DrmDevice::from(dri_file)) {
+    let gbm_device = match gbm::Device::new(DrmFile::from(dri_file)) {
         Err(e) => {
             log::error!("Failed to get OpenGL information: {e}");
             return None;

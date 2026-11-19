@@ -1,6 +1,6 @@
 /* src/network/mod.rs
  *
- * Copyright 2025 Mission Center Developers
+ * Copyright 2026 Mission Center Developers
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ mod ip;
 mod network_manager;
 mod network_wrapper;
 mod stats;
+mod temperature;
 mod util;
 mod wireless;
 
@@ -108,24 +109,30 @@ impl magpie_platform::network::NetworkCache for NetworkCache {
             }
         };
 
+        self.connections.clear();
         let mut prev_nets = std::mem::take(&mut self.connection_wrappers);
 
         let rt = async_runtime();
 
-        for if_name in InterfaceIter::new() {
+        for interface in InterfaceIter::new() {
+            let if_name = interface.name.as_ref();
+
             // TODO: skip based on type now that detection by name is (mostly) deprecated
             if if_name.starts_with("lo") {
                 continue;
             }
 
-            let mut prev_network = match prev_nets.remove(&*if_name) {
-                Some(n) => n,
-                None => {
+            let mut network = match prev_nets.remove(if_name) {
+                Some(n) if n.if_index == interface.index => n,
+                _ => {
+                    self.stats_cache.remove(if_name);
+
                     let Some(nw) = NetworkWrapper::new(
                         rt,
                         proxy,
                         system_bus,
-                        &if_name,
+                        interface.index,
+                        if_name,
                         &mut self.device_name_cache,
                     ) else {
                         continue;
@@ -135,13 +142,16 @@ impl magpie_platform::network::NetworkCache for NetworkCache {
                 }
             };
 
-            prev_network.refresh(rt, &mut self.stats_cache, system_bus);
+            network.refresh(rt, &mut self.stats_cache, system_bus);
 
             self.connections
-                .insert(if_name.to_string(), prev_network.connection.clone());
+                .insert(if_name.to_string(), network.connection.clone());
             self.connection_wrappers
-                .insert(if_name.into_owned(), prev_network);
+                .insert(if_name.to_string(), network);
         }
+
+        self.stats_cache
+            .retain(|if_name, _| self.connections.contains_key(if_name));
     }
 
     fn cached_entries(&self) -> &HashMap<String, Connection> {

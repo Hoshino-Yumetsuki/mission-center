@@ -25,8 +25,6 @@ use magpie_platform::fan::Fan;
 
 use crate::config_dir;
 
-const MK_TO_0_C: u32 = 273150;
-
 pub struct FanPath {
     base_path: Box<Path>,
     config_path: Option<Box<Path>>,
@@ -40,8 +38,8 @@ impl FanPath {
                 if path.exists() {
                     log::info!(
                         "Found override for {}: {}",
-                        &self.base_path.display(),
-                        &path.display()
+                        self.base_path.display(),
+                        path.display()
                     );
                     read_to_string(path)
                 } else {
@@ -87,13 +85,13 @@ fn new_fan(path: &Path) -> Result<(Fan, FanPath), Box<dyn std::error::Error>> {
         .read_to_string(&format!("fan{}_label", findex))
         .map(|it| it.trim().to_owned())
         .ok()
-        .and_then(|it| if it.is_empty() { None } else { Some(it) });
+        .filter(|it| !it.is_empty());
 
     let temp_label = fanpath
         .read_to_string(&format!("temp{}_label", findex))
         .map(|it| it.trim().to_owned())
         .ok()
-        .and_then(|it| if it.is_empty() { None } else { Some(it) });
+        .filter(|it| !it.is_empty());
 
     let max_speed = match fanpath.read_to_string(&format!("fan{}_max", findex)) {
         Err(_) => None,
@@ -131,7 +129,7 @@ fn update_fan((fan, fanpath): (&mut Fan, &FanPath)) {
         Ok(v) => v
             .trim()
             .parse::<i64>()
-            .map(|v| (v + MK_TO_0_C as i64) as u32)
+            .map(|v| (v + crate::util::MK_TO_0_C) as u32)
             .ok(),
     };
 }

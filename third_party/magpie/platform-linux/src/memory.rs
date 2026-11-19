@@ -146,12 +146,7 @@ fn refresh_memory(memory: &mut Memory) {
     for line in meminfo.trim().lines() {
         let mut split = line.split_whitespace();
         let key = split.next().map_or("", |s| s);
-        let value = split
-            .next()
-            .map_or("", |s| s)
-            .parse::<u64>()
-            .map_or(0, |v| v)
-            * 1024;
+        let value = split.next().map_or("", |s| s).parse::<u64>().unwrap_or(0) * 1024;
 
         match key {
             "MemTotal:" => memory.mem_total = value,
@@ -281,9 +276,9 @@ pub fn read_memory_device_info(devices: &mut Vec<MemoryDevice>) -> u64 {
 
                     match key {
                         "MEMORY_ARRAY_NUM_DEVICES" => {
-                            max_devices = value.parse::<u64>().map_or(0, |s| s)
+                            max_devices = value.parse::<u64>().unwrap_or(0)
                         }
-                        e => println!("{}", e),
+                        other => log::debug!("{}", other),
                     }
                 }
                 break;
@@ -324,14 +319,14 @@ pub fn read_memory_device_info(devices: &mut Vec<MemoryDevice>) -> u64 {
                         break;
                     }
                 }
-                "SIZE" => md.size = value.parse::<u64>().map_or(0, |s| s),
+                "SIZE" => md.size = value.parse::<u64>().unwrap_or(0),
                 "FORM_FACTOR" => md.form_factor = value.to_owned(),
                 "LOCATOR" => md.locator = value.to_owned(),
                 "BANK_LOCATOR" => md.bank_locator = value.to_owned(),
                 "TYPE" => md.ram_type = value.to_owned(),
-                "SPEED_MTS" => speed_fallback = value.parse::<u64>().map_or(0, |s| s),
-                "CONFIGURED_SPEED_MTS" => md.speed = value.parse::<u64>().map_or(0, |s| s),
-                "RANK" => md.rank = value.parse::<u32>().map_or(0, |s| s),
+                "SPEED_MTS" => speed_fallback = value.parse::<u64>().unwrap_or(0),
+                "CONFIGURED_SPEED_MTS" => md.speed = value.parse::<u64>().unwrap_or(0),
+                "RANK" => md.rank = value.parse::<u32>().unwrap_or(0),
                 _ => (), // Ignore unused values and other RAM modules we are not currently parsing
             }
         }

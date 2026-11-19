@@ -25,7 +25,8 @@ use glib::{ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use crate::performance_page::widgets::{
-    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, MemoryCompositionWidget,
+    AnimationFrame, DatasetGroup, FillingSettings, GraphWidget, GraphWidgetSettingsExt,
+    MemoryCompositionWidget,
 };
 use crate::DataType;
 use crate::{application::INTERVAL_STEP, i18n::*, settings, to_short_human_readable_time};

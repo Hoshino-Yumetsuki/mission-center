@@ -53,7 +53,6 @@ src/performance_page/widgets/eject_failure_row.rs
 src/performance_page/widgets/mod.rs
 src/performance_page/widgets/smart_failure_dialog.rs
 src/performance_page/widgets/smart_data_dialog.rs
-src/performance_page/widgets/graph_widget.rs
 src/performance_page/widgets/mem_composition_widget.rs
 src/performance_page/widgets/sidebar_drop_hint.rs
 src/performance_page/widgets/smart_nvme_dialog_row.rs
