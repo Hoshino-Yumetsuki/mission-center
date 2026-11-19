@@ -438,3 +438,58 @@ fn parse_signal_percent(signal_noise: &str) -> Option<u8> {
     let pct = ((rssi + 100).clamp(0, 70) * 100 / 70) as u8;
     Some(pct)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use magpie_platform::network::NetworkCache as _;
+
+    #[test]
+    fn parses_full_width_counters_without_duplicate_address_rows() {
+        let rows = "en0 1500 <Link#14> aa:bb 123 0 20519398027 456 0 3586861968 0\nen0 1500 10.0.0/24 10.0.0.1 123 - 5 456 - 7 -";
+        assert_eq!(parse_netstat(rows)["en0"], (3586861968, 20519398027));
+    }
+
+    #[test]
+    fn rates_distinguish_missing_warmup_zero_and_reset() {
+        let now = Instant::now();
+        let prev = PrevStats {
+            tx: 10,
+            rx: 20,
+            ts: now,
+        };
+        let later = now + std::time::Duration::from_secs(1);
+        assert_eq!(network_rates(Some((10, 20)), None, later), None);
+        assert_eq!(network_rates(None, Some(&prev), later), None);
+        assert_eq!(
+            network_rates(Some((10, 20)), Some(&prev), later),
+            Some((0.0, 0.0))
+        );
+        assert_eq!(
+            network_rates(Some((13, 25)), Some(&prev), later),
+            Some((3.0, 5.0))
+        );
+        assert_eq!(network_rates(Some((9, 20)), Some(&prev), later), None);
+    }
+
+    #[test]
+    fn channel_frequencies_use_band() {
+        assert_eq!(parse_channel_to_mhz("14 (2GHz, 20MHz)"), Some(2484));
+        assert_eq!(parse_channel_to_mhz("153 (5GHz, 20MHz)"), Some(5765));
+        assert_eq!(parse_channel_to_mhz("5 (6GHz, 20MHz)"), Some(5975));
+    }
+
+    #[test]
+    #[ignore = "samples native network counters"]
+    fn native_network_readings() {
+        let mut cache = NetworkCache::new();
+        cache.refresh();
+        for connection in cache.cached_entries().values() {
+            println!("network {connection:?}");
+        }
+        assert!(cache
+            .cached_entries()
+            .values()
+            .any(|c| c.rx_total_bytes > 0));
+    }
+}

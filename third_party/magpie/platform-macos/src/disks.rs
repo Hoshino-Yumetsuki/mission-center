@@ -539,3 +539,87 @@ fn partitions_for(
     }
     map
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use magpie_platform::disks::DisksCache as _;
+
+    #[test]
+    fn distinguishes_missing_warmup_idle_and_reset() {
+        let now = Instant::now();
+        let raw = RawDiskStats {
+            bytes: Some((100, 200)),
+            timings: Some((1_000_000, 2)),
+        };
+        assert_eq!(disk_rates(&raw, None, now), (None, None));
+        let prev = DiskStats {
+            raw: raw.clone(),
+            timestamp: now,
+        };
+        let later = now + std::time::Duration::from_secs(1);
+        assert_eq!(disk_rates(&raw, Some(&prev), later), (Some((0, 0)), None));
+        let active = RawDiskStats {
+            bytes: Some((110, 220)),
+            timings: Some((3_000_000, 4)),
+        };
+        assert_eq!(
+            disk_rates(&active, Some(&prev), later),
+            (Some((10, 20)), Some(1.0))
+        );
+        assert_eq!(
+            disk_rates(&RawDiskStats::default(), Some(&prev), later),
+            (None, None)
+        );
+        let reset = DiskStats {
+            raw: active,
+            timestamp: now,
+        };
+        assert_eq!(disk_rates(&raw, Some(&reset), later), (None, None));
+        let parsed = parse_all_ioreg_disk_stats(
+            "+-o IOBlockStorageDriver\n\"BSD Name\" = \"disk0\"\n\"Bytes (Read)\"=4",
+        );
+        assert!(parsed["disk0"].bytes.is_none());
+    }
+
+    #[test]
+    fn maps_apfs_mounts_to_physical_stores() {
+        let apfs = vec![ApfsContainerInfo {
+            container: "disk3".into(),
+            physical_stores: vec!["disk0".into()],
+            volumes: HashMap::from([("disk3s1".into(), 40)]),
+        }];
+        let mounts = vec![MountEntry {
+            dev: "/dev/disk3s1s1".into(),
+            mnt: "/".into(),
+            total: 100,
+            used: 40,
+            filesystem: Some("apfs".into()),
+        }];
+        assert_eq!(detect_system_disk(&mounts, &apfs).as_deref(), Some("disk0"));
+        assert_eq!(
+            partitions_for("disk0", &mounts, &apfs)["disk3s1s1"].used,
+            Some(40)
+        );
+        assert!(partitions_for("disk1", &mounts, &apfs).is_empty());
+    }
+
+    #[test]
+    #[ignore = "samples native disk counters"]
+    fn native_disk_readings() {
+        let mut cache = DisksCache::new();
+        cache.refresh();
+        for disk in cache.cached_entries() {
+            println!("disk {disk:?}");
+        }
+        assert!(cache
+            .cached_entries()
+            .iter()
+            .any(|d| d.is_system && d.capacity_bytes > 0 && !d.partitions.is_empty()));
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        cache.refresh();
+        for disk in cache.cached_entries() {
+            println!("second disk {disk:?}");
+        }
+    }
+}

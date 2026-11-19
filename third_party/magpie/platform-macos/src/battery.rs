@@ -145,3 +145,25 @@ fn parse_battery(entry: &plist::Dictionary) -> Option<Battery> {
 fn charge_to_energy(charge_mah: Option<u64>, voltage_mv: Option<u64>) -> Option<u32> {
     u32::try_from(charge_mah?.checked_mul(voltage_mv?)? / 1000).ok()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn charge_is_a_ratio_and_missing_charge_is_not_full() {
+        let mut entry = plist::Dictionary::new();
+        entry.insert("IORegistryEntryName".into(), "AppleSmartBattery".into());
+        entry.insert("MaxCapacity".into(), 100.into());
+        assert!(parse_battery(&entry).is_none());
+        entry.insert("CurrentCapacity".into(), 100.into());
+        entry.insert("IsCharging".into(), true.into());
+        assert_eq!(parse_battery(&entry).unwrap().percentage * 100.0, 100.0);
+        entry.insert("CurrentCapacity".into(), 3000.into());
+        entry.insert("MaxCapacity".into(), 6000.into());
+        entry.insert("Voltage".into(), 12000.into());
+        entry.insert("InstantAmperage".into(), (u64::MAX - 999).into());
+        let b = parse_battery(&entry).unwrap();
+        assert_eq!((b.percentage, b.power), (0.5, Some(12.0)));
+        assert_eq!(b.energy_full_design, None);
+    }
+}

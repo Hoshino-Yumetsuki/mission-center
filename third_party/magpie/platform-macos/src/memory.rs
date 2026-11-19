@@ -169,3 +169,20 @@ impl magpie_platform::memory::MemoryCache for MemoryCache {
         &self.devices
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn native_memory_matches_hardware_size() {
+        let mut memory = Memory::default();
+        refresh_memory(&mut memory);
+        assert_eq!(Some(memory.mem_total), sysctl_u64("hw.memsize"));
+        assert!(
+            memory.mem_available >= memory.mem_free && memory.mem_available <= memory.mem_total
+        );
+        assert!(memory.mem_available < memory.mem_total);
+        assert!(memory.swap_free <= memory.swap_total);
+    }
+}

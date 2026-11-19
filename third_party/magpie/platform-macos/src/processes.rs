@@ -370,6 +370,50 @@ fn read_proc_bsdinfo(pid: u32) -> (u32, ProcessState) {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn process_ticks_match_the_native_cpu_clock() {
+        use mach2::mach_time::{mach_timebase_info, mach_timebase_info_data_t};
+        let cpu_ns = || unsafe {
+            let mut ts: libc::timespec = std::mem::zeroed();
+            assert_eq!(
+                libc::clock_gettime(libc::CLOCK_PROCESS_CPUTIME_ID, &mut ts),
+                0
+            );
+            ts.tv_sec as u64 * 1_000_000_000 + ts.tv_nsec as u64
+        };
+        let mut scale = mach_timebase_info_data_t { numer: 0, denom: 0 };
+        assert_eq!(unsafe { mach_timebase_info(&mut scale) }, 0);
+        let ticks = || read_proc_task_info(std::process::id()).unwrap().cpu_ticks;
+        let (start, before) = (cpu_ns(), ticks());
+        while cpu_ns() - start < 30_000_000 {
+            std::hint::spin_loop();
+        }
+        let elapsed = cpu_ns() - start;
+        let measured = (ticks() - before) as f64 * scale.numer as f64 / scale.denom as f64;
+        assert!((0.8..1.2).contains(&(measured / elapsed as f64)));
+    }
+
+    #[test]
+    fn native_process_data_and_arguments() {
+        let pid = std::process::id();
+        let info = read_proc_task_info(pid).expect("own task info");
+        assert!(info.resident_bytes > 0);
+        assert!(info.thread_count > 0);
+        assert!(!read_proc_name(pid).is_empty());
+        assert!(!read_proc_exe(pid).is_empty());
+        assert!(!read_proc_cmdline(pid).is_empty());
+
+        let mut data = 3i32.to_ne_bytes().to_vec();
+        data.extend_from_slice(b"/bin/test\0\0test\0\0last\0ENV=value\0");
+        assert_eq!(parse_proc_cmdline(&data), ["test", "", "last"]);
+        assert!(parse_proc_cmdline(&[0, 0, 0]).is_empty());
+    }
+}
+
 // BSD process states from sys/proc.h
 fn map_proc_state(status: u32) -> ProcessState {
     match status {

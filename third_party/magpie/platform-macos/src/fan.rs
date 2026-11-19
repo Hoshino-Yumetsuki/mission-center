@@ -221,6 +221,40 @@ unsafe fn smc_read_key_raw(conn: u32, key: &[u8; 4]) -> Option<SmcVal> {
     })
 }
 
+#[cfg(test)]
+mod tests {
+    use super::{read_smc_fans, SmcVal};
+
+    #[test]
+    fn decodes_smc_fan_values() {
+        let mut value = SmcVal::default();
+        value.data_type = *b"fpe2";
+        value.data_size = 2;
+        value.bytes[..2].copy_from_slice(&8000u16.to_be_bytes());
+        assert_eq!(value.number(), Some(2000.0));
+        value.data_type = *b"flt ";
+        value.data_size = 4;
+        value.bytes[..4].copy_from_slice(&2345.5f32.to_le_bytes());
+        assert_eq!(value.number(), Some(2345.5));
+        value.data_size = 2;
+        assert_eq!(value.number(), None);
+    }
+
+    #[test]
+    fn native_fan_readings_are_optional() {
+        let fans = read_smc_fans();
+        for fan in &fans {
+            assert_eq!(fan.pwm_percent, None);
+            assert_ne!(fan.max_rpm, Some(0));
+            eprintln!(
+                "fan {}: {} RPM, max {:?} RPM",
+                fan.fan_index, fan.rpm, fan.max_rpm
+            );
+        }
+        eprintln!("read {} fans", fans.len());
+    }
+}
+
 #[link(name = "IOKit", kind = "framework")]
 extern "C" {
     fn IOServiceGetMatchingService(main_port: u32, matching: *mut libc::c_void) -> u32;

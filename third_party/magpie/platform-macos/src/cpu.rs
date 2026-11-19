@@ -314,3 +314,62 @@ fn process_and_thread_count() -> (u64, u64) {
         (procs, threads)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use magpie_platform::cpu::CpuCache as _;
+
+    #[test]
+    fn tick_usage_includes_nice_and_handles_counter_wrap() {
+        let prev = CpuTicks {
+            user: u32::MAX - 4,
+            system: 10,
+            idle: 100,
+            nice: 10,
+        };
+        let curr = CpuTicks {
+            user: 5,
+            system: 30,
+            idle: 140,
+            nice: 40,
+        };
+        let (total, kernel) = curr.usage_since(prev);
+        assert!((total - 60.0).abs() < 0.001);
+        assert!((kernel - 20.0).abs() < 0.001);
+    }
+
+    #[test]
+    fn native_cpu_readings() {
+        let mut cache = CpuCache::new();
+        cache.refresh();
+        std::thread::sleep(std::time::Duration::from_millis(300));
+        cache.refresh();
+        let cpu = cache.cached();
+        if sysctl_u32("kern.hv_support") == Some(1) {
+            assert_eq!(
+                cpu.virtualization_technology.as_deref(),
+                Some("Hypervisor Framework")
+            );
+        }
+        assert!(!cpu.core_usage_percent.is_empty());
+        assert_eq!(
+            cpu.core_usage_percent.len(),
+            read_per_cpu_ticks()
+                .expect("Mach CPU ticks unavailable")
+                .len()
+        );
+        assert_eq!(
+            cpu.core_usage_percent.len(),
+            cpu.core_kernel_usage_percent.len()
+        );
+        assert!(cpu
+            .core_usage_percent
+            .iter()
+            .all(|&value| (0.0..=100.0).contains(&value)));
+        assert!((0.0..=100.0).contains(&cpu.total_usage_percent));
+        assert!(cpu.total_process_count > 0);
+        assert!(cpu.uptime_seconds > 0);
+        eprintln!("native CPU: {cpu:?}");
+    }
+}

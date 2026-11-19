@@ -728,3 +728,54 @@ fn parse_vram(s: &str) -> Option<u64> {
         None
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn accelerator_samples_preserve_zero_and_unavailable() {
+        let stats = parse_accelerator_stats("+-o GPU\n{\"Device Utilization %\"=0,\"In use system memory\"=0,\"Alloc system memory\"=123}");
+        assert_eq!(stats.util_percent, Some(0.0));
+        assert_eq!(stats.used_memory, Some(0));
+        let stats = parse_accelerator_stats(
+            "+-o GPU\n{\"Device Utilization %\"=101,\"Alloc system memory\"=123}",
+        );
+        assert_eq!(stats.util_percent, None);
+        assert_eq!(stats.used_memory, None);
+        let stats = parse_accelerator_stats("+-o GPU 1\n{\"Device Utilization %\"=30}\n+-o GPU 2");
+        assert_eq!(stats.util_percent, None);
+        assert_eq!(stats.used_memory, None);
+        assert!(parse_metal_version("Supported, Metal GPUFamily Apple 9").is_none());
+        assert_eq!(parse_metal_version("Metal 4").unwrap().major, 4);
+        #[cfg(target_arch = "aarch64")]
+        {
+            assert_eq!(energy_joules(1_000_000_000, "nJ"), Some(1.0));
+            assert_eq!(energy_joules(1_000_000, "µJ"), Some(1.0));
+            assert_eq!(energy_joules(1_000, "mJ"), Some(1.0));
+            assert_eq!(energy_joules(1, "J"), Some(1.0));
+            assert_eq!(energy_joules(1, "unknown"), None);
+            assert_eq!(
+                parse_gpu_frequencies("\"perf-states\" = <000000007d0000008078251458020000>"),
+                vec![338]
+            );
+        }
+    }
+
+    #[cfg(target_arch = "aarch64")]
+    #[test]
+    #[ignore = "samples native GPU counters"]
+    fn native_gpu_sample() {
+        let mut cache = <GpuCache as magpie_platform::gpus::GpuCache>::new();
+        magpie_platform::gpus::GpuCache::refresh(&mut cache);
+        eprintln!(
+            "IOReport subscription available: {}",
+            cache.apple_report.is_some()
+        );
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        magpie_platform::gpus::GpuCache::refresh(&mut cache);
+        for gpu in cache.gpus.values() {
+            eprintln!("GPU {:?}: utilization {:?}%, power {:?} W, clock {:?} MHz, shared usage {:?} bytes", gpu.device_name, gpu.utilization_percent, gpu.power_draw_watts, gpu.clock_speed_mhz, gpu.used_shared_memory);
+        }
+    }
+}

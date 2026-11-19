@@ -158,3 +158,21 @@ unsafe fn collect() -> Option<f32> {
 fn is_cpu_sensor(sensor: &[u8]) -> bool {
     sensor.starts_with(b"eACC") || sensor.starts_with(b"pACC")
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn only_cpu_sensor_names_are_selected() {
+        assert!(super::is_cpu_sensor(b"eACC0"));
+        assert!(super::is_cpu_sensor(b"pACC1"));
+        assert!(!super::is_cpu_sensor(b"PMU tdie1"));
+        assert!(!super::is_cpu_sensor(b"SOC MTR1"));
+    }
+
+    #[test]
+    fn native_temperature_is_optional_and_plausible() {
+        let temperature = super::apple_silicon_temperature();
+        eprintln!("Unidentified HID die temperature estimate: {temperature:?} °C");
+        assert!(temperature.map_or(true, |value| value > 0.0 && value < 150.0));
+    }
+}
