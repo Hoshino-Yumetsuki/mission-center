@@ -23,7 +23,7 @@ use std::fmt::Write;
 
 use adw::{self, subclass::prelude::*};
 use arrayvec::ArrayString;
-use glib::{g_critical, g_warning, ParamSpec, Properties, Value};
+use glib::{g_critical, ParamSpec, Properties, Value};
 use gtk::{gio, glib, prelude::*};
 
 use magpie_types::gpus::Gpu;
@@ -435,6 +435,21 @@ mod imp {
                 }
             }
 
+            let vram_scale = if gpu.total_memory.is_some() {
+                ScalingSettings::Fixed
+            } else {
+                ScalingSettings::StickyUp
+            };
+            let gtt_scale = if gpu.total_shared_memory.is_some() {
+                ScalingSettings::Fixed
+            } else {
+                ScalingSettings::StickyUp
+            };
+            for graph in [&self.middle_graph, &self.bottom_graph] {
+                graph.set_dataset_scaling(GRAPH_VRAM_DATASET, vram_scale.clone());
+                graph.set_dataset_scaling(GRAPH_GTT_DATASET, gtt_scale.clone());
+            }
+
             if memory {
                 self.graph_middle_memory.set_enabled(true);
                 self.graph_bottom_memory.set_enabled(true);
@@ -453,7 +468,8 @@ mod imp {
                         .set_dataset_max_scale(GRAPH_GTT_DATASET, total_shared_memory as f32);
                 }
 
-                self.gtt_available.set(gpu.total_shared_memory.is_some());
+                self.gtt_available
+                    .set(gpu.total_shared_memory.is_some() || gpu.used_shared_memory.is_some());
             }
 
             if power {
@@ -530,6 +546,8 @@ mod imp {
             gpu: &Gpu,
         ) -> bool {
             let this = this.imp();
+            this.infobar_content.set_total_memory_valid(gpu.total_memory.is_some());
+            this.infobar_content.set_used_memory_valid(gpu.used_memory.is_some());
             this.configure_actions_graph(gpu);
 
             if let Some(index) = index {
@@ -543,13 +561,13 @@ mod imp {
                 let total_memory_str =
                     crate::to_human_readable_nice(total_memory, &DataType::MemoryBytes);
 
-                this.infobar_content.set_total_memory_valid(true);
-
                 this.infobar_content
                     .memory_usage_max()
                     .set_text(&total_memory_str);
             } else {
-                this.infobar_content.set_total_memory_valid(false);
+                this.infobar_content
+                    .memory_usage_max()
+                    .set_text(&i18n("N/A"));
             }
 
             this.device_name
@@ -597,6 +615,8 @@ mod imp {
                 this.infobar_content
                     .opengl_version()
                     .set_text(ogl_version.as_str());
+            } else {
+                this.infobar_content.opengl_version().set_text(&i18n("N/A"));
             }
 
             if let Some(vulkan_version) = gpu.vulkan_version.as_ref() {
@@ -607,10 +627,13 @@ mod imp {
                     vulkan_version.patch.unwrap_or(0)
                 );
                 this.infobar_content.vulkan_version().set_visible(true);
-                this.infobar_content.vulkan_version_label().set_visible(true);
+                this.infobar_content
+                    .vulkan_version_label()
+                    .set_visible(true);
                 this.infobar_content.vulkan_version().set_text(&vk_version);
             } else {
                 this.infobar_content.vulkan_version().set_visible(false);
+                this.infobar_content.vulkan_version().set_text(&i18n("N/A"));
                 this.infobar_content
                     .vulkan_version_label()
                     .set_visible(false);
@@ -636,6 +659,9 @@ mod imp {
                 this.infobar_content.set_max_pcie_info_visible(false);
             }
 
+            #[cfg(target_os = "macos")]
+            this.infobar_content.pci_addr().set_text(&i18n("N/A"));
+            #[cfg(not(target_os = "macos"))]
             this.infobar_content.pci_addr().set_text(gpu.id.as_ref());
 
             true
@@ -663,6 +689,20 @@ mod imp {
             this.update_video_encode_decode(gpu);
             this.update_temperature(gpu);
             this.update_pcie(gpu);
+            let memory = gpu.total_memory.is_some()
+                || gpu.used_memory.is_some()
+                || gpu.total_shared_memory.is_some()
+                || gpu.used_shared_memory.is_some();
+            let mut support = this.graph_support.get();
+            support.set_bit(GRAPH_MEMORY as usize, memory);
+            this.graph_support.set(support);
+            this.graph_middle_memory.set_enabled(memory);
+            this.graph_bottom_memory.set_enabled(memory);
+            let has_shared = gpu.total_shared_memory.is_some() || gpu.used_shared_memory.is_some();
+            if has_shared != this.gtt_available.replace(has_shared) {
+                this.set_middle_graph(this.graph_middle_idx.get());
+                this.set_bottom_graph(this.graph_bottom_idx.get());
+            }
             this.update_middle_graph_total(this.graph_middle_idx.get());
             this.update_bottom_graph_total(this.graph_bottom_idx.get());
 
@@ -683,12 +723,19 @@ mod imp {
         }
 
         fn data_summary(&self) -> String {
+            let label = |widget: &gtk::Label, available: bool| {
+                if available {
+                    widget.label()
+                } else {
+                    i18n("N/A").into()
+                }
+            };
             format!(
                 r#"{}
 
     {}
 
-    OpenGL version:        {}
+    {}        {}
     Vulkan version:        {}
     PCI Express speed:     {}
     Max PCI Express speed: {}
@@ -704,43 +751,79 @@ mod imp {
     Temperature:   {}"#,
                 self.gpu_id.label(),
                 self.device_name.label(),
+                self.infobar_content.opengl_version_label().label(),
                 self.infobar_content.opengl_version().label(),
                 self.infobar_content.vulkan_version().label(),
-                self.infobar_content.pcie_speed().label(),
-                self.infobar_content.max_pcie_speed().label(),
+                label(
+                    self.infobar_content.pcie_speed(),
+                    self.infobar_content.pcie_info_visible()
+                ),
+                label(
+                    self.infobar_content.max_pcie_speed(),
+                    self.infobar_content.max_pcie_info_visible()
+                ),
                 self.infobar_content.pci_addr().label(),
                 self.infobar_content.utilization().label(),
-                self.infobar_content.memory_usage_current().label(),
-                self.infobar_content.memory_usage_max().label(),
-                self.infobar_content.shared_mem_usage_current().label(),
-                self.infobar_content.shared_mem_usage_max().label(),
-                self.infobar_content.clock_speed_current().label(),
-                self.infobar_content.clock_speed_max().label(),
-                self.infobar_content.memory_speed_current().label(),
-                self.infobar_content.memory_speed_max().label(),
-                self.infobar_content.power_draw_current().label(),
-                self.infobar_content.power_draw_max().label(),
+                label(
+                    self.infobar_content.memory_usage_current(),
+                    self.infobar_content.used_memory_valid()
+                ),
+                label(
+                    self.infobar_content.memory_usage_max(),
+                    self.infobar_content.total_memory_valid()
+                ),
+                label(
+                    self.infobar_content.shared_mem_usage_current(),
+                    self.infobar_content.used_shared_memory_valid()
+                ),
+                label(
+                    self.infobar_content.shared_mem_usage_max(),
+                    self.infobar_content.total_shared_memory_valid()
+                ),
+                label(
+                    self.infobar_content.clock_speed_current(),
+                    self.infobar_content.clock_speed_available()
+                ),
+                label(
+                    self.infobar_content.clock_speed_max(),
+                    self.infobar_content.clock_speed_max().is_visible()
+                ),
+                label(
+                    self.infobar_content.memory_speed_current(),
+                    self.infobar_content.memory_speed_available()
+                ),
+                label(
+                    self.infobar_content.memory_speed_max(),
+                    self.infobar_content.memory_speed_max().is_visible()
+                ),
+                label(
+                    self.infobar_content.power_draw_current(),
+                    self.infobar_content.power_draw_available()
+                ),
+                if self.infobar_content.power_draw_max().is_visible() {
+                    format!(" / {}", self.infobar_content.power_draw_max().label())
+                } else {
+                    String::new()
+                },
                 self.infobar_content.encode_percent().label(),
                 self.infobar_content.decode_percent().label(),
-                self.infobar_content.temperature().label(),
+                label(
+                    self.infobar_content.temperature(),
+                    self.infobar_content.box_temp().is_visible()
+                ),
             )
         }
 
         fn update_utilization(&self, gpu: &Gpu) {
-            let overall_usage = gpu.utilization_percent.unwrap_or_else(|| {
-                g_warning!(
-                    "MissionCenter::PerformancePage",
-                    "GPU '{}' utilization data is missing",
-                    gpu.id
-                );
-                0.
-            });
-
-            self.graph_utilization
-                .add_data_point(vec![vec![overall_usage]]);
-            self.infobar_content
-                .utilization()
-                .set_text(&format!("{}%", overall_usage));
+            if let Some(overall_usage) = gpu.utilization_percent {
+                self.graph_utilization
+                    .add_data_point(vec![vec![overall_usage]]);
+                self.infobar_content
+                    .utilization()
+                    .set_text(&crate::percent_or_na(overall_usage));
+            } else {
+                self.infobar_content.utilization().set_text(&i18n("N/A"));
+            }
         }
 
         fn update_clock_speed(&self, gpu: &Gpu) {
@@ -946,6 +1029,11 @@ mod imp {
         }
 
         fn update_video_encode_decode(&self, gpu: &Gpu) {
+            self.infobar_content.set_encode_decode_available(
+                gpu.encoder_percent.is_some() || gpu.decoder_percent.is_some(),
+            );
+            self.infobar_content.encode_percent().set_text(&i18n("N/A"));
+            self.infobar_content.decode_percent().set_text(&i18n("N/A"));
             if let Some(encoder_percent) = gpu.encoder_percent {
                 self.middle_graph
                     .add_single_data_point(GRAPH_ENCODE_DATASET, vec![encoder_percent]);
@@ -1135,8 +1223,12 @@ mod imp {
                         graph_total.set_text(&i18n("100%"));
                     }
                     GRAPH_MEMORY => {
-                        if self.gtt_available.get() {
+                        if self.gtt_available.get()
+                            && self.infobar_content.dedicated_memory_available()
+                        {
                             graph_label.set_text(&i18n("Dedicated and shared memory usage over "));
+                        } else if self.gtt_available.get() {
+                            graph_label.set_text(&i18n("Shared memory usage over "));
                         } else {
                             graph_label.set_text(&i18n("Memory usage over "));
                         }
@@ -1162,7 +1254,14 @@ mod imp {
             let text = match num {
                 GRAPH_NONE | GRAPH_ENCODE_DECODE => return,
                 GRAPH_MEMORY => {
-                    if self.gtt_available.get() {
+                    if self.gtt_available.get()
+                        && !self.infobar_content.dedicated_memory_available()
+                    {
+                        crate::to_human_readable_nice(
+                            graph.get_dataset_max_scale(GRAPH_GTT_DATASET),
+                            &DataType::MemoryBytes,
+                        )
+                    } else if self.gtt_available.get() {
                         format!(
                             "{} / {}",
                             crate::to_human_readable_nice(

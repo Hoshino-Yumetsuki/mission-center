@@ -1422,7 +1422,11 @@ mod imp {
                 let _ = write!(&mut info2, "{v}%");
             }
             if let Some(v) = gpu.temperature_c {
-                let _ = write!(&mut info2, " ({v:.2}°C)");
+                if !info2.is_empty() {
+                    let _ = write!(&mut info2, " ({v:.0} °C)");
+                } else {
+                    let _ = write!(&mut info2, "{v:.0} °C");
+                }
             }
             summary.set_info2(info2.as_str());
 
@@ -2074,8 +2078,12 @@ mod imp {
                                     graph_widget.add_data_point(vec![vec![v]]);
                                     let _ = write!(&mut info2, "{v}%");
                                 }
-                                if let Some(v) = gpu.temperature_c.map(|v| v.round() as u32) {
-                                    let _ = write!(&mut info2, " ({v} °C)");
+                                if let Some(v) = gpu.temperature_c {
+                                    if !info2.is_empty() {
+                                        let _ = write!(&mut info2, " ({v:.0} °C)");
+                                    } else {
+                                        let _ = write!(&mut info2, "{v:.0} °C");
+                                    }
                                 }
                                 summary.set_info2(info2.as_str());
 
