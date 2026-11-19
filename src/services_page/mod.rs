@@ -95,6 +95,18 @@ mod imp {
 
             fmt_buffer.clear();
             let _ = write!(fmt_buffer, "{}", total);
+            #[cfg(target_os = "macos")]
+            self.h1.set_tooltip_text(Some(&i18n(
+                "Only a subset of loaded user launchd jobs is shown; system jobs are unavailable.",
+            )));
+            #[cfg(target_os = "macos")]
+            self.h1.set_label(&ni18n_f(
+                "{} Shown Service",
+                "{} Shown Services",
+                total,
+                &[fmt_buffer.as_str()],
+            ));
+            #[cfg(not(target_os = "macos"))]
             self.h1.set_label(&ni18n_f(
                 "{} Total Service",
                 "{} Total Services",
@@ -255,6 +267,9 @@ mod imp {
 
         fn constructed(&self) {
             self.parent_constructed();
+
+            #[cfg(target_os = "macos")]
+            self.toggle_disabled.set_visible(false);
 
             let update_headers = |this: &WeakRef<super::ServicesPage>| {
                 let Some(this) = this.upgrade() else {

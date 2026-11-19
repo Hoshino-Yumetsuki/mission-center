@@ -424,7 +424,9 @@ fn update_service(
             let usage_stats = process.merged_usage_stats(&process_map);
 
             set_stats(&row_model, &usage_stats);
-        } // else clear usage stats?
+        } else {
+            set_empty_stats(&row_model);
+        }
 
         let app_children = row_model.children();
 

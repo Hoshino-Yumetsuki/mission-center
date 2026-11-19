@@ -45,7 +45,9 @@ impl magpie_platform::services::ServiceCache for ServiceCache {
         // ponytail: empty system list + capped user list; full dump once UI fixed.
         let mut user = parse_launchctl_list();
         if user.len() > 64 {
-            user = user.into_iter().take(64).collect();
+            let mut jobs: Vec<_> = user.into_iter().collect();
+            jobs.sort_unstable_by(|(_, a), (_, b)| a.name.cmp(&b.name));
+            user = jobs.into_iter().take(64).collect();
         }
         self.user = user;
         self.system = HashMap::new();
@@ -69,12 +71,7 @@ impl magpie_platform::services::ServiceManager for ServiceManager {
         Self
     }
 
-    fn logs(
-        &self,
-        _sc: &Self::ServiceCache,
-        _id: u64,
-        _pid: Option<NonZeroU32>,
-    ) -> Option<String> {
+    fn logs(&self, _sc: &Self::ServiceCache, _id: u64, _pid: Option<NonZeroU32>) -> Option<String> {
         // ponytail: log stream is heavy; wire log show --predicate later if UI needs it.
         None
     }

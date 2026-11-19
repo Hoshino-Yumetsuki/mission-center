@@ -159,6 +159,9 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
+            #[cfg(target_os = "macos")]
+            self.switch_enabled.set_visible(false);
+
             if let Some(_) = std::env::var_os("SNAP_CONTEXT") {
                 self.switch_enabled.set_sensitive(false);
                 self.box_buttons.set_visible(false);
