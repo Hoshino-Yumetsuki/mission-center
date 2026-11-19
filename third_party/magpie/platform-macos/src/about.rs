@@ -75,7 +75,7 @@ fn collect_os_info() -> AboutOsInfo {
     info.id = Some("macos".into());
     info.id_like = Some("darwin".into());
     info.version_id = product_version.clone();
-    info.version = product_version.or(build_version.clone());
+    info.version = product_version;
     info.os_type = Some("Darwin".into());
     info.os_architecture = sysctl_string("hw.machine").or_else(|| uname_field("-m"));
     info.kernel_release = sysctl_string("kern.osrelease").or_else(|| uname_field("-r"));
@@ -102,8 +102,7 @@ fn collect_device_info() -> AboutDeviceInfo {
         .or_else(|| command_stdout(&["/bin/hostname"]))
         .map(|s| s.trim().to_string());
 
-    let model = hardware_field("Model Name")
-        .or_else(|| sysctl_string("hw.model"));
+    let model = hardware_field("Model Name").or_else(|| sysctl_string("hw.model"));
 
     AboutDeviceInfo {
         hostname,
@@ -135,6 +134,7 @@ fn uname_field(flag: &str) -> Option<String> {
 fn hardware_field(label: &str) -> Option<String> {
     let out = Command::new("/usr/sbin/system_profiler")
         .args(["SPHardwareDataType"])
+        .env("LC_ALL", "C")
         .output()
         .ok()?;
     if !out.status.success() {

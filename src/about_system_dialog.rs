@@ -267,7 +267,11 @@ mod imp {
 
         fn get_copy_all(&self) -> String {
             fn get_label_contents(label: &gtk::Label) -> String {
-                label.label().to_string()
+                if label.is_visible() {
+                    label.label().to_string()
+                } else {
+                    crate::i18n::i18n("N/A")
+                }
             }
 
             format!(
