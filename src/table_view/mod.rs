@@ -853,8 +853,12 @@ mod imp {
         pub fn update_column_titles(&self, readings: &crate::magpie_client::Readings) {
             let mut buffer = ArrayString::<128>::new();
 
-            let cpu_usage = readings.cpu.total_usage_percent.round() as u32;
-            let _ = write!(&mut buffer, "{}\n{}%", i18n("CPU"), cpu_usage);
+            let _ = write!(
+                &mut buffer,
+                "{}\n{}",
+                i18n("CPU"),
+                crate::percent_or_na(readings.cpu.total_usage_percent)
+            );
             self.cpu_column.set_title(Some(buffer.as_str()));
 
             buffer.clear();

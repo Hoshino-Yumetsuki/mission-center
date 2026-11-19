@@ -121,8 +121,8 @@ unsafe fn collect() -> Option<f32> {
     (api.set_matching)(client, matching);
     let services = (api.copy_services)(client);
     let product = CFStringCreateWithCString(kCFAllocatorDefault, b"Product\0".as_ptr() as *const c_char, K_CF_STRING_ENCODING_ASCII);
-    let mut sums = [0.0; 3];
-    let mut counts = [0u32; 3];
+    let mut sum = 0.0;
+    let mut count = 0u32;
     if !services.is_null() && !product.is_null() {
         for i in 0..CFArrayGetCount(services as *const CFArray) {
             let service = CFArrayGetValueAtIndex(services as *const CFArray, i) as Service;
@@ -133,23 +133,14 @@ unsafe fn collect() -> Option<f32> {
             let valid_name = CFStringGetCString(name, buf.as_mut_ptr(), buf.len() as c_long, K_CF_STRING_ENCODING_ASCII);
             if valid_name {
                 let sensor = CStr::from_ptr(buf.as_ptr()).to_bytes();
-                let group = if sensor.starts_with(b"eACC") || sensor.starts_with(b"pACC") {
-                    Some(0)
-                } else if sensor.starts_with(b"PMU tdie") {
-                    Some(1)
-                } else if sensor.starts_with(b"SOC MTR") {
-                    Some(2)
-                } else {
-                    None
-                };
-                if let Some(group) = group {
+                if is_cpu_sensor(sensor) {
                     let event = (api.copy_event)(service, TEMPERATURE_EVENT, 0, 0);
                     if !event.is_null() {
                         let value = (api.event_value)(event, TEMPERATURE_EVENT << 16);
                         CFRelease(event as CFType);
                         if value.is_finite() && value > 0.0 && value < 150.0 {
-                            sums[group] += value;
-                            counts[group] += 1;
+                            sum += value;
+                            count += 1;
                         }
                     }
                 }
@@ -161,5 +152,9 @@ unsafe fn collect() -> Option<f32> {
     if !services.is_null() { CFRelease(services as CFType); }
     CFRelease(client as CFType);
     CFRelease(matching as CFType);
-    counts.iter().position(|&count| count > 0).map(|group| (sums[group] / counts[group] as f64) as f32)
+    (count > 0).then(|| (sum / count as f64) as f32)
+}
+
+fn is_cpu_sensor(sensor: &[u8]) -> bool {
+    sensor.starts_with(b"eACC") || sensor.starts_with(b"pACC")
 }

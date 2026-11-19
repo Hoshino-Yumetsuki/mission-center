@@ -384,6 +384,14 @@ pub fn setup_readable_settings_cache(settings: &Settings) {
     }
 }
 
+fn percent_or_na(percent: f32) -> String {
+    if percent.is_finite() && percent >= 0.0 {
+        format!("{percent:.0}%")
+    } else {
+        i18n("N/A")
+    }
+}
+
 pub fn to_human_readable_nice(value_bytes: f32, data_type: &DataType) -> String {
     let (label, min_dec) = match data_type {
         DataType::Hertz => ("Hz", 0),

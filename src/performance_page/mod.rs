@@ -1050,7 +1050,7 @@ mod imp {
             summary.set_widget_name("cpu");
 
             summary.set_heading(i18n("CPU"));
-            summary.set_info1("0% 0.00 GHz");
+            summary.set_info1(crate::percent_or_na(readings.cpu.total_usage_percent));
             match readings.cpu.temperature_celsius.as_ref() {
                 Some(v) => summary.set_info2(format!("{:.0} °C", *v)),
                 _ => {}
@@ -1869,17 +1869,25 @@ mod imp {
                         let graph_widget = summary.graph_widget();
 
                         let mut info2 = ArrayString::<256>::new();
-                        let _ = write!(&mut info2, "{}%", readings.cpu.total_usage_percent.round());
+                        let _ = write!(
+                            &mut info2,
+                            "{}",
+                            crate::percent_or_na(readings.cpu.total_usage_percent)
+                        );
                         if let Some(temp) = readings.cpu.temperature_celsius.as_ref() {
                             let _ = write!(&mut info2, " ({:.0} °C)", temp);
                         }
 
-                        graph_widget.add_data_point(vec![vec![readings.cpu.total_usage_percent]]);
+                        if readings.cpu.total_usage_percent.is_finite() {
+                            graph_widget
+                                .add_data_point(vec![vec![readings.cpu.total_usage_percent]]);
+                        }
                         if let Some(name) = readings.cpu.name.as_ref() {
                             summary.set_info1(name.as_str());
                             summary.set_info2(info2.as_str());
                         } else {
                             summary.set_info1(info2.as_str());
+                            summary.set_info2("");
                         }
 
                         result &= page.update_readings(readings);

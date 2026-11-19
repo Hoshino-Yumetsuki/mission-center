@@ -533,6 +533,7 @@ mod imp {
                 } else {
                     // Apple Silicon etc. often has no fixed base frequency — hide row.
                     base_speed.set_visible(false);
+                    base_speed.set_text(&i18n("N/A"));
                     if let Some(lbl) = this.base_speed_label.get() {
                         lbl.set_visible(false);
                     }
@@ -563,6 +564,9 @@ mod imp {
                 if let Some(vt) = static_cpu_info.virtualization_technology.as_ref() {
                     virtualization.set_text(vt.as_ref());
                 } else {
+                    #[cfg(target_os = "macos")]
+                    virtualization.set_text(&i18n("Unknown"));
+                    #[cfg(not(target_os = "macos"))]
                     virtualization.set_text(&i18n("Unsupported"));
                 }
             }
@@ -679,29 +683,29 @@ mod imp {
                 graph_widgets = this.graph_widgets.take();
             }
 
-            // Update global CPU graph
-            graph_widgets[0].add_data_point(vec![
-                vec![dynamic_cpu_info.total_usage_percent],
-                vec![dynamic_cpu_info.kernel_usage_percent],
-            ]);
-            graph_widgets[1].add_data_point(vec![dynamic_cpu_info.core_usage_percent.clone()]);
+            if dynamic_cpu_info.total_usage_percent.is_finite() {
+                // Update global CPU graph
+                graph_widgets[0].add_data_point(vec![
+                    vec![dynamic_cpu_info.total_usage_percent],
+                    vec![dynamic_cpu_info.kernel_usage_percent],
+                ]);
+                graph_widgets[1].add_data_point(vec![dynamic_cpu_info.core_usage_percent.clone()]);
 
-            // Update per-core graphs
-            let per_core = dynamic_cpu_info
-                .core_usage_percent
-                .iter()
-                .zip(dynamic_cpu_info.core_kernel_usage_percent.iter());
-            for (graph_widget, (usage, kernel)) in graph_widgets.iter_mut().skip(2).zip(per_core) {
-                graph_widget.add_data_point(vec![vec![*usage], vec![*kernel]]);
+                // Update per-core graphs
+                let per_core = dynamic_cpu_info
+                    .core_usage_percent
+                    .iter()
+                    .zip(dynamic_cpu_info.core_kernel_usage_percent.iter());
+                for (graph_widget, (usage, kernel)) in
+                    graph_widgets.iter_mut().skip(2).zip(per_core)
+                {
+                    graph_widget.add_data_point(vec![vec![*usage], vec![*kernel]]);
+                }
             }
-
             this.graph_widgets.set(graph_widgets);
 
             if let Some(utilization) = this.utilization.get() {
-                utilization.set_text(&format!(
-                    "{}%",
-                    dynamic_cpu_info.total_usage_percent.round()
-                ));
+                utilization.set_text(&crate::percent_or_na(dynamic_cpu_info.total_usage_percent));
             }
 
             if let Some(speed) = this.speed.get() {
@@ -709,6 +713,7 @@ mod imp {
                 if mhz == 0 && !this.is_bogomips.get() {
                     // Apple Silicon has no public instantaneous MHz; hide Speed.
                     speed.set_visible(false);
+                    speed.set_text(&i18n("N/A"));
                     if let Some(l) = this.speed_label.get() {
                         l.set_visible(false);
                     }
@@ -739,6 +744,9 @@ mod imp {
             }
 
             if let Some(power_draw) = this.power_draw.get() {
+                if let Some(power_row) = this.power_row.get() {
+                    power_row.set_visible(dynamic_cpu_info.power_draw_w.is_some());
+                }
                 if let Some(power_draw_num) = dynamic_cpu_info.power_draw_w {
                     this.bottom_graph
                         .add_single_data_point(GRAPH_POWER_DATASET, vec![power_draw_num]);
@@ -754,11 +762,21 @@ mod imp {
                 }
             }
             if let Some(processes) = this.processes.get() {
-                processes.set_text(&format!("{}", dynamic_cpu_info.total_process_count));
+                let count = dynamic_cpu_info.total_process_count;
+                processes.set_text(&if count == 0 {
+                    i18n("N/A")
+                } else {
+                    count.to_string()
+                });
             }
 
             if let Some(threads) = this.threads.get() {
-                threads.set_text(&format!("{}", dynamic_cpu_info.total_thread_count));
+                let count = dynamic_cpu_info.total_thread_count;
+                threads.set_text(&if count == 0 {
+                    i18n("N/A")
+                } else {
+                    count.to_string()
+                });
             }
 
             if let Some(handles) = this.handles.get() {
@@ -824,11 +842,14 @@ mod imp {
                 }
             }
 
-            if let Some(temp) = dynamic_cpu_info.temperature_celsius {
-                this.bottom_graph
-                    .add_single_data_point(GRAPH_TEMPERATURE_DATASET, vec![temp]);
-                if let Some(temperature) = this.temperature.get() {
+            if let Some(temperature) = this.temperature.get() {
+                temperature.set_visible(dynamic_cpu_info.temperature_celsius.is_some());
+                if let Some(temp) = dynamic_cpu_info.temperature_celsius {
+                    this.bottom_graph
+                        .add_single_data_point(GRAPH_TEMPERATURE_DATASET, vec![temp]);
                     temperature.set_text(&format!("{:.0} °C", temp));
+                } else {
+                    temperature.set_text(&i18n("N/A"));
                 }
             }
 
