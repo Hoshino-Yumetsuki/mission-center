@@ -59,6 +59,14 @@ mod imp {
         command_line: TemplateChild<gtk::Label>,
 
         #[template_child]
+        swap_row: TemplateChild<PreferencesRow>,
+        #[template_child]
+        network_row: TemplateChild<PreferencesRow>,
+        #[template_child]
+        gpu_row: TemplateChild<PreferencesRow>,
+        #[template_child]
+        gpu_memory_row: TemplateChild<PreferencesRow>,
+        #[template_child]
         cpu: TemplateChild<LabelCell>,
         #[template_child]
         memory: TemplateChild<LabelCell>,
@@ -89,6 +97,10 @@ mod imp {
                 command_line_row: TemplateChild::default(),
                 command_line: TemplateChild::default(),
 
+                swap_row: TemplateChild::default(),
+                network_row: TemplateChild::default(),
+                gpu_row: TemplateChild::default(),
+                gpu_memory_row: TemplateChild::default(),
                 cpu: TemplateChild::default(),
                 memory: TemplateChild::default(),
                 swap: TemplateChild::default(),
@@ -132,6 +144,16 @@ mod imp {
 
             self.command_line_row.set_visible(!cli.is_empty());
 
+            #[cfg(target_os = "macos")]
+            for row in [
+                &self.swap_row,
+                &self.network_row,
+                &self.gpu_row,
+                &self.gpu_memory_row,
+            ] {
+                row.set_visible(false);
+            }
+
             cpu_label_formatter(&*self.cpu, model.cpu_usage().into());
             self.cpu.bind(&*model, "cpu-usage", cpu_label_formatter);
 
@@ -140,8 +162,7 @@ mod imp {
                 .bind(&*model, "memory-usage", memory_label_formatter);
 
             swap_label_formatter(&*self.swap, model.swap_usage().into());
-            self.swap
-                .bind(&*model, "shared-memory-usage", swap_label_formatter);
+            self.swap.bind(&*model, "swap-usage", swap_label_formatter);
 
             drive_label_formatter(&*self.drives, model.disk_usage().into());
             self.drives

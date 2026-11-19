@@ -49,6 +49,11 @@ pub fn sorter(column_view: &gtk::ColumnView) -> impl IsA<gtk::Sorter> {
 
 pub fn label_formatter(label: &LabelCell, value: glib::Value) {
     let disk_usage: f32 = value.get().unwrap();
+    if disk_usage < 0.0 {
+        label.set_label(&crate::i18n::i18n("N/A"));
+        label.set_opacity(1.0);
+        return;
+    }
     label.set_label(&crate::to_human_readable_nice(
         disk_usage,
         &DataType::DriveBytesPerSecond,

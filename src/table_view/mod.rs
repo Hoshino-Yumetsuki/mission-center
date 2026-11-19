@@ -224,6 +224,16 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
 
+            #[cfg(target_os = "macos")]
+            for column in [
+                &self.swap_column,
+                &self.network_usage_column,
+                &self.gpu_usage_column,
+                &self.gpu_memory_column,
+            ] {
+                column.set_visible(false);
+            }
+
             self.name_column
                 .set_factory(Some(&name_list_item_factory()));
             self.name_column

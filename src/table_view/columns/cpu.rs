@@ -18,12 +18,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-use crate::table_view::ArrayString;
 use std::cmp::Ordering;
 
 use gtk::glib;
 use gtk::prelude::*;
-use std::fmt::Write;
 
 use super::{compare_column_entries_by, set_label_zero, sort_order, LabelCell};
 use crate::label_cell_factory;
@@ -51,8 +49,6 @@ pub fn sorter(column_view: &gtk::ColumnView) -> impl IsA<gtk::Sorter> {
 
 pub fn label_formatter(label: &LabelCell, value: glib::Value) {
     let cpu_usage: f32 = value.get().unwrap();
-    let mut buffer = ArrayString::<8>::new();
-    let _ = write!(&mut buffer, "{}%", cpu_usage.round() as u32);
-    label.set_label(buffer.as_str());
+    label.set_label(&crate::percent_or_na(cpu_usage));
     set_label_zero(label, cpu_usage);
 }

@@ -21,55 +21,37 @@
 use std::collections::HashMap;
 use std::time::Instant;
 
-use magpie_platform::processes::{NetworkStatsError, Process, ProcessState, ProcessUsageStats};
+use mach2::mach_time::mach_absolute_time;
 
-use crate::util;
+use magpie_platform::processes::{NetworkStatsError, Process, ProcessState, ProcessUsageStats};
 
 #[derive(Debug, Clone, Copy)]
 struct RawStats {
-    user_time_us: u64,
-    sys_time_us: u64,
-    disk_read_bytes: u64,
-    disk_write_bytes: u64,
+    cpu_ticks: u64,
+    disk_read_bytes: Option<u64>,
+    disk_write_bytes: Option<u64>,
     timestamp: Instant,
-}
-
-impl Default for RawStats {
-    fn default() -> Self {
-        Self {
-            user_time_us: 0,
-            sys_time_us: 0,
-            disk_read_bytes: 0,
-            disk_write_bytes: 0,
-            timestamp: Instant::now(),
-        }
-    }
+    mach_time: u64,
 }
 
 pub struct ProcessCache {
     processes: HashMap<u32, Process>,
     raw_stats: HashMap<u32, RawStats>,
     network_stats_error: Option<NetworkStatsError>,
-    cpu_count: f32,
 }
 
 impl magpie_platform::processes::ProcessCache for ProcessCache {
     fn new() -> Self {
-        let cpu_count = util::sysctl_u32("hw.logicalcpu")
-            .or_else(|| util::sysctl_u32("hw.ncpu"))
-            .unwrap_or(1)
-            .max(1) as f32;
-
         Self {
             processes: HashMap::new(),
             raw_stats: HashMap::new(),
             network_stats_error: None,
-            cpu_count,
         }
     }
 
     fn refresh(&mut self) {
         let now = Instant::now();
+        let mach_time = unsafe { mach_absolute_time() };
         let pids = list_pids();
 
         let mut new_map: HashMap<u32, Process> = HashMap::with_capacity(pids.len());
@@ -87,33 +69,25 @@ impl magpie_platform::processes::ProcessCache for ProcessCache {
             let cmd = read_proc_cmdline(pid);
             let (parent, state) = read_proc_bsdinfo(pid);
 
-            let prev_stats = self.raw_stats.get(&pid).copied().unwrap_or(RawStats {
-                user_time_us: info.user_time_us,
-                sys_time_us: info.sys_time_us,
-                disk_read_bytes: info.disk_read_bytes,
-                disk_write_bytes: info.disk_write_bytes,
-                timestamp: now,
-            });
-
-            let elapsed_secs = now
-                .duration_since(prev_stats.timestamp)
-                .as_secs_f64()
-                .max(0.001);
-
-            let user_delta = info.user_time_us.saturating_sub(prev_stats.user_time_us);
-            let sys_delta = info.sys_time_us.saturating_sub(prev_stats.sys_time_us);
-            // Per-core % (can exceed 100 for multi-threaded). UI normalizes by logical count.
-            let cpu_usage = (((user_delta + sys_delta) as f64 / (elapsed_secs * 1_000_000.0) * 100.0)
-                as f32)
-                .min(self.cpu_count * 100.0);
-
-            let disk_read_delta = info
-                .disk_read_bytes
-                .saturating_sub(prev_stats.disk_read_bytes);
-            let disk_write_delta = info
-                .disk_write_bytes
-                .saturating_sub(prev_stats.disk_write_bytes);
-            let disk_usage = ((disk_read_delta + disk_write_delta) as f64 / elapsed_secs) as f32;
+            let previous = self.raw_stats.get(&pid);
+            // PROC_PIDTASKINFO and mach_absolute_time use the same hardware timebase.
+            let cpu_usage = previous
+                .and_then(|p| {
+                    let elapsed = mach_time.checked_sub(p.mach_time).filter(|&n| n > 0)?;
+                    Some(
+                        (info.cpu_ticks.checked_sub(p.cpu_ticks)? as f64 * 100.0 / elapsed as f64)
+                            as f32,
+                    )
+                })
+                .unwrap_or(f32::NAN);
+            let disk_usage = previous
+                .and_then(|p| {
+                    let read = info.disk_read_bytes?.checked_sub(p.disk_read_bytes?)?;
+                    let write = info.disk_write_bytes?.checked_sub(p.disk_write_bytes?)?;
+                    let elapsed = now.duration_since(p.timestamp).as_secs_f64();
+                    (elapsed > 0.0).then(|| ((read as f64 + write as f64) / elapsed) as f32)
+                })
+                .unwrap_or(f32::NAN);
 
             let mut process = self.processes.remove(&pid).unwrap_or_default();
             process.name = name;
@@ -138,8 +112,8 @@ impl magpie_platform::processes::ProcessCache for ProcessCache {
             new_stats.insert(
                 pid,
                 RawStats {
-                    user_time_us: info.user_time_us,
-                    sys_time_us: info.sys_time_us,
+                    cpu_ticks: info.cpu_ticks,
+                    mach_time,
                     disk_read_bytes: info.disk_read_bytes,
                     disk_write_bytes: info.disk_write_bytes,
                     timestamp: now,
@@ -223,11 +197,10 @@ fn send_signals(pids: &[u32], signal: libc::c_int) {
 }
 
 struct ProcTaskInfo {
-    user_time_us: u64,
-    sys_time_us: u64,
+    cpu_ticks: u64,
     resident_bytes: u64,
-    disk_read_bytes: u64,
-    disk_write_bytes: u64,
+    disk_read_bytes: Option<u64>,
+    disk_write_bytes: Option<u64>,
     thread_count: u32,
 }
 
@@ -263,13 +236,9 @@ fn read_proc_task_info(pid: u32) -> Option<ProcTaskInfo> {
             &mut info as *mut libc::proc_taskinfo as *mut libc::c_void,
             std::mem::size_of::<libc::proc_taskinfo>() as libc::c_int,
         );
-        if ret <= 0 {
+        if ret as usize != std::mem::size_of::<libc::proc_taskinfo>() {
             return None;
         }
-
-        // pti_total_{user,system} are nanoseconds on modern macOS.
-        let user_time_us = info.pti_total_user / 1000;
-        let sys_time_us = info.pti_total_system / 1000;
 
         let mut disk_info: libc::rusage_info_v2 = std::mem::zeroed();
         let disk_ret = libc::proc_pid_rusage(
@@ -279,16 +248,15 @@ fn read_proc_task_info(pid: u32) -> Option<ProcTaskInfo> {
         );
         let (disk_read_bytes, disk_write_bytes) = if disk_ret == 0 {
             (
-                disk_info.ri_diskio_bytesread,
-                disk_info.ri_diskio_byteswritten,
+                Some(disk_info.ri_diskio_bytesread),
+                Some(disk_info.ri_diskio_byteswritten),
             )
         } else {
-            (0, 0)
+            (None, None)
         };
 
         Some(ProcTaskInfo {
-            user_time_us,
-            sys_time_us,
+            cpu_ticks: info.pti_total_user.saturating_add(info.pti_total_system),
             resident_bytes: info.pti_resident_size,
             disk_read_bytes,
             disk_write_bytes,
@@ -356,33 +324,33 @@ fn read_proc_cmdline(pid: u32) -> Vec<String> {
         {
             return vec![];
         }
-        if size < 4 {
-            return vec![];
-        }
-        let argc = u32::from_ne_bytes([buf[0], buf[1], buf[2], buf[3]]) as usize;
-        let rest = &buf[4..size];
-        let exe_end = rest.iter().position(|&b| b == 0).unwrap_or(rest.len());
-        let args_start = rest[exe_end..]
-            .iter()
-            .position(|&b| b != 0)
-            .map(|p| exe_end + p)
-            .unwrap_or(rest.len());
-
-        let mut args = Vec::with_capacity(argc);
-        let mut pos = args_start;
-        while pos < rest.len() && args.len() < argc {
-            let end = rest[pos..]
-                .iter()
-                .position(|&b| b == 0)
-                .map(|p| pos + p)
-                .unwrap_or(rest.len());
-            if end > pos {
-                args.push(String::from_utf8_lossy(&rest[pos..end]).into_owned());
-            }
-            pos = end + 1;
-        }
-        args
+        parse_proc_cmdline(&buf[..size])
     }
+}
+
+fn parse_proc_cmdline(buf: &[u8]) -> Vec<String> {
+    let Some(header) = buf.get(..4) else {
+        return vec![];
+    };
+    let argc = i32::from_ne_bytes(header.try_into().unwrap()).max(0) as usize;
+    let rest = &buf[4..];
+    let Some(exe_end) = rest.iter().position(|&b| b == 0) else {
+        return vec![];
+    };
+    let args_start = rest[exe_end..]
+        .iter()
+        .position(|&b| b != 0)
+        .map(|p| exe_end + p)
+        .unwrap_or(rest.len());
+
+    if args_start == rest.len() {
+        return vec![];
+    }
+    rest[args_start..]
+        .split(|&b| b == 0)
+        .take(argc)
+        .map(|arg| String::from_utf8_lossy(arg).into_owned())
+        .collect()
 }
 
 fn read_proc_bsdinfo(pid: u32) -> (u32, ProcessState) {
@@ -405,11 +373,11 @@ fn read_proc_bsdinfo(pid: u32) -> (u32, ProcessState) {
 // BSD process states from sys/proc.h
 fn map_proc_state(status: u32) -> ProcessState {
     match status {
-        1 => ProcessState::Unknown, // SIDL
-        2 => ProcessState::Running, // SRUN
+        1 => ProcessState::Unknown,  // SIDL
+        2 => ProcessState::Running,  // SRUN
         3 => ProcessState::Sleeping, // SSLEEP
-        4 => ProcessState::Stopped, // SSTOP
-        5 => ProcessState::Zombie,  // SZOMB
+        4 => ProcessState::Stopped,  // SSTOP
+        5 => ProcessState::Zombie,   // SZOMB
         _ => ProcessState::Unknown,
     }
 }

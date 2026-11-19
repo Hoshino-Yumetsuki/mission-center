@@ -473,10 +473,19 @@ fn set_empty_stats(row_model: &RowModel) {
 }
 
 fn set_stats(row_model: &RowModel, usage_stats: &ProcessUsageStats) {
-    row_model.set_cpu_usage(usage_stats.cpu_usage);
+    // NaN is valid in protobuf but not in a GObject float property.
+    row_model.set_cpu_usage(if usage_stats.cpu_usage.is_finite() {
+        usage_stats.cpu_usage
+    } else {
+        -1.0
+    });
     row_model.set_memory_usage(usage_stats.memory_usage);
     row_model.set_swap_usage(usage_stats.swap_usage);
-    row_model.set_disk_usage(usage_stats.disk_usage);
+    row_model.set_disk_usage(if usage_stats.disk_usage.is_finite() {
+        usage_stats.disk_usage
+    } else {
+        -1.0
+    });
     row_model.set_network_usage(usage_stats.network_usage);
     row_model.set_gpu_usage(usage_stats.gpu_usage);
     row_model.set_gpu_memory_usage(usage_stats.gpu_memory_usage);
