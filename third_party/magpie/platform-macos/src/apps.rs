@@ -59,20 +59,21 @@ impl magpie_platform::apps::AppCache for AppCache {
                     continue;
                 };
 
-                let entry = bundle_map.entry(bundle_path.clone()).or_insert_with(|| {
-                    match read_bundle_info(&bundle_path) {
-                        Some((id, name, icon)) => {
-                            (id, name, icon, bundle_path.clone(), Vec::new())
-                        }
-                        None => (
-                            String::new(),
-                            String::new(),
-                            None,
-                            bundle_path.clone(),
-                            Vec::new(),
-                        ),
-                    }
-                });
+                let entry =
+                    bundle_map.entry(bundle_path.clone()).or_insert_with(
+                        || match read_bundle_info(&bundle_path) {
+                            Some((id, name, icon)) => {
+                                (id, name, icon, bundle_path.clone(), Vec::new())
+                            }
+                            None => (
+                                String::new(),
+                                String::new(),
+                                None,
+                                bundle_path.clone(),
+                                Vec::new(),
+                            ),
+                        },
+                    );
                 entry.4.push(*pid);
             }
         }
@@ -138,8 +139,8 @@ impl magpie_platform::apps::AppCache for AppCache {
 }
 
 fn bundle_path_from_exe(exe: &str) -> Option<String> {
-    let lower = exe.to_lowercase();
-    let pos = lower.find(".app/")?;
+    let lower = exe.to_ascii_lowercase();
+    let pos = lower.rfind(".app/")?;
     Some(exe[..pos + 4].to_string())
 }
 
@@ -201,8 +202,8 @@ fn read_bundle_info(bundle_path: &str) -> Option<(String, String, Option<String>
 
     let bundle_id = plutil_raw(&plist_path, "CFBundleIdentifier")?;
 
-    let name = plutil_raw(&plist_path, "CFBundleName")
-        .or_else(|| plutil_raw(&plist_path, "CFBundleDisplayName"))
+    let name = plutil_raw(&plist_path, "CFBundleDisplayName")
+        .or_else(|| plutil_raw(&plist_path, "CFBundleName"))
         .unwrap_or_else(|| {
             Path::new(bundle_path)
                 .file_stem()
