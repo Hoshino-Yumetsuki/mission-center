@@ -83,8 +83,8 @@ glib-compile-resources \
   missioncenter.gresource.xml
 
 echo "==> Staging magpie as missioncenter-magpie..."
-cp "$MAGPIE_BIN" "$BUILD_DIR/missioncenter-magpie"
-chmod +x "$BUILD_DIR/missioncenter-magpie"
+# Don't overwrite a previously executed Mach-O in place (macOS caches its signature).
+install -S -m 755 "$MAGPIE_BIN" "$BUILD_DIR/missioncenter-magpie"
 
 echo "==> Launching Mission Center..."
 export PATH="$BUILD_DIR:$PATH"
