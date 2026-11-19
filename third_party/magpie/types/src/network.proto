@@ -75,6 +75,9 @@ message Connection {
   required ConnectionState state = 13;
 
   optional uint32 temperature_milli_k = 14;
+  // Absent means available, for compatibility with older collectors.
+  optional bool io_totals_available = 15;
+  optional bool io_rates_available = 16;
 }
 
 message ConnectionsRequest {}

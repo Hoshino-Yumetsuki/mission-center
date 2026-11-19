@@ -1981,10 +1981,14 @@ mod imp {
                             {
                                 let graph_widget = summary.graph_widget();
 
-                                graph_widget.add_data_point(vec![
-                                    vec![network_connection.tx_rate_bytes_ps],
-                                    vec![network_connection.rx_rate_bytes_ps],
-                                ]);
+                                let rates_available =
+                                    network_connection.io_rates_available.unwrap_or(true);
+                                if rates_available {
+                                    graph_widget.add_data_point(vec![
+                                        vec![network_connection.tx_rate_bytes_ps],
+                                        vec![network_connection.rx_rate_bytes_ps],
+                                    ]);
+                                }
 
                                 let grey_out =
                                     network_connection.state() == ConnectionState::Unavailable;
@@ -2004,6 +2008,11 @@ mod imp {
                                     } else {
                                         summary.set_info2("");
                                     }
+                                } else if !rates_available {
+                                    summary.set_info1(i18n("N/A"));
+                                    summary.set_info2(
+                                        temperature.map(|v| format!("{v} °C")).unwrap_or_default(),
+                                    );
                                 } else {
                                     let send_speed = network_connection.tx_rate_bytes_ps;
                                     let rec_speed = network_connection.rx_rate_bytes_ps;

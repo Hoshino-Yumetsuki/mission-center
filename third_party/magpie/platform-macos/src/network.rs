@@ -22,14 +22,28 @@ use std::collections::HashMap;
 use std::net::{Ipv4Addr, Ipv6Addr};
 use std::time::Instant;
 
-use magpie_platform::network::{
-    Connection, ConnectionKind, ConnectionState, WirelessConnection,
-};
+use magpie_platform::network::{Connection, ConnectionKind, ConnectionState, WirelessConnection};
 
 struct PrevStats {
     tx: u64,
     rx: u64,
     ts: Instant,
+}
+
+fn network_rates(
+    totals: Option<(u64, u64)>,
+    prev: Option<&PrevStats>,
+    now: Instant,
+) -> Option<(f64, f64)> {
+    let ((tx, rx), prev) = totals.zip(prev)?;
+    let elapsed = now.duration_since(prev.ts).as_secs_f64();
+    if elapsed <= 0.0 {
+        return None;
+    }
+    Some((
+        tx.checked_sub(prev.tx)? as f64 / elapsed,
+        rx.checked_sub(prev.rx)? as f64 / elapsed,
+    ))
 }
 
 pub struct NetworkCache {
@@ -50,13 +64,20 @@ impl magpie_platform::network::NetworkCache for NetworkCache {
     }
 
     fn refresh(&mut self) {
-        let hw_ports = list_hardware_ports();
+        let mut hw_ports = list_hardware_ports();
+        let stats = read_interface_stats();
+        for name in stats.keys().filter(|name| name.starts_with("utun")) {
+            let (ipv4, ipv6) = if_addresses(name);
+            if ipv4.is_some() || ipv6.as_ref().is_some_and(|addr| !addr.starts_with("fe80:")) {
+                hw_ports.push((name.clone(), name.clone(), None));
+            }
+        }
         if hw_ports.is_empty() {
             self.connections.clear();
+            self.prev.clear();
             return;
         }
 
-        let stats = read_interface_stats();
         let now = Instant::now();
         let mut next = HashMap::with_capacity(hw_ports.len());
 
@@ -79,24 +100,14 @@ impl magpie_platform::network::NetworkCache for NetworkCache {
         }
 
         for (if_name, port_name, hw_addr) in hw_ports {
-            let (tx, rx) = stats.get(&if_name).copied().unwrap_or((0, 0));
-            let (tx_rate, rx_rate) = if let Some(prev) = self.prev.get(&if_name) {
-                let elapsed = now.duration_since(prev.ts).as_secs_f64().max(0.001);
-                (
-                    tx.saturating_sub(prev.tx) as f64 / elapsed,
-                    rx.saturating_sub(prev.rx) as f64 / elapsed,
-                )
+            let totals = stats.get(&if_name).copied();
+            let rates = network_rates(totals, self.prev.get(&if_name), now);
+            if let Some((tx, rx)) = totals {
+                self.prev
+                    .insert(if_name.clone(), PrevStats { tx, rx, ts: now });
             } else {
-                (0.0, 0.0)
-            };
-            self.prev.insert(
-                if_name.clone(),
-                PrevStats {
-                    tx,
-                    rx,
-                    ts: now,
-                },
-            );
+                self.prev.remove(&if_name);
+            }
 
             let kind = connection_kind(&port_name);
             let wireless_connection = if kind == ConnectionKind::Wireless {
@@ -120,10 +131,12 @@ impl magpie_platform::network::NetworkCache for NetworkCache {
                     kind: kind as i32,
                     wireless_connection,
                     hw_address: hw_addr.unwrap_or_default(),
-                    tx_rate_bytes_ps: tx_rate as f32,
-                    tx_total_bytes: tx,
-                    rx_rate_bytes_ps: rx_rate as f32,
-                    rx_total_bytes: rx,
+                    tx_rate_bytes_ps: rates.map_or(0.0, |r| r.0 as f32),
+                    tx_total_bytes: totals.map_or(0, |r| r.0),
+                    rx_rate_bytes_ps: rates.map_or(0.0, |r| r.1 as f32),
+                    rx_total_bytes: totals.map_or(0, |r| r.1),
+                    io_totals_available: Some(totals.is_some()),
+                    io_rates_available: Some(rates.is_some()),
                     max_speed_bytes_ps: None,
                     temperature_milli_k: None,
                     ipv4_address,
@@ -133,6 +146,7 @@ impl magpie_platform::network::NetworkCache for NetworkCache {
             );
         }
 
+        self.prev.retain(|name, _| next.contains_key(name));
         self.connections = next;
     }
 
@@ -142,15 +156,13 @@ impl magpie_platform::network::NetworkCache for NetworkCache {
 }
 
 fn is_wireless_port(port_name: &str) -> bool {
-    port_name.contains("Wi-Fi")
-        || port_name.contains("AirPort")
-        || port_name.contains("Wireless")
+    port_name.contains("Wi-Fi") || port_name.contains("AirPort") || port_name.contains("Wireless")
 }
 
 fn connection_kind(port_name: &str) -> ConnectionKind {
     if is_wireless_port(port_name) {
         ConnectionKind::Wireless
-    } else if port_name.contains("Thunderbolt") || port_name.contains("Bridge") {
+    } else if port_name.contains("Bridge") {
         ConnectionKind::Bridge
     } else if port_name.contains("Bluetooth") {
         ConnectionKind::Bluetooth
@@ -198,72 +210,34 @@ fn list_hardware_ports() -> Vec<(String, String, Option<String>)> {
     result
 }
 
-/// Map of interface -> (tx_bytes, rx_bytes), from the public route sysctl.
+/// Map of interface -> (tx_bytes, rx_bytes). Link rows are per interface;
+/// address rows in netstat repeat the same counters and must be skipped.
 fn read_interface_stats() -> HashMap<String, (u64, u64)> {
-    let mut map = HashMap::new();
-    unsafe {
-        let mut mib = [
-            libc::CTL_NET,
-            libc::PF_ROUTE,
-            0,
-            0,
-            libc::NET_RT_IFLIST2,
-            0,
-        ];
-        let mut size = 0usize;
-        if libc::sysctl(
-            mib.as_mut_ptr(),
-            mib.len() as u32,
-            std::ptr::null_mut(),
-            &mut size,
-            std::ptr::null_mut(),
-            0,
-        ) != 0
-            || size == 0
-        {
-            return map;
-        }
-        let mut buf = vec![0u8; size];
-        if libc::sysctl(
-            mib.as_mut_ptr(),
-            mib.len() as u32,
-            buf.as_mut_ptr() as *mut libc::c_void,
-            &mut size,
-            std::ptr::null_mut(),
-            0,
-        ) != 0
-        {
-            return map;
-        }
-
-        let mut offset = 0usize;
-        while offset + 4 <= size {
-            let record = buf.as_ptr().add(offset);
-            let msg_len = (record as *const u16).read_unaligned() as usize;
-            let msg_type = *record.add(3) as i32;
-            if msg_len < 4 || offset + msg_len > size {
-                break;
-            }
-            if msg_type == libc::RTM_IFINFO2
-                && msg_len >= std::mem::size_of::<libc::if_msghdr2>()
-            {
-                let header = record as *const libc::if_msghdr2;
-                let index = std::ptr::addr_of!((*header).ifm_index).read_unaligned() as u32;
-                let ibytes = std::ptr::addr_of!((*header).ifm_data.ifi_ibytes).read_unaligned();
-                let obytes = std::ptr::addr_of!((*header).ifm_data.ifi_obytes).read_unaligned();
-                let mut name = [0i8; libc::IF_NAMESIZE];
-                if !libc::if_indextoname(index, name.as_mut_ptr()).is_null() {
-                    let name = std::ffi::CStr::from_ptr(name.as_ptr())
-                        .to_string_lossy()
-                        .into_owned();
-                    // Address records are skipped, so IPv4 and IPv6 do not duplicate totals.
-                    map.entry(name).or_insert((obytes, ibytes));
-                }
-            }
-            offset += msg_len;
-        }
+    let Ok(output) = std::process::Command::new("/usr/sbin/netstat")
+        .args(["-ibn"])
+        .env("LC_ALL", "C")
+        .output()
+    else {
+        return HashMap::new();
+    };
+    if !output.status.success() {
+        return HashMap::new();
     }
-    map
+    parse_netstat(&String::from_utf8_lossy(&output.stdout))
+}
+
+fn parse_netstat(text: &str) -> HashMap<String, (u64, u64)> {
+    text.lines()
+        .filter_map(|line| {
+            let fields: Vec<_> = line.split_whitespace().collect();
+            if fields.len() < 9 || !fields[2].starts_with("<Link#") {
+                return None;
+            }
+            let rx = fields.get(fields.len() - 5)?.parse().ok()?;
+            let tx = fields.get(fields.len() - 2)?.parse().ok()?;
+            Some((fields[0].trim_end_matches('*').to_string(), (tx, rx)))
+        })
+        .collect()
 }
 
 fn load_wifi_cache() -> HashMap<String, WirelessConnection> {
@@ -333,8 +307,11 @@ fn load_wifi_cache() -> HashMap<String, WirelessConnection> {
         } else if trimmed == "Other Local Wi-Fi Networks:" {
             in_current_net = false;
         } else if in_current_net {
-            if indent == 12 && trimmed.ends_with(':') && !trimmed.starts_with('<') {
-                ssid = Some(trimmed.trim_end_matches(':').to_string());
+            if indent == 12 && trimmed.ends_with(':') {
+                let name = trimmed.trim_end_matches(':');
+                if !name.starts_with('<') {
+                    ssid = Some(name.to_string());
+                }
             } else if let Some(v) = trimmed.strip_prefix("Channel: ") {
                 channel_str = Some(v.to_string());
             } else if let Some(v) = trimmed.strip_prefix("Signal / Noise: ") {
@@ -436,9 +413,13 @@ fn parse_mac_address(s: &str) -> Option<[u8; 6]> {
 
 fn parse_channel_to_mhz(channel_str: &str) -> Option<u32> {
     let ch: u32 = channel_str.split_whitespace().next()?.parse().ok()?;
-    if (1..=14).contains(&ch) {
+    if channel_str.contains("6GHz") {
+        Some(5950 + ch * 5)
+    } else if ch == 14 {
+        Some(2484)
+    } else if (1..=13).contains(&ch) {
         Some(2407 + ch * 5)
-    } else if (36..=64).contains(&ch) || (100..=177).contains(&ch) {
+    } else if (36..=177).contains(&ch) {
         Some(5000 + ch * 5)
     } else {
         None

@@ -333,11 +333,15 @@ mod imp {
         ) -> bool {
             let this = this.imp();
 
-            this.usage_graph.add_data_point(vec![
-                vec![connection.tx_rate_bytes_ps],
-                vec![connection.rx_rate_bytes_ps],
-            ]);
-
+            let rates_available = connection.io_rates_available.unwrap_or(true);
+            let totals_available = connection.io_totals_available.unwrap_or(true);
+            this.usage_graph.set_visible(rates_available);
+            if rates_available {
+                this.usage_graph.add_data_point(vec![
+                    vec![connection.tx_rate_bytes_ps],
+                    vec![connection.rx_rate_bytes_ps],
+                ]);
+            }
             let send_speed = connection.tx_rate_bytes_ps;
             let rec_speed = connection.rx_rate_bytes_ps;
 
@@ -357,6 +361,7 @@ mod imp {
                         .clone(),
                 );
                 if let Some(signal_strength) = this.signal_strength.get() {
+                    signal_strength.set_visible(wireless_info.signal_strength_percent.is_some());
                     signal_strength.set_icon_name(Some(
                         if let Some(percentage) = wireless_info.signal_strength_percent.as_ref() {
                             if *percentage <= 25_u32 {
@@ -384,6 +389,17 @@ mod imp {
                         },
                     ));
                 }
+            } else if this.connection_type.get() == ConnectionKind::Wireless {
+                this.signal_strength_percent.set(None);
+                if let Some(ssid) = this.ssid.get() {
+                    ssid.set_text(&i18n("Unknown"));
+                }
+                if let Some(frequency) = this.frequency.get() {
+                    frequency.set_text(&i18n("Unknown"));
+                }
+                if let Some(signal_strength) = this.signal_strength.get() {
+                    signal_strength.set_visible(false);
+                }
             }
 
             if let Some(max_bitrate) = this.max_bitrate.get() {
@@ -407,31 +423,40 @@ mod imp {
             );
             this.max_y.set_text(&max_y);
 
-            let speed_send_info =
-                crate::to_human_readable_nice(send_speed, &DataType::NetworkBytesPerSecond);
+            let display = |available, value, unit| {
+                if available {
+                    crate::to_human_readable_nice(value, unit)
+                } else {
+                    i18n("N/A")
+                }
+            };
             if let Some(speed_send) = this.speed_send.get() {
-                speed_send.set_text(&speed_send_info);
+                speed_send.set_text(&display(
+                    rates_available,
+                    send_speed,
+                    &DataType::NetworkBytesPerSecond,
+                ));
             }
-
-            let speed_recv_info =
-                crate::to_human_readable_nice(rec_speed, &DataType::NetworkBytesPerSecond);
             if let Some(speed_recv) = this.speed_recv.get() {
-                speed_recv.set_text(&speed_recv_info);
+                speed_recv.set_text(&display(
+                    rates_available,
+                    rec_speed,
+                    &DataType::NetworkBytesPerSecond,
+                ));
             }
-
-            let sent = crate::to_human_readable_nice(
-                connection.tx_total_bytes as f32,
-                &DataType::NetworkBytes,
-            );
             if let Some(total_sent) = this.total_sent.get() {
-                total_sent.set_text(&sent);
+                total_sent.set_text(&display(
+                    totals_available,
+                    connection.tx_total_bytes as f32,
+                    &DataType::NetworkBytes,
+                ));
             }
-            let received = crate::to_human_readable_nice(
-                connection.rx_total_bytes as f32,
-                &DataType::NetworkBytes,
-            );
             if let Some(total_recv) = this.total_recv.get() {
-                total_recv.set_text(&received);
+                total_recv.set_text(&display(
+                    totals_available,
+                    connection.rx_total_bytes as f32,
+                    &DataType::NetworkBytes,
+                ));
             }
 
             if let Some(temperature) = this.temperature.get() {
