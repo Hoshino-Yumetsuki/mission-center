@@ -39,92 +39,61 @@ impl magpie_platform::fan::FanCache for FanCache {
 }
 
 fn read_smc_fans() -> Vec<Fan> {
-    let fan_count = smc_read_fan_count();
-    let mut fans = Vec::with_capacity(fan_count as usize);
-    for i in 0..fan_count {
-        let actual_rpm = smc_read_fan_rpm(i, b"Ac");
-        let max_rpm = smc_read_fan_rpm(i, b"Mx").max(1);
-        let percent = if max_rpm > 0 {
-            (actual_rpm as f32 / max_rpm as f32) * 100.0
-        } else {
-            0.0
-        };
-        fans.push(Fan {
-            fan_label: Some(format!("Fan {i}")),
-            temp_name: None,
-            fan_index: i,
-            hwmon_index: 0,
-            rpm: actual_rpm,
-            temp_amount: None,
-            pwm_percent: Some(percent),
-            max_rpm: Some(max_rpm),
-        });
+    let Some(count) = smc_read_key(b"FNum") else {
+        return Vec::new();
+    };
+    if count.data_type != *b"ui8 " || count.data_size != 1 {
+        return Vec::new();
     }
-    fans
+    // SMC fan keys have one hexadecimal index digit.
+    (0..u32::from(count.bytes[0]).min(16))
+        .filter_map(|i| {
+            let rpm = smc_read_fan_rpm(i, b"Ac")?;
+            Some(Fan {
+                fan_label: Some(format!("Fan {i}")),
+                temp_name: None,
+                fan_index: i,
+                hwmon_index: 0,
+                rpm,
+                temp_amount: None,
+                // RPM/max RPM is not PWM duty cycle.
+                pwm_percent: None,
+                max_rpm: smc_read_fan_rpm(i, b"Mx").filter(|&rpm| rpm > 0),
+            })
+        })
+        .collect()
 }
 
-fn smc_read_fan_count() -> u32 {
-    smc_read_u8_key(b"FNum") as u32
+fn smc_read_fan_rpm(index: u32, suffix: &[u8; 2]) -> Option<u32> {
+    let key = [
+        b'F',
+        b"0123456789ABCDEF"[index as usize],
+        suffix[0],
+        suffix[1],
+    ];
+    let value = smc_read_key(&key)?.number()?;
+    (value.is_finite() && (0.0..=u32::MAX as f32).contains(&value)).then_some(value as u32)
 }
 
-fn smc_read_fan_rpm(index: u32, suffix: &[u8; 2]) -> u32 {
-    let mut key = [0u8; 4];
-    key[0] = b'F';
-    key[1] = b'0' + (index.min(9) as u8);
-    key[2] = suffix[0];
-    key[3] = suffix[1];
-    smc_read_fpe2_key(&key) as u32
-}
-
-fn smc_read_u8_key(key: &[u8]) -> u8 {
+fn smc_read_key(key: &[u8; 4]) -> Option<SmcVal> {
     unsafe {
         let conn = smc_open();
         if conn == 0 {
-            return 0;
+            return None;
         }
-        let val = smc_read_key_raw(conn, key);
+        let value = smc_read_key_raw(conn, key);
         smc_close(conn);
-        if val.data_size >= 1 {
-            val.bytes[0]
-        } else {
-            0
-        }
-    }
-}
-
-fn smc_read_fpe2_key(key: &[u8]) -> f32 {
-    unsafe {
-        let conn = smc_open();
-        if conn == 0 {
-            return 0.0;
-        }
-        let val = smc_read_key_raw(conn, key);
-        smc_close(conn);
-        if val.data_size >= 2 {
-            let raw = ((val.bytes[0] as u16) << 8) | (val.bytes[1] as u16);
-            raw as f32 / 4.0
-        } else {
-            0.0
-        }
+        value
     }
 }
 
 #[cfg(not(target_arch = "aarch64"))]
 pub(crate) fn smc_cpu_temperature() -> Option<f32> {
-    let temp = unsafe {
-        let conn = smc_open();
-        if conn == 0 {
-            return None;
-        }
-        let value = smc_read_key_raw(conn, b"TC0P");
-        smc_close(conn);
-        if value.data_size >= 2 {
-            let raw = u16::from_be_bytes([value.bytes[0], value.bytes[1]]);
-            raw as f32 / 256.0
-        } else {
-            return None;
-        }
-    };
+    let value = smc_read_key(b"TC0P")?;
+    if value.data_type != *b"sp78" || value.data_size != 2 {
+        return None;
+    }
+    let temp = i16::from_be_bytes([value.bytes[0], value.bytes[1]]) as f32 / 256.0;
     if temp.is_finite() && temp > 0.0 && temp < 150.0 {
         Some(temp)
     } else {
@@ -136,6 +105,17 @@ pub(crate) fn smc_cpu_temperature() -> Option<f32> {
 struct SmcVal {
     bytes: [u8; 32],
     data_size: u32,
+    data_type: [u8; 4],
+}
+
+impl SmcVal {
+    fn number(&self) -> Option<f32> {
+        match (&self.data_type, self.data_size) {
+            (b"fpe2", 2) => Some(u16::from_be_bytes([self.bytes[0], self.bytes[1]]) as f32 / 4.0),
+            (b"flt ", 4) => Some(f32::from_le_bytes(self.bytes[..4].try_into().ok()?)),
+            _ => None,
+        }
+    }
 }
 
 impl Default for SmcVal {
@@ -143,6 +123,7 @@ impl Default for SmcVal {
         Self {
             bytes: [0u8; 32],
             data_size: 0,
+            data_type: [0; 4],
         }
     }
 }
@@ -171,12 +152,8 @@ unsafe fn smc_close(conn: u32) {
     let _ = IOServiceClose(conn);
 }
 
-unsafe fn smc_read_key_raw(conn: u32, key: &[u8]) -> SmcVal {
-    let mut result = SmcVal::default();
-    if key.len() < 4 {
-        return result;
-    }
-    let key_u32 = u32::from_be_bytes([key[0], key[1], key[2], key[3]]);
+unsafe fn smc_read_key_raw(conn: u32, key: &[u8; 4]) -> Option<SmcVal> {
+    let key_u32 = u32::from_be_bytes(*key);
 
     #[repr(C)]
     struct SmcKeyData {
@@ -215,11 +192,13 @@ unsafe fn smc_read_key_raw(conn: u32, key: &[u8]) -> SmcVal {
         &mut output as *mut SmcKeyData as *mut libc::c_void,
         &mut output_size,
     );
-    if kr != 0 {
-        return result;
+    if kr != 0 || output.result != 0 || output_size != input_size || output.key_info.data_size > 32
+    {
+        return None;
     }
 
     input.key_info.data_size = output.key_info.data_size;
+    let data_type = output.key_info.data_type.to_be_bytes();
     input.key_info.data_type = output.key_info.data_type;
     input.data8 = 5; // kSMCReadKey
 
@@ -232,11 +211,14 @@ unsafe fn smc_read_key_raw(conn: u32, key: &[u8]) -> SmcVal {
         &mut output as *mut SmcKeyData as *mut libc::c_void,
         &mut output_size,
     );
-    if kr == 0 {
-        result.data_size = output.key_info.data_size;
-        result.bytes = output.bytes;
+    if kr != 0 || output.result != 0 || output_size != input_size {
+        return None;
     }
-    result
+    Some(SmcVal {
+        data_size: input.key_info.data_size,
+        data_type,
+        bytes: output.bytes,
+    })
 }
 
 #[link(name = "IOKit", kind = "framework")]

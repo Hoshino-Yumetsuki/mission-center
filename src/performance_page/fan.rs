@@ -206,8 +206,8 @@ mod imp {
                     box_pwm.set_visible(false);
                 }
 
-                if let Some(legend_speed) = this.legend_speed.get() {
-                    legend_speed.set_visible(false);
+                if let Some(legend_pwm) = this.legend_pwm.get() {
+                    legend_pwm.set_visible(false);
                 }
             }
 
@@ -249,14 +249,22 @@ mod imp {
                 speed_send.set_text(&i18n_f("{} RPM", &[&format!("{}", fan.rpm)]));
             }
 
+            if let Some(legend_pwm) = this.legend_pwm.get() {
+                legend_pwm.set_visible(fan.pwm_percent.is_some());
+            }
+            if let Some(box_pwm) = this.bow_pwm.get() {
+                box_pwm.set_visible(fan.pwm_percent.is_some());
+            }
+            this.temp_graph_box.set_visible(fan.temp_amount.is_some());
+            if let Some(box_temp) = this.box_temp.get() {
+                box_temp.set_visible(fan.temp_amount.is_some());
+            }
             if let Some(pwm) = this.pwm.get() {
-                pwm.set_text(&i18n_f(
-                    "{}%",
-                    &[&format!(
-                        "{:.0}",
-                        fan.pwm_percent.clone().unwrap_or(0.) * 100.0
-                    )],
-                ));
+                pwm.set_text(
+                    &fan.pwm_percent
+                        .map(|v| format!("{:.0}%", v * 100.0))
+                        .unwrap_or_else(|| i18n("N/A")),
+                );
             }
 
             if let Some(fan_temp_mk) = fan.temp_amount {
@@ -270,10 +278,11 @@ mod imp {
                     .set_text(&format!("{} °C", this.temp_graph.get_dataset_max_scale(0)));
             }
 
-            this.speed_graph.add_data_point(vec![
-                vec![fan.rpm as f32],
-                vec![fan.pwm_percent.unwrap_or(0.)],
-            ]);
+            this.speed_graph
+                .add_single_data_point(0, vec![fan.rpm as f32]);
+            if let Some(pwm) = fan.pwm_percent {
+                this.speed_graph.add_single_data_point(1, vec![pwm]);
+            }
 
             if fan.max_rpm.is_none() {
                 this.speed_max_y.set_text(&i18n_f(
@@ -315,12 +324,12 @@ mod imp {
                     .unwrap_or(unsupported.clone()),
                 self.pwm
                     .get()
-                    .and_then(|pwm| if !pwm.is_visible() { None } else { Some(pwm) })
+                    .filter(|_| self.bow_pwm.get().is_some_and(|b| b.is_visible()))
                     .map(|s| s.text())
                     .unwrap_or(unsupported.clone()),
                 self.temp
                     .get()
-                    .and_then(|temp| if !temp.is_visible() { None } else { Some(temp) })
+                    .filter(|_| self.box_temp.get().is_some_and(|b| b.is_visible()))
                     .map(|s| s.text())
                     .unwrap_or(unsupported)
             )
